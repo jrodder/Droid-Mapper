@@ -11,6 +11,7 @@ import com.jrod.droidgridder.model.deleteExit as removeExit
 import com.jrod.droidgridder.model.deleteRoom as removeRoom
 import com.jrod.droidgridder.model.go as goRoom
 import com.jrod.droidgridder.model.autoTidy as tidyLayout
+import com.jrod.droidgridder.model.springLayout as relaxLayout
 import com.jrod.droidgridder.model.linkToExisting
 import com.jrod.droidgridder.model.redirectExit as repointExit
 import com.jrod.droidgridder.model.ROOM_BOX_SIZE
@@ -203,6 +204,20 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         val map = s.map ?: return
         val newMap = tidyLayout(map, layoutStride(map))
         // ponytail: data-class equality is the no-op test; store.save would also burn updatedAt.
+        if (newMap == map) return
+        previousMap = map
+        store.save(newMap)
+        _uiState.value = s.copy(map = newMap, canUndo = true)
+    }
+
+    /**
+     * Re-lay out every room via the pure [relaxLayout] (force-directed relaxation
+     * seeded from the Tidy layout). Same no-op/undo/save contract as [autoTidy].
+     */
+    fun relax() {
+        val s = _uiState.value
+        val map = s.map ?: return
+        val newMap = relaxLayout(map, layoutStride(map))
         if (newMap == map) return
         previousMap = map
         store.save(newMap)

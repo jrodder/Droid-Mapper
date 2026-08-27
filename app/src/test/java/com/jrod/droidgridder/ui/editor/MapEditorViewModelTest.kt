@@ -400,6 +400,46 @@ class MapEditorViewModelTest {
         assertFalse(vm.uiState.value.canUndo)
     }
 
+    @Test
+    fun `relax re-lays-out rooms, saves it, and pushes one undo step`() {
+        val m = baseMap(Room(id = "a", x = 5f, y = 6f), Room(id = "b", x = 100f, y = 200f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.relax()
+
+        val s = vm.uiState.value
+        val byId = s.map!!.rooms.associateBy { it.id }
+        assertEquals(0f, byId["a"]!!.x, 0.01f) // root pinned at the origin
+        assertEquals(0f, byId["a"]!!.y, 0.01f)
+        // b settles at the E rest slot (one stride east), up to spring/gravity slack
+        assertTrue(kotlin.math.abs(byId["b"]!!.x - GRID_STEP) < 0.15f * GRID_STEP)
+        assertTrue(kotlin.math.abs(byId["b"]!!.y) < 0.15f * GRID_STEP)
+        assertTrue(s.canUndo) // relax is a real map replacement -> undo step
+        assertEquals(byId["b"]!!.x, MapStore(tmp.root).load("m1")!!.rooms.single { it.id == "b" }.x, 0.001f)
+
+        vm.undo()
+        val reverted = vm.uiState.value.map!!.rooms.associateBy { it.id }
+        assertEquals(5f, reverted["a"]!!.x, 0.001f) // undo reverts the positions
+        assertEquals(200f, reverted["b"]!!.y, 0.001f)
+        assertFalse(vm.uiState.value.canUndo)
+    }
+
+    @Test
+    fun `relax is idempotent - a second call pushes no undo step and re-saves nothing`() {
+        val m = baseMap(Room(id = "a", x = 5f, y = 6f), Room(id = "b", x = 100f, y = 200f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.relax() // converges (deterministic: seeded from the Tidy layout of the same graph)
+        val file = File(tmp.root, "m1.json")
+        val before = file.readText()
+
+        vm.relax()
+
+        val s = vm.uiState.value
+        assertTrue(s.canUndo) // the first relax() pushed the slot; the no-op must not consume it
+        assertEquals(before, file.readText()) // nothing re-saved (no updatedAt burn)
+    }
+
     // --- v1.1 room-mode interaction: detail window (single-tap) vs edit sheet (double-tap) ---
 
     @Test

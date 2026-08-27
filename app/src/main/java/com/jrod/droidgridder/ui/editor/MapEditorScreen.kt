@@ -48,8 +48,9 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
     val camera = remember { CameraState() }
     val centered = remember { mutableStateOf(false) }
 
-    // ponytail: text "Undo"/"Tidy" actions — no glyphs for either in material-icons-core, and
-    // the icons-extended artifact is not worth pulling in for two text buttons (Task 8+ may revisit).
+    // ponytail: text "Undo"/"Tidy"/"Relax" actions — no glyphs for either in material-icons-core, and
+    // the icons-extended artifact is not worth pulling in for three text buttons (Task 8+ may revisit).
+    // "Relax" (not "Springs") is the label because seven chars wrap inside the 48dp IconButton.
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,6 +63,9 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                 actions = {
                     IconButton(onClick = { viewModel.autoTidy() }) {
                         Text("Tidy", style = MaterialTheme.typography.labelLarge)
+                    }
+                    IconButton(onClick = { viewModel.relax() }) {
+                        Text("Relax", style = MaterialTheme.typography.labelLarge)
                     }
                     IconButton(onClick = { viewModel.undo() }, enabled = state.canUndo) {
                         Text("Undo", style = MaterialTheme.typography.labelLarge)
