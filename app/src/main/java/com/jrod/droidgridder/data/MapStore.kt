@@ -1,6 +1,7 @@
 package com.jrod.droidgridder.data
 
 import com.jrod.droidgridder.model.MapFile
+import com.jrod.droidgridder.model.Room
 import java.io.File
 import java.util.UUID
 
@@ -9,7 +10,10 @@ class MapStore(private val rootDir: File) {
     private fun fileFor(id: String) = File(rootDir, "$id.json")
 
     fun newMap(name: String): MapFile =
-        MapFile(id = UUID.randomUUID().toString(), name = name, createdAt = 0L, updatedAt = 0L)
+        MapFile(id = UUID.randomUUID().toString(), name = name, createdAt = 0L, updatedAt = 0L,
+            // ponytail: new maps seed one root room — go() needs a current room and the UI has no
+            // "add first room" affordance (Task 9 E2E found fresh maps were an empty dead-end).
+            rooms = listOf(Room(id = UUID.randomUUID().toString())))
 
     fun save(map: MapFile) {
         val now = System.currentTimeMillis()

@@ -31,6 +31,7 @@ class MapJsonTest {
         val dir = File.createTempFile("maps", "").let { it.delete(); File(it.absolutePath) }
         val store = MapStore(dir)
         val map = store.newMap("Zork")
+        assertEquals(1, map.rooms.size) // new maps seed a single root room (go() needs a current room)
         store.save(map.copy(rooms = listOf(Room("a"))))
         assertEquals(1, store.list().size)
         assertEquals("Zork", store.load(map.id)?.name)
