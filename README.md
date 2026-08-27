@@ -16,7 +16,7 @@ by hand while you play.
 | Drag | Pan |
 | Pinch | Zoom |
 | Tap a room | Read-only detail window (tap anywhere to dismiss) |
-| Double-tap a room | Edit (name, description, notes) + direction wheel |
+| Double-tap a room | Edit sheet (name, description, notes; Manage exits → direction wheel; delete room) |
 | Direction wheel | Attach a passage to an adjacent room in one of 12 directions |
 
 A direction with no exit is *blocked* by design (same as the game): the wheel
@@ -71,7 +71,7 @@ dependencies beyond the standard Compose/BOM set.
 
 ```bash
 ./gradlew assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
-./gradlew testDebugUnitTest      # 61 unit tests
+./gradlew testDebugUnitTest      # 67 unit tests
 ```
 
 ### Architecture
@@ -94,5 +94,8 @@ the bare JVM (no Robolectric).
   is NP-hard). ~10% of passages may render on the far side of their declared
   compass direction, mostly at high-degree junctions.
 - No multi-floor concept: UP/DOWN are directions like the rest.
+- Containment is flat, not nested: an IN/OUT room is placed *beside* its
+  parent (hugging it), not rendered inside the parent's box. True nested
+  interiors (Infocom's 1983 paper-map style) are a future feature.
 - There's no export button — maps are plain JSON files in `files/maps/`
   (import *is* supported: paste map JSON from the map list).
