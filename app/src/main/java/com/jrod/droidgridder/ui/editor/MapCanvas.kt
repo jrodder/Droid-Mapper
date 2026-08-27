@@ -25,6 +25,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.jrod.droidgridder.model.Direction
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.Pos
@@ -169,10 +170,17 @@ fun MapCanvas(
             val b = animatedRooms[to.id]?.let { Pos(it.x, it.y) } ?: Pos(to.x, to.y)
             val s = camera.worldToScreen(a)
             val t = camera.worldToScreen(b)
-            // v1.3 ruling L: exit lines touching the selected room use primary (blue); others stay outline.
-            val edgeColor =
-                if (exit.from == state.selectedRoomId || exit.to == state.selectedRoomId) currentColor else exitColor
-            drawLine(color = edgeColor, start = s, end = t, strokeWidth = 2f)
+            // v1.4 ruling N2 (priority order): UP/DOWN edges are primary (blue) 3dp always;
+            // other edges touching the selected room are secondary (green) 3dp; the rest
+            // stay outline (grey) 2dp. Replaces v1.3 ruling L's blue-on-selection.
+            val isVertical = exit.direction == Direction.UP || exit.direction == Direction.DOWN
+            val isSelectedEdge = exit.from == state.selectedRoomId || exit.to == state.selectedRoomId
+            val edgeColor = when {
+                isVertical -> currentColor
+                isSelectedEdge -> selectedColor
+                else -> exitColor
+            }
+            drawLine(color = edgeColor, start = s, end = t, strokeWidth = if (isVertical || isSelectedEdge) 3f else 2f)
         }
 
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
@@ -192,18 +200,18 @@ fun MapCanvas(
                 color = boxStroke, topLeft = rect.topLeft, size = rect.size,
                 cornerRadius = radius, style = Stroke(width = 2f),
             )
-            if (room.id == state.currentRoomId) {
+            // v1.4 ruling N1: one highlight per room, drawn ON the box. Selected -> secondary
+            // (green) wins; current -> primary (blue) only when not also selected. No inflated ring.
+            if (room.id == state.currentRoomId && room.id != state.selectedRoomId) {
                 drawRoundRect(
                     color = currentColor, topLeft = rect.topLeft, size = rect.size,
                     cornerRadius = radius, style = Stroke(width = 3f),
                 )
             }
             if (room.id == state.selectedRoomId) {
-                val ring = rect.inflate(8f)
                 drawRoundRect(
-                    color = selectedColor, topLeft = ring.topLeft, size = ring.size,
-                    cornerRadius = CornerRadius(ROOM_BOX_RADIUS * camera.scale + 8f),
-                    style = Stroke(width = 3f),
+                    color = selectedColor, topLeft = rect.topLeft, size = rect.size,
+                    cornerRadius = radius, style = Stroke(width = 3f),
                 )
             }
             // Room name is drawn under the box (spec wins over brief's "below/inside").
