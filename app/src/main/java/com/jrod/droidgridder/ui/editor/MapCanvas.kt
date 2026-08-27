@@ -169,7 +169,10 @@ fun MapCanvas(
             val b = animatedRooms[to.id]?.let { Pos(it.x, it.y) } ?: Pos(to.x, to.y)
             val s = camera.worldToScreen(a)
             val t = camera.worldToScreen(b)
-            drawLine(color = exitColor, start = s, end = t, strokeWidth = 2f)
+            // v1.3 ruling L: exit lines touching the selected room use primary (blue); others stay outline.
+            val edgeColor =
+                if (exit.from == state.selectedRoomId || exit.to == state.selectedRoomId) currentColor else exitColor
+            drawLine(color = edgeColor, start = s, end = t, strokeWidth = 2f)
         }
 
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)

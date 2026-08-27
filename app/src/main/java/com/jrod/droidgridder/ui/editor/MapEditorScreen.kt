@@ -170,7 +170,6 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
             if (state.roomMode == RoomMode.Detail && selectedRoom != null) {
                 RoomDetailWindow(
                     room = selectedRoom,
-                    map = state.map!!,
                     onClose = { viewModel.closeDetail() },
                 )
             }

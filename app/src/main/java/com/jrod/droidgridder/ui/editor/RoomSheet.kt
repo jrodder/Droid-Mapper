@@ -154,11 +154,13 @@ fun RoomSheet(
 
 /**
  * Draft field that expands and word-wraps with its content (36–240 dp tall),
- * committing on focus loss or the IME done action. v1.2 ruling K: a commit hides
- * the keyboard via focusManager.clearFocus() — in the pinned compose-ui (BOM
- * 2025.01.00 → 1.7.6) that is the API behind the newer clearFocus(hideIme = true);
- * a text field losing focus hides the IME by default (hideImeOnFocusLost). The
- * sheet stays open.
+ * committing on focus loss or the IME done action. v1.2 ruling K: the IME Done
+ * (checkmark) path hides the keyboard via focusManager.clearFocus() — in the
+ * pinned compose-ui (BOM 2025.01.00 → 1.7.6) that is the API behind the newer
+ * clearFocus(hideIme = true). The focus-loss path commits without clearFocus
+ * (v1.3 P2 fix: clearing there can steal a sibling field's new focus); a text
+ * field losing focus to a non-editable target still hides the IME via the
+ * default hideImeOnFocusLost. The sheet stays open.
  */
 @Composable
 private fun DraftField(
@@ -184,8 +186,11 @@ private fun DraftField(
             .padding(vertical = 4.dp)
             .onFocusChanged { fs ->
                 if (focused && !fs.isFocused) {
+                    // v1.3 P2 fix: commit on focus loss, but do NOT clearFocus here — when the
+                    // user taps a sibling field, this callback can run after the sibling's focus
+                    // request and clearFocus() steals it (keyboard then lingers with no target).
+                    // The IME still hides on plain focus loss via hideImeOnFocusLost.
                     onCommit()
-                    focusManager.clearFocus() // focus-loss commit also hides the IME
                 }
                 focused = fs.isFocused
             },
