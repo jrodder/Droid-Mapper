@@ -1,2630 +1,2522 @@
 {
- "id": "zork1-complete",
- "name": "Zork I (Complete)",
- "createdAt": 1787863002520,
- "updatedAt": 1787863002520,
- "rooms": [
-  {
-   "id": "west_of_house",
-   "name": "West of House",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "altar",
-   "name": "Altar",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "aragain_falls",
-   "name": "Aragain Falls",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "atlantis_room",
-   "name": "Atlantis Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "attic",
-   "name": "Attic",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "bat_room",
-   "name": "Bat Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "beach1",
-   "name": "White Cliffs Beach",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "beach2",
-   "name": "White Cliffs Beach",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "canyon_bottom",
-   "name": "Canyon Bottom",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "canyon_view",
-   "name": "Canyon View",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "cave1",
-   "name": "Cave",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "cave2",
-   "name": "Cave",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "cellar",
-   "name": "Cellar",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "chasm",
-   "name": "Chasm",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "clearing1",
-   "name": "Clearing",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "clearing2",
-   "name": "Clearing",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "cold_passage",
-   "name": "Cold Passage",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "cyclops_room",
-   "name": "Cyclops Room",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "dam",
-   "name": "Dam",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "dam_base",
-   "name": "Dam Base",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "dam_lobby",
-   "name": "Dam Lobby",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "damp_cave",
-   "name": "Damp Cave",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "dead_end",
-   "name": "Dead End",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "deep_canyon",
-   "name": "Deep Canyon",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "dome_room",
-   "name": "Dome Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "drafty_room",
-   "name": "Drafty Room",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "e_w_passage",
-   "name": "East-West Passage",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "east_of_chasm",
-   "name": "East of Chasm",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "east_of_house",
-   "name": "Behind House",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "egyptian_room",
-   "name": "Egyptian Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "end_of_rainbow",
-   "name": "End of Rainbow",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "engravings_cave",
-   "name": "Engravings Cave",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "entrance_to_hades",
-   "name": "Entrance to Hades",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "forest1",
-   "name": "Forest",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "forest2",
-   "name": "Forest",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "forest3",
-   "name": "Forest",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "forest4",
-   "name": "Forest",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "forest_path",
-   "name": "Forest Path",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "frigid_river",
-   "name": "Frigid River",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "gallery",
-   "name": "Gallery",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "gas_room",
-   "name": "Gas Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "grating_room",
-   "name": "Grating Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "kitchen",
-   "name": "Kitchen",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "ladder_bottom",
-   "name": "Ladder Bottom",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "ladder_top",
-   "name": "Ladder Top",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "land_of_the_dead",
-   "name": "Land of the Dead",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "living_room",
-   "name": "Living Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "loud_room",
-   "name": "Loud Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "machine_room",
-   "name": "Machine Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maintenance_room",
-   "name": "Maintenance Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze1",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze10",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze11",
-   "name": "Dead End",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze12",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze13",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze14",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze15",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze16",
-   "name": "Dead End",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze17",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze18",
-   "name": "Dead End",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze19",
-   "name": "Dead End",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze2",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze3",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze4",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze5",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze6",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze7",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze8",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "maze9",
-   "name": "Maze",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mine1",
-   "name": "Coal Mine",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mine2",
-   "name": "Coal Mine",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mine3",
-   "name": "Coal Mine",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mine4",
-   "name": "Coal Mine",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mine_entrance",
-   "name": "Mine Entrance",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mirror_room1",
-   "name": "Mirror Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "mirror_room2",
-   "name": "Mirror Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "n_s_passage",
-   "name": "North-South Passage",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "narrow_passage",
-   "name": "Narrow Passage",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "north_of_house",
-   "name": "North of House",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "on_the_rainbow",
-   "name": "On the Rainbow",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "reservoir",
-   "name": "Reservoir",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "reservoir_north",
-   "name": "Reservoir North",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "reservoir_south",
-   "name": "Reservoir South",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "river1",
-   "name": "Frigid River",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "river2",
-   "name": "Frigid River",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "river3",
-   "name": "Frigid River",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "river4",
-   "name": "Frigid River",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "rocky_ledge",
-   "name": "Rocky Ledge",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "round_room",
-   "name": "Round Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "sandy_beach",
-   "name": "Sandy Beach",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "sandy_cave",
-   "name": "Sandy Cave",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "shaft_room",
-   "name": "Shaft Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "shore",
-   "name": "Shore",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "slide_room",
-   "name": "Slide Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "smelly_room",
-   "name": "Smelly Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "south_of_house",
-   "name": "South of House",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "squeaky_room",
-   "name": "Squeaky Room",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "stone_barrow",
-   "name": "Stone Barrow",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "strange_passage",
-   "name": "Strange Passage",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "stream",
-   "name": "Stream",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "stream_view",
-   "name": "Stream View",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "studio",
-   "name": "Studio",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "temple",
-   "name": "Temple",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "the_troll_room",
-   "name": "The Troll Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "timber_room",
-   "name": "Timber Room",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "torch_room",
-   "name": "Torch Room",
-   "description": "",
-   "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "treasure_room",
-   "name": "Treasure Room",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "twisting_passage",
-   "name": "Twisting Passage",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "up_a_tree",
-   "name": "Up a Tree",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "winding_passage",
-   "name": "Winding Passage",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  }
- ],
- "exits": [
-  {
-   "id": "z1e001",
-   "from": "altar",
-   "direction": "DOWN",
-   "to": "cave1"
-  },
-  {
-   "id": "z1e001r",
-   "from": "cave1",
-   "direction": "UP",
-   "to": "altar"
-  },
-  {
-   "id": "z1e002",
-   "from": "atlantis_room",
-   "direction": "UP",
-   "to": "cave2"
-  },
-  {
-   "id": "z1e002r",
-   "from": "cave2",
-   "direction": "DOWN",
-   "to": "atlantis_room"
-  },
-  {
-   "id": "z1e003",
-   "from": "atlantis_room",
-   "direction": "S",
-   "to": "reservoir_north"
-  },
-  {
-   "id": "z1e003r",
-   "from": "reservoir_north",
-   "direction": "N",
-   "to": "atlantis_room"
-  },
-  {
-   "id": "z1e004",
-   "from": "attic",
-   "direction": "DOWN",
-   "to": "kitchen"
-  },
-  {
-   "id": "z1e004r",
-   "from": "kitchen",
-   "direction": "UP",
-   "to": "attic"
-  },
-  {
-   "id": "z1e005",
-   "from": "beach1",
-   "direction": "N",
-   "to": "beach2"
-  },
-  {
-   "id": "z1e005r",
-   "from": "beach2",
-   "direction": "S",
-   "to": "beach1"
-  },
-  {
-   "id": "z1e006",
-   "from": "canyon_bottom",
-   "direction": "N",
-   "to": "end_of_rainbow"
-  },
-  {
-   "id": "z1e006r",
-   "from": "end_of_rainbow",
-   "direction": "S",
-   "to": "canyon_bottom"
-  },
-  {
-   "id": "z1e007",
-   "from": "canyon_view",
-   "direction": "W",
-   "to": "forest4"
-  },
-  {
-   "id": "z1e007r",
-   "from": "forest4",
-   "direction": "E",
-   "to": "canyon_view"
-  },
-  {
-   "id": "z1e008",
-   "from": "canyon_view",
-   "direction": "DOWN",
-   "to": "rocky_ledge"
-  },
-  {
-   "id": "z1e008r",
-   "from": "rocky_ledge",
-   "direction": "UP",
-   "to": "canyon_view"
-  },
-  {
-   "id": "z1e009",
-   "from": "cave2",
-   "direction": "N",
-   "to": "mirror_room1"
-  },
-  {
-   "id": "z1e009r",
-   "from": "mirror_room1",
-   "direction": "S",
-   "to": "cave2"
-  },
-  {
-   "id": "z1e010",
-   "from": "cellar",
-   "direction": "S",
-   "to": "east_of_chasm"
-  },
-  {
-   "id": "z1e010r",
-   "from": "east_of_chasm",
-   "direction": "N",
-   "to": "cellar"
-  },
-  {
-   "id": "z1e011",
-   "from": "cellar",
-   "direction": "N",
-   "to": "the_troll_room"
-  },
-  {
-   "id": "z1e011r",
-   "from": "the_troll_room",
-   "direction": "S",
-   "to": "cellar"
-  },
-  {
-   "id": "z1e012",
-   "from": "chasm",
-   "direction": "S",
-   "to": "n_s_passage"
-  },
-  {
-   "id": "z1e012r",
-   "from": "n_s_passage",
-   "direction": "N",
-   "to": "chasm"
-  },
-  {
-   "id": "z1e013",
-   "from": "chasm",
-   "direction": "NE",
-   "to": "reservoir_south"
-  },
-  {
-   "id": "z1e013r",
-   "from": "reservoir_south",
-   "direction": "SW",
-   "to": "chasm"
-  },
-  {
-   "id": "z1e014",
-   "from": "clearing1",
-   "direction": "W",
-   "to": "forest1"
-  },
-  {
-   "id": "z1e014r",
-   "from": "forest1",
-   "direction": "E",
-   "to": "clearing1"
-  },
-  {
-   "id": "z1e015",
-   "from": "clearing1",
-   "direction": "E",
-   "to": "forest2"
-  },
-  {
-   "id": "z1e015r",
-   "from": "forest2",
-   "direction": "W",
-   "to": "clearing1"
-  },
-  {
-   "id": "z1e016",
-   "from": "clearing1",
-   "direction": "S",
-   "to": "forest_path"
-  },
-  {
-   "id": "z1e016r",
-   "from": "forest_path",
-   "direction": "N",
-   "to": "clearing1"
-  },
-  {
-   "id": "z1e017",
-   "from": "clearing1",
-   "direction": "DOWN",
-   "to": "grating_room"
-  },
-  {
-   "id": "z1e017r",
-   "from": "grating_room",
-   "direction": "UP",
-   "to": "clearing1"
-  },
-  {
-   "id": "z1e018",
-   "from": "clearing2",
-   "direction": "E",
-   "to": "canyon_view"
-  },
-  {
-   "id": "z1e018r",
-   "from": "canyon_view",
-   "direction": "W",
-   "to": "clearing2"
-  },
-  {
-   "id": "z1e019",
-   "from": "clearing2",
-   "direction": "W",
-   "to": "east_of_house"
-  },
-  {
-   "id": "z1e019r",
-   "from": "east_of_house",
-   "direction": "E",
-   "to": "clearing2"
-  },
-  {
-   "id": "z1e020",
-   "from": "clearing2",
-   "direction": "N",
-   "to": "forest2"
-  },
-  {
-   "id": "z1e020r",
-   "from": "forest2",
-   "direction": "S",
-   "to": "clearing2"
-  },
-  {
-   "id": "z1e021",
-   "from": "clearing2",
-   "direction": "S",
-   "to": "forest4"
-  },
-  {
-   "id": "z1e021r",
-   "from": "forest4",
-   "direction": "N",
-   "to": "clearing2"
-  },
-  {
-   "id": "z1e022",
-   "from": "cold_passage",
-   "direction": "S",
-   "to": "mirror_room1"
-  },
-  {
-   "id": "z1e022r",
-   "from": "mirror_room1",
-   "direction": "N",
-   "to": "cold_passage"
-  },
-  {
-   "id": "z1e023",
-   "from": "cold_passage",
-   "direction": "W",
-   "to": "slide_room"
-  },
-  {
-   "id": "z1e023r",
-   "from": "slide_room",
-   "direction": "E",
-   "to": "cold_passage"
-  },
-  {
-   "id": "z1e024",
-   "from": "cyclops_room",
-   "direction": "UP",
-   "to": "treasure_room"
-  },
-  {
-   "id": "z1e024r",
-   "from": "treasure_room",
-   "direction": "DOWN",
-   "to": "cyclops_room"
-  },
-  {
-   "id": "z1e025",
-   "from": "dam",
-   "direction": "DOWN",
-   "to": "dam_base"
-  },
-  {
-   "id": "z1e025r",
-   "from": "dam_base",
-   "direction": "UP",
-   "to": "dam"
-  },
-  {
-   "id": "z1e026",
-   "from": "dam",
-   "direction": "N",
-   "to": "dam_lobby"
-  },
-  {
-   "id": "z1e026r",
-   "from": "dam_lobby",
-   "direction": "S",
-   "to": "dam"
-  },
-  {
-   "id": "z1e027",
-   "from": "damp_cave",
-   "direction": "E",
-   "to": "beach2"
-  },
-  {
-   "id": "z1e027r",
-   "from": "beach2",
-   "direction": "W",
-   "to": "damp_cave"
-  },
-  {
-   "id": "z1e028",
-   "from": "deep_canyon",
-   "direction": "E",
-   "to": "dam"
-  },
-  {
-   "id": "z1e028r",
-   "from": "dam",
-   "direction": "W",
-   "to": "deep_canyon"
-  },
-  {
-   "id": "z1e029",
-   "from": "deep_canyon",
-   "direction": "NW",
-   "to": "reservoir_south"
-  },
-  {
-   "id": "z1e029r",
-   "from": "reservoir_south",
-   "direction": "SE",
-   "to": "deep_canyon"
-  },
-  {
-   "id": "z1e030",
-   "from": "dome_room",
-   "direction": "DOWN",
-   "to": "torch_room"
-  },
-  {
-   "id": "z1e030r",
-   "from": "torch_room",
-   "direction": "UP",
-   "to": "dome_room"
-  },
-  {
-   "id": "z1e031",
-   "from": "e_w_passage",
-   "direction": "DOWN",
-   "to": "chasm"
-  },
-  {
-   "id": "z1e031r",
-   "from": "chasm",
-   "direction": "UP",
-   "to": "e_w_passage"
-  },
-  {
-   "id": "z1e032",
-   "from": "e_w_passage",
-   "direction": "E",
-   "to": "round_room"
-  },
-  {
-   "id": "z1e032r",
-   "from": "round_room",
-   "direction": "W",
-   "to": "e_w_passage"
-  },
-  {
-   "id": "z1e033",
-   "from": "east_of_chasm",
-   "direction": "E",
-   "to": "gallery"
-  },
-  {
-   "id": "z1e033r",
-   "from": "gallery",
-   "direction": "W",
-   "to": "east_of_chasm"
-  },
-  {
-   "id": "z1e034",
-   "from": "east_of_house",
-   "direction": "W",
-   "to": "kitchen"
-  },
-  {
-   "id": "z1e034r",
-   "from": "kitchen",
-   "direction": "E",
-   "to": "east_of_house"
-  },
-  {
-   "id": "z1e035",
-   "from": "east_of_house",
-   "direction": "NW",
-   "to": "north_of_house"
-  },
-  {
-   "id": "z1e035r",
-   "from": "north_of_house",
-   "direction": "SE",
-   "to": "east_of_house"
-  },
-  {
-   "id": "z1e036",
-   "from": "east_of_house",
-   "direction": "SW",
-   "to": "south_of_house"
-  },
-  {
-   "id": "z1e036r",
-   "from": "south_of_house",
-   "direction": "NE",
-   "to": "east_of_house"
-  },
-  {
-   "id": "z1e037",
-   "from": "egyptian_room",
-   "direction": "UP",
-   "to": "temple"
-  },
-  {
-   "id": "z1e037r",
-   "from": "temple",
-   "direction": "DOWN",
-   "to": "egyptian_room"
-  },
-  {
-   "id": "z1e038",
-   "from": "end_of_rainbow",
-   "direction": "UP",
-   "to": "on_the_rainbow"
-  },
-  {
-   "id": "z1e038r",
-   "from": "on_the_rainbow",
-   "direction": "DOWN",
-   "to": "end_of_rainbow"
-  },
-  {
-   "id": "z1e039",
-   "from": "engravings_cave",
-   "direction": "E",
-   "to": "dome_room"
-  },
-  {
-   "id": "z1e039r",
-   "from": "dome_room",
-   "direction": "W",
-   "to": "engravings_cave"
-  },
-  {
-   "id": "z1e040",
-   "from": "entrance_to_hades",
-   "direction": "UP",
-   "to": "cave1"
-  },
-  {
-   "id": "z1e040r",
-   "from": "cave1",
-   "direction": "DOWN",
-   "to": "entrance_to_hades"
-  },
-  {
-   "id": "z1e041",
-   "from": "forest3",
-   "direction": "S",
-   "to": "forest2"
-  },
-  {
-   "id": "z1e041r",
-   "from": "forest2",
-   "direction": "N",
-   "to": "forest3"
-  },
-  {
-   "id": "z1e042",
-   "from": "forest4",
-   "direction": "W",
-   "to": "forest1"
-  },
-  {
-   "id": "z1e042r",
-   "from": "forest1",
-   "direction": "E",
-   "to": "forest4"
-  },
-  {
-   "id": "z1e043",
-   "from": "forest4",
-   "direction": "NW",
-   "to": "south_of_house"
-  },
-  {
-   "id": "z1e043r",
-   "from": "south_of_house",
-   "direction": "SE",
-   "to": "forest4"
-  },
-  {
-   "id": "z1e044",
-   "from": "forest_path",
-   "direction": "W",
-   "to": "forest1"
-  },
-  {
-   "id": "z1e044r",
-   "from": "forest1",
-   "direction": "E",
-   "to": "forest_path"
-  },
-  {
-   "id": "z1e045",
-   "from": "forest_path",
-   "direction": "E",
-   "to": "forest2"
-  },
-  {
-   "id": "z1e045r",
-   "from": "forest2",
-   "direction": "W",
-   "to": "forest_path"
-  },
-  {
-   "id": "z1e046",
-   "from": "forest_path",
-   "direction": "S",
-   "to": "north_of_house"
-  },
-  {
-   "id": "z1e046r",
-   "from": "north_of_house",
-   "direction": "N",
-   "to": "forest_path"
-  },
-  {
-   "id": "z1e047",
-   "from": "frigid_river",
-   "direction": "W",
-   "to": "beach1"
-  },
-  {
-   "id": "z1e047r",
-   "from": "beach1",
-   "direction": "E",
-   "to": "frigid_river"
-  },
-  {
-   "id": "z1e048",
-   "from": "frigid_river",
-   "direction": "DOWN",
-   "to": "river1"
-  },
-  {
-   "id": "z1e048r",
-   "from": "river1",
-   "direction": "UP",
-   "to": "frigid_river"
-  },
-  {
-   "id": "z1e049",
-   "from": "frigid_river",
-   "direction": "E",
-   "to": "sandy_beach"
-  },
-  {
-   "id": "z1e049r",
-   "from": "sandy_beach",
-   "direction": "W",
-   "to": "frigid_river"
-  },
-  {
-   "id": "z1e050",
-   "from": "gallery",
-   "direction": "N",
-   "to": "studio"
-  },
-  {
-   "id": "z1e050r",
-   "from": "studio",
-   "direction": "S",
-   "to": "gallery"
-  },
-  {
-   "id": "z1e051",
-   "from": "gas_room",
-   "direction": "UP",
-   "to": "smelly_room"
-  },
-  {
-   "id": "z1e051r",
-   "from": "smelly_room",
-   "direction": "DOWN",
-   "to": "gas_room"
-  },
-  {
-   "id": "z1e052",
-   "from": "kitchen",
-   "direction": "DOWN",
-   "to": "studio"
-  },
-  {
-   "id": "z1e052r",
-   "from": "studio",
-   "direction": "UP",
-   "to": "kitchen"
-  },
-  {
-   "id": "z1e053",
-   "from": "ladder_bottom",
-   "direction": "S",
-   "to": "dead_end"
-  },
-  {
-   "id": "z1e053r",
-   "from": "dead_end",
-   "direction": "N",
-   "to": "ladder_bottom"
-  },
-  {
-   "id": "z1e054",
-   "from": "ladder_bottom",
-   "direction": "UP",
-   "to": "ladder_top"
-  },
-  {
-   "id": "z1e054r",
-   "from": "ladder_top",
-   "direction": "DOWN",
-   "to": "ladder_bottom"
-  },
-  {
-   "id": "z1e055",
-   "from": "ladder_bottom",
-   "direction": "W",
-   "to": "timber_room"
-  },
-  {
-   "id": "z1e055r",
-   "from": "timber_room",
-   "direction": "E",
-   "to": "ladder_bottom"
-  },
-  {
-   "id": "z1e056",
-   "from": "land_of_the_dead",
-   "direction": "N",
-   "to": "entrance_to_hades"
-  },
-  {
-   "id": "z1e056r",
-   "from": "entrance_to_hades",
-   "direction": "S",
-   "to": "land_of_the_dead"
-  },
-  {
-   "id": "z1e057",
-   "from": "living_room",
-   "direction": "DOWN",
-   "to": "cellar"
-  },
-  {
-   "id": "z1e057r",
-   "from": "cellar",
-   "direction": "UP",
-   "to": "living_room"
-  },
-  {
-   "id": "z1e058",
-   "from": "loud_room",
-   "direction": "E",
-   "to": "damp_cave"
-  },
-  {
-   "id": "z1e058r",
-   "from": "damp_cave",
-   "direction": "W",
-   "to": "loud_room"
-  },
-  {
-   "id": "z1e059",
-   "from": "loud_room",
-   "direction": "UP",
-   "to": "deep_canyon"
-  },
-  {
-   "id": "z1e059r",
-   "from": "deep_canyon",
-   "direction": "DOWN",
-   "to": "loud_room"
-  },
-  {
-   "id": "z1e060",
-   "from": "machine_room",
-   "direction": "N",
-   "to": "drafty_room"
-  },
-  {
-   "id": "z1e060r",
-   "from": "drafty_room",
-   "direction": "S",
-   "to": "machine_room"
-  },
-  {
-   "id": "z1e061",
-   "from": "maintenance_room",
-   "direction": "S",
-   "to": "dam_lobby"
-  },
-  {
-   "id": "z1e061r",
-   "from": "dam_lobby",
-   "direction": "N",
-   "to": "maintenance_room"
-  },
-  {
-   "id": "z1e062",
-   "from": "maze1",
-   "direction": "N",
-   "to": "maze1"
-  },
-  {
-   "id": "z1e062r",
-   "from": "maze1",
-   "direction": "S",
-   "to": "maze1"
-  },
-  {
-   "id": "z1e063",
-   "from": "maze1",
-   "direction": "W",
-   "to": "maze2"
-  },
-  {
-   "id": "z1e063r",
-   "from": "maze2",
-   "direction": "E",
-   "to": "maze1"
-  },
-  {
-   "id": "z1e064",
-   "from": "maze1",
-   "direction": "S",
-   "to": "maze4"
-  },
-  {
-   "id": "z1e064r",
-   "from": "maze4",
-   "direction": "N",
-   "to": "maze1"
-  },
-  {
-   "id": "z1e065",
-   "from": "maze1",
-   "direction": "E",
-   "to": "the_troll_room"
-  },
-  {
-   "id": "z1e065r",
-   "from": "the_troll_room",
-   "direction": "W",
-   "to": "maze1"
-  },
-  {
-   "id": "z1e066",
-   "from": "maze10",
-   "direction": "DOWN",
-   "to": "maze12"
-  },
-  {
-   "id": "z1e066r",
-   "from": "maze12",
-   "direction": "UP",
-   "to": "maze10"
-  },
-  {
-   "id": "z1e067",
-   "from": "maze10",
-   "direction": "W",
-   "to": "maze13"
-  },
-  {
-   "id": "z1e067r",
-   "from": "maze13",
-   "direction": "E",
-   "to": "maze10"
-  },
-  {
-   "id": "z1e068",
-   "from": "maze10",
-   "direction": "S",
-   "to": "maze14"
-  },
-  {
-   "id": "z1e068r",
-   "from": "maze14",
-   "direction": "N",
-   "to": "maze10"
-  },
-  {
-   "id": "z1e069",
-   "from": "maze10",
-   "direction": "E",
-   "to": "maze15"
-  },
-  {
-   "id": "z1e069r",
-   "from": "maze15",
-   "direction": "W",
-   "to": "maze10"
-  },
-  {
-   "id": "z1e070",
-   "from": "maze11",
-   "direction": "S",
-   "to": "maze12"
-  },
-  {
-   "id": "z1e070r",
-   "from": "maze12",
-   "direction": "N",
-   "to": "maze11"
-  },
-  {
-   "id": "z1e071",
-   "from": "maze12",
-   "direction": "SW",
-   "to": "maze13"
-  },
-  {
-   "id": "z1e071r",
-   "from": "maze13",
-   "direction": "NE",
-   "to": "maze12"
-  },
-  {
-   "id": "z1e072",
-   "from": "maze12",
-   "direction": "UP",
-   "to": "maze15"
-  },
-  {
-   "id": "z1e072r",
-   "from": "maze15",
-   "direction": "DOWN",
-   "to": "maze12"
-  },
-  {
-   "id": "z1e073",
-   "from": "maze13",
-   "direction": "NE",
-   "to": "grating_room"
-  },
-  {
-   "id": "z1e073r",
-   "from": "grating_room",
-   "direction": "SW",
-   "to": "maze13"
-  },
-  {
-   "id": "z1e074",
-   "from": "maze13",
-   "direction": "DOWN",
-   "to": "maze14"
-  },
-  {
-   "id": "z1e074r",
-   "from": "maze14",
-   "direction": "UP",
-   "to": "maze13"
-  },
-  {
-   "id": "z1e075",
-   "from": "maze14",
-   "direction": "E",
-   "to": "maze15"
-  },
-  {
-   "id": "z1e075r",
-   "from": "maze15",
-   "direction": "W",
-   "to": "maze14"
-  },
-  {
-   "id": "z1e076",
-   "from": "maze15",
-   "direction": "NW",
-   "to": "maze15"
-  },
-  {
-   "id": "z1e076r",
-   "from": "maze15",
-   "direction": "SE",
-   "to": "maze15"
-  },
-  {
-   "id": "z1e077",
-   "from": "maze16",
-   "direction": "N",
-   "to": "maze17"
-  },
-  {
-   "id": "z1e077r",
-   "from": "maze17",
-   "direction": "S",
-   "to": "maze16"
-  },
-  {
-   "id": "z1e078",
-   "from": "maze17",
-   "direction": "W",
-   "to": "maze17"
-  },
-  {
-   "id": "z1e078r",
-   "from": "maze17",
-   "direction": "E",
-   "to": "maze17"
-  },
-  {
-   "id": "z1e079",
-   "from": "maze2",
-   "direction": "E",
-   "to": "maze19"
-  },
-  {
-   "id": "z1e079r",
-   "from": "maze19",
-   "direction": "W",
-   "to": "maze2"
-  },
-  {
-   "id": "z1e080",
-   "from": "maze2",
-   "direction": "W",
-   "to": "maze3"
-  },
-  {
-   "id": "z1e080r",
-   "from": "maze3",
-   "direction": "E",
-   "to": "maze2"
-  },
-  {
-   "id": "z1e081",
-   "from": "maze3",
-   "direction": "W",
-   "to": "maze4"
-  },
-  {
-   "id": "z1e081r",
-   "from": "maze4",
-   "direction": "E",
-   "to": "maze3"
-  },
-  {
-   "id": "z1e082",
-   "from": "maze3",
-   "direction": "UP",
-   "to": "maze5"
-  },
-  {
-   "id": "z1e082r",
-   "from": "maze5",
-   "direction": "DOWN",
-   "to": "maze3"
-  },
-  {
-   "id": "z1e083",
-   "from": "maze5",
-   "direction": "E",
-   "to": "maze18"
-  },
-  {
-   "id": "z1e083r",
-   "from": "maze18",
-   "direction": "W",
-   "to": "maze5"
-  },
-  {
-   "id": "z1e084",
-   "from": "maze5",
-   "direction": "SW",
-   "to": "maze6"
-  },
-  {
-   "id": "z1e084r",
-   "from": "maze6",
-   "direction": "NE",
-   "to": "maze5"
-  },
-  {
-   "id": "z1e085",
-   "from": "maze6",
-   "direction": "UP",
-   "to": "maze15"
-  },
-  {
-   "id": "z1e085r",
-   "from": "maze15",
-   "direction": "DOWN",
-   "to": "maze6"
-  },
-  {
-   "id": "z1e086",
-   "from": "maze6",
-   "direction": "W",
-   "to": "maze6"
-  },
-  {
-   "id": "z1e086r",
-   "from": "maze6",
-   "direction": "E",
-   "to": "maze6"
-  },
-  {
-   "id": "z1e087",
-   "from": "maze6",
-   "direction": "E",
-   "to": "maze7"
-  },
-  {
-   "id": "z1e087r",
-   "from": "maze7",
-   "direction": "W",
-   "to": "maze6"
-  },
-  {
-   "id": "z1e088",
-   "from": "maze7",
-   "direction": "E",
-   "to": "maze17"
-  },
-  {
-   "id": "z1e088r",
-   "from": "maze17",
-   "direction": "W",
-   "to": "maze7"
-  },
-  {
-   "id": "z1e089",
-   "from": "maze7",
-   "direction": "S",
-   "to": "maze8"
-  },
-  {
-   "id": "z1e089r",
-   "from": "maze8",
-   "direction": "N",
-   "to": "maze7"
-  },
-  {
-   "id": "z1e090",
-   "from": "maze7",
-   "direction": "UP",
-   "to": "maze9"
-  },
-  {
-   "id": "z1e090r",
-   "from": "maze9",
-   "direction": "DOWN",
-   "to": "maze7"
-  },
-  {
-   "id": "z1e091",
-   "from": "maze8",
-   "direction": "SE",
-   "to": "cyclops_room"
-  },
-  {
-   "id": "z1e091r",
-   "from": "cyclops_room",
-   "direction": "NW",
-   "to": "maze8"
-  },
-  {
-   "id": "z1e092",
-   "from": "maze8",
-   "direction": "W",
-   "to": "maze9"
-  },
-  {
-   "id": "z1e092r",
-   "from": "maze9",
-   "direction": "E",
-   "to": "maze8"
-  },
-  {
-   "id": "z1e093",
-   "from": "maze9",
-   "direction": "NW",
-   "to": "maze9"
-  },
-  {
-   "id": "z1e093r",
-   "from": "maze9",
-   "direction": "SE",
-   "to": "maze9"
-  },
-  {
-   "id": "z1e094",
-   "from": "mine1",
-   "direction": "DOWN",
-   "to": "ladder_top"
-  },
-  {
-   "id": "z1e094r",
-   "from": "ladder_top",
-   "direction": "UP",
-   "to": "mine1"
-  },
-  {
-   "id": "z1e095",
-   "from": "mine1",
-   "direction": "W",
-   "to": "mine1"
-  },
-  {
-   "id": "z1e095r",
-   "from": "mine1",
-   "direction": "E",
-   "to": "mine1"
-  },
-  {
-   "id": "z1e096",
-   "from": "mine1",
-   "direction": "N",
-   "to": "mine2"
-  },
-  {
-   "id": "z1e096r",
-   "from": "mine2",
-   "direction": "S",
-   "to": "mine1"
-  },
-  {
-   "id": "z1e097",
-   "from": "mine2",
-   "direction": "S",
-   "to": "mine2"
-  },
-  {
-   "id": "z1e097r",
-   "from": "mine2",
-   "direction": "N",
-   "to": "mine2"
-  },
-  {
-   "id": "z1e098",
-   "from": "mine2",
-   "direction": "E",
-   "to": "mine3"
-  },
-  {
-   "id": "z1e098r",
-   "from": "mine3",
-   "direction": "W",
-   "to": "mine2"
-  },
-  {
-   "id": "z1e099",
-   "from": "mine3",
-   "direction": "N",
-   "to": "mine3"
-  },
-  {
-   "id": "z1e099r",
-   "from": "mine3",
-   "direction": "S",
-   "to": "mine3"
-  },
-  {
-   "id": "z1e100",
-   "from": "mine3",
-   "direction": "S",
-   "to": "mine4"
-  },
-  {
-   "id": "z1e100r",
-   "from": "mine4",
-   "direction": "N",
-   "to": "mine3"
-  },
-  {
-   "id": "z1e101",
-   "from": "mine4",
-   "direction": "N",
-   "to": "gas_room"
-  },
-  {
-   "id": "z1e101r",
-   "from": "gas_room",
-   "direction": "S",
-   "to": "mine4"
-  },
-  {
-   "id": "z1e102",
-   "from": "mine4",
-   "direction": "E",
-   "to": "mine4"
-  },
-  {
-   "id": "z1e102r",
-   "from": "mine4",
-   "direction": "W",
-   "to": "mine4"
-  },
-  {
-   "id": "z1e103",
-   "from": "mirror_room2",
-   "direction": "E",
-   "to": "cave1"
-  },
-  {
-   "id": "z1e103r",
-   "from": "cave1",
-   "direction": "W",
-   "to": "mirror_room2"
-  },
-  {
-   "id": "z1e104",
-   "from": "n_s_passage",
-   "direction": "NE",
-   "to": "deep_canyon"
-  },
-  {
-   "id": "z1e104r",
-   "from": "deep_canyon",
-   "direction": "SW",
-   "to": "n_s_passage"
-  },
-  {
-   "id": "z1e105",
-   "from": "narrow_passage",
-   "direction": "S",
-   "to": "mirror_room2"
-  },
-  {
-   "id": "z1e105r",
-   "from": "mirror_room2",
-   "direction": "N",
-   "to": "narrow_passage"
-  },
-  {
-   "id": "z1e106",
-   "from": "north_of_house",
-   "direction": "SW",
-   "to": "west_of_house"
-  },
-  {
-   "id": "z1e106r",
-   "from": "west_of_house",
-   "direction": "NE",
-   "to": "north_of_house"
-  },
-  {
-   "id": "z1e107",
-   "from": "on_the_rainbow",
-   "direction": "E",
-   "to": "aragain_falls"
-  },
-  {
-   "id": "z1e107r",
-   "from": "aragain_falls",
-   "direction": "W",
-   "to": "on_the_rainbow"
-  },
-  {
-   "id": "z1e108",
-   "from": "reservoir",
-   "direction": "S",
-   "to": "reservoir_south"
-  },
-  {
-   "id": "z1e108r",
-   "from": "reservoir_south",
-   "direction": "N",
-   "to": "reservoir"
-  },
-  {
-   "id": "z1e109",
-   "from": "reservoir_north",
-   "direction": "S",
-   "to": "reservoir"
-  },
-  {
-   "id": "z1e109r",
-   "from": "reservoir",
-   "direction": "N",
-   "to": "reservoir_north"
-  },
-  {
-   "id": "z1e110",
-   "from": "reservoir_south",
-   "direction": "E",
-   "to": "dam"
-  },
-  {
-   "id": "z1e110r",
-   "from": "dam",
-   "direction": "W",
-   "to": "reservoir_south"
-  },
-  {
-   "id": "z1e111",
-   "from": "river1",
-   "direction": "E",
-   "to": "shore"
-  },
-  {
-   "id": "z1e111r",
-   "from": "shore",
-   "direction": "W",
-   "to": "river1"
-  },
-  {
-   "id": "z1e112",
-   "from": "river2",
-   "direction": "W",
-   "to": "beach2"
-  },
-  {
-   "id": "z1e112r",
-   "from": "beach2",
-   "direction": "E",
-   "to": "river2"
-  },
-  {
-   "id": "z1e113",
-   "from": "river2",
-   "direction": "DOWN",
-   "to": "frigid_river"
-  },
-  {
-   "id": "z1e113r",
-   "from": "frigid_river",
-   "direction": "UP",
-   "to": "river2"
-  },
-  {
-   "id": "z1e114",
-   "from": "river3",
-   "direction": "DOWN",
-   "to": "river2"
-  },
-  {
-   "id": "z1e114r",
-   "from": "river2",
-   "direction": "UP",
-   "to": "river3"
-  },
-  {
-   "id": "z1e115",
-   "from": "river4",
-   "direction": "W",
-   "to": "dam_base"
-  },
-  {
-   "id": "z1e115r",
-   "from": "dam_base",
-   "direction": "E",
-   "to": "river4"
-  },
-  {
-   "id": "z1e116",
-   "from": "river4",
-   "direction": "DOWN",
-   "to": "river3"
-  },
-  {
-   "id": "z1e116r",
-   "from": "river3",
-   "direction": "UP",
-   "to": "river4"
-  },
-  {
-   "id": "z1e117",
-   "from": "rocky_ledge",
-   "direction": "DOWN",
-   "to": "canyon_bottom"
-  },
-  {
-   "id": "z1e117r",
-   "from": "canyon_bottom",
-   "direction": "UP",
-   "to": "rocky_ledge"
-  },
-  {
-   "id": "z1e118",
-   "from": "round_room",
-   "direction": "SE",
-   "to": "engravings_cave"
-  },
-  {
-   "id": "z1e118r",
-   "from": "engravings_cave",
-   "direction": "NW",
-   "to": "round_room"
-  },
-  {
-   "id": "z1e119",
-   "from": "round_room",
-   "direction": "E",
-   "to": "loud_room"
-  },
-  {
-   "id": "z1e119r",
-   "from": "loud_room",
-   "direction": "W",
-   "to": "round_room"
-  },
-  {
-   "id": "z1e120",
-   "from": "round_room",
-   "direction": "N",
-   "to": "n_s_passage"
-  },
-  {
-   "id": "z1e120r",
-   "from": "n_s_passage",
-   "direction": "S",
-   "to": "round_room"
-  },
-  {
-   "id": "z1e121",
-   "from": "round_room",
-   "direction": "S",
-   "to": "narrow_passage"
-  },
-  {
-   "id": "z1e121r",
-   "from": "narrow_passage",
-   "direction": "N",
-   "to": "round_room"
-  },
-  {
-   "id": "z1e122",
-   "from": "sandy_beach",
-   "direction": "S",
-   "to": "shore"
-  },
-  {
-   "id": "z1e122r",
-   "from": "shore",
-   "direction": "N",
-   "to": "sandy_beach"
-  },
-  {
-   "id": "z1e123",
-   "from": "sandy_cave",
-   "direction": "SW",
-   "to": "sandy_beach"
-  },
-  {
-   "id": "z1e123r",
-   "from": "sandy_beach",
-   "direction": "NE",
-   "to": "sandy_cave"
-  },
-  {
-   "id": "z1e124",
-   "from": "shaft_room",
-   "direction": "W",
-   "to": "bat_room"
-  },
-  {
-   "id": "z1e124r",
-   "from": "bat_room",
-   "direction": "E",
-   "to": "shaft_room"
-  },
-  {
-   "id": "z1e125",
-   "from": "shore",
-   "direction": "S",
-   "to": "aragain_falls"
-  },
-  {
-   "id": "z1e125r",
-   "from": "aragain_falls",
-   "direction": "N",
-   "to": "shore"
-  },
-  {
-   "id": "z1e126",
-   "from": "slide_room",
-   "direction": "DOWN",
-   "to": "cellar"
-  },
-  {
-   "id": "z1e126r",
-   "from": "cellar",
-   "direction": "UP",
-   "to": "slide_room"
-  },
-  {
-   "id": "z1e127",
-   "from": "slide_room",
-   "direction": "N",
-   "to": "mine_entrance"
-  },
-  {
-   "id": "z1e127r",
-   "from": "mine_entrance",
-   "direction": "S",
-   "to": "slide_room"
-  },
-  {
-   "id": "z1e128",
-   "from": "smelly_room",
-   "direction": "S",
-   "to": "shaft_room"
-  },
-  {
-   "id": "z1e128r",
-   "from": "shaft_room",
-   "direction": "N",
-   "to": "smelly_room"
-  },
-  {
-   "id": "z1e129",
-   "from": "south_of_house",
-   "direction": "NW",
-   "to": "west_of_house"
-  },
-  {
-   "id": "z1e129r",
-   "from": "west_of_house",
-   "direction": "SE",
-   "to": "south_of_house"
-  },
-  {
-   "id": "z1e130",
-   "from": "squeaky_room",
-   "direction": "N",
-   "to": "bat_room"
-  },
-  {
-   "id": "z1e130r",
-   "from": "bat_room",
-   "direction": "S",
-   "to": "squeaky_room"
-  },
-  {
-   "id": "z1e131",
-   "from": "squeaky_room",
-   "direction": "E",
-   "to": "mine_entrance"
-  },
-  {
-   "id": "z1e131r",
-   "from": "mine_entrance",
-   "direction": "W",
-   "to": "squeaky_room"
-  },
-  {
-   "id": "z1e132",
-   "from": "strange_passage",
-   "direction": "W",
-   "to": "cyclops_room"
-  },
-  {
-   "id": "z1e132r",
-   "from": "cyclops_room",
-   "direction": "E",
-   "to": "strange_passage"
-  },
-  {
-   "id": "z1e133",
-   "from": "strange_passage",
-   "direction": "E",
-   "to": "living_room"
-  },
-  {
-   "id": "z1e133r",
-   "from": "living_room",
-   "direction": "W",
-   "to": "strange_passage"
-  },
-  {
-   "id": "z1e134",
-   "from": "stream",
-   "direction": "DOWN",
-   "to": "reservoir"
-  },
-  {
-   "id": "z1e134r",
-   "from": "reservoir",
-   "direction": "UP",
-   "to": "stream"
-  },
-  {
-   "id": "z1e135",
-   "from": "stream_view",
-   "direction": "E",
-   "to": "reservoir_south"
-  },
-  {
-   "id": "z1e135r",
-   "from": "reservoir_south",
-   "direction": "W",
-   "to": "stream_view"
-  },
-  {
-   "id": "z1e136",
-   "from": "temple",
-   "direction": "S",
-   "to": "altar"
-  },
-  {
-   "id": "z1e136r",
-   "from": "altar",
-   "direction": "N",
-   "to": "temple"
-  },
-  {
-   "id": "z1e137",
-   "from": "temple",
-   "direction": "UP",
-   "to": "torch_room"
-  },
-  {
-   "id": "z1e137r",
-   "from": "torch_room",
-   "direction": "DOWN",
-   "to": "temple"
-  },
-  {
-   "id": "z1e138",
-   "from": "the_troll_room",
-   "direction": "W",
-   "to": "e_w_passage"
-  },
-  {
-   "id": "z1e138r",
-   "from": "e_w_passage",
-   "direction": "E",
-   "to": "the_troll_room"
-  },
-  {
-   "id": "z1e139",
-   "from": "timber_room",
-   "direction": "W",
-   "to": "drafty_room"
-  },
-  {
-   "id": "z1e139r",
-   "from": "drafty_room",
-   "direction": "E",
-   "to": "timber_room"
-  },
-  {
-   "id": "z1e140",
-   "from": "twisting_passage",
-   "direction": "E",
-   "to": "cave2"
-  },
-  {
-   "id": "z1e140r",
-   "from": "cave2",
-   "direction": "W",
-   "to": "twisting_passage"
-  },
-  {
-   "id": "z1e141",
-   "from": "twisting_passage",
-   "direction": "N",
-   "to": "mirror_room1"
-  },
-  {
-   "id": "z1e141r",
-   "from": "mirror_room1",
-   "direction": "S",
-   "to": "twisting_passage"
-  },
-  {
-   "id": "z1e142",
-   "from": "up_a_tree",
-   "direction": "DOWN",
-   "to": "forest_path"
-  },
-  {
-   "id": "z1e142r",
-   "from": "forest_path",
-   "direction": "UP",
-   "to": "up_a_tree"
-  },
-  {
-   "id": "z1e143",
-   "from": "west_of_house",
-   "direction": "SW",
-   "to": "stone_barrow"
-  },
-  {
-   "id": "z1e143r",
-   "from": "stone_barrow",
-   "direction": "NE",
-   "to": "west_of_house"
-  },
-  {
-   "id": "z1e144",
-   "from": "winding_passage",
-   "direction": "E",
-   "to": "cave1"
-  },
-  {
-   "id": "z1e144r",
-   "from": "cave1",
-   "direction": "W",
-   "to": "winding_passage"
-  },
-  {
-   "id": "z1e145",
-   "from": "winding_passage",
-   "direction": "N",
-   "to": "mirror_room2"
-  },
-  {
-   "id": "z1e145r",
-   "from": "mirror_room2",
-   "direction": "S",
-   "to": "winding_passage"
-  }
- ]
+  "id": "zork1-complete",
+  "name": "Zork I (Complete)",
+  "createdAt": 1787863002520,
+  "updatedAt": 1787863002520,
+  "rooms": [
+    {
+      "id": "west_of_house",
+      "name": "West of House",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "altar",
+      "name": "Altar",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "aragain_falls",
+      "name": "Aragain Falls",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "atlantis_room",
+      "name": "Atlantis Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "attic",
+      "name": "Attic",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "bat_room",
+      "name": "Bat Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "beach1",
+      "name": "White Cliffs Beach",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "beach2",
+      "name": "White Cliffs Beach",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "canyon_bottom",
+      "name": "Canyon Bottom",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "canyon_view",
+      "name": "Canyon View",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "cave1",
+      "name": "Cave",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "cave2",
+      "name": "Cave",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "cellar",
+      "name": "Cellar",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "chasm",
+      "name": "Chasm",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "clearing1",
+      "name": "Clearing",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "clearing2",
+      "name": "Clearing",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "cold_passage",
+      "name": "Cold Passage",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "cyclops_room",
+      "name": "Cyclops Room",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "dam",
+      "name": "Dam",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "dam_base",
+      "name": "Dam Base",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "dam_lobby",
+      "name": "Dam Lobby",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "damp_cave",
+      "name": "Damp Cave",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "dead_end",
+      "name": "Dead End",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "deep_canyon",
+      "name": "Deep Canyon",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "dome_room",
+      "name": "Dome Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "drafty_room",
+      "name": "Drafty Room",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "e_w_passage",
+      "name": "East-West Passage",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "east_of_chasm",
+      "name": "East of Chasm",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "east_of_house",
+      "name": "Behind House",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "egyptian_room",
+      "name": "Egyptian Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "end_of_rainbow",
+      "name": "End of Rainbow",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "engravings_cave",
+      "name": "Engravings Cave",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "entrance_to_hades",
+      "name": "Entrance to Hades",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "forest1",
+      "name": "Forest",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "forest2",
+      "name": "Forest",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "forest3",
+      "name": "Forest",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "forest4",
+      "name": "Forest",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "forest_path",
+      "name": "Forest Path",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "frigid_river",
+      "name": "Frigid River",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "gallery",
+      "name": "Gallery",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "gas_room",
+      "name": "Gas Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "grating_room",
+      "name": "Grating Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "ladder_bottom",
+      "name": "Ladder Bottom",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "ladder_top",
+      "name": "Ladder Top",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "land_of_the_dead",
+      "name": "Land of the Dead",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "living_room",
+      "name": "Living Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "loud_room",
+      "name": "Loud Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "machine_room",
+      "name": "Machine Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maintenance_room",
+      "name": "Maintenance Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze1",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze10",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze11",
+      "name": "Dead End",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze12",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze13",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze14",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze15",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze16",
+      "name": "Dead End",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze17",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze18",
+      "name": "Dead End",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze19",
+      "name": "Dead End",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze2",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze3",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze4",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze5",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze6",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze7",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze8",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "maze9",
+      "name": "Maze",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mine1",
+      "name": "Coal Mine",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mine2",
+      "name": "Coal Mine",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mine3",
+      "name": "Coal Mine",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mine4",
+      "name": "Coal Mine",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mine_entrance",
+      "name": "Mine Entrance",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mirror_room1",
+      "name": "Mirror Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "mirror_room2",
+      "name": "Mirror Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "n_s_passage",
+      "name": "North-South Passage",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "narrow_passage",
+      "name": "Narrow Passage",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "north_of_house",
+      "name": "North of House",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "on_the_rainbow",
+      "name": "On the Rainbow",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "reservoir",
+      "name": "Reservoir",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "reservoir_north",
+      "name": "Reservoir North",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "reservoir_south",
+      "name": "Reservoir South",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "river1",
+      "name": "Frigid River",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "river2",
+      "name": "Frigid River",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "river3",
+      "name": "Frigid River",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "river4",
+      "name": "Frigid River",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "rocky_ledge",
+      "name": "Rocky Ledge",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "round_room",
+      "name": "Round Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "sandy_beach",
+      "name": "Sandy Beach",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "sandy_cave",
+      "name": "Sandy Cave",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "shaft_room",
+      "name": "Shaft Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "shore",
+      "name": "Shore",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "slide_room",
+      "name": "Slide Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "smelly_room",
+      "name": "Smelly Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "south_of_house",
+      "name": "South of House",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "squeaky_room",
+      "name": "Squeaky Room",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "stone_barrow",
+      "name": "Stone Barrow",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "strange_passage",
+      "name": "Strange Passage",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "stream",
+      "name": "Stream",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "stream_view",
+      "name": "Stream View",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "studio",
+      "name": "Studio",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "temple",
+      "name": "Temple",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "the_troll_room",
+      "name": "The Troll Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "timber_room",
+      "name": "Timber Room",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "torch_room",
+      "name": "Torch Room",
+      "description": "",
+      "notes": "IN/OUT passage in the game; drawn as UP/DOWN.",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "treasure_room",
+      "name": "Treasure Room",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "twisting_passage",
+      "name": "Twisting Passage",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "up_a_tree",
+      "name": "Up a Tree",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "id": "winding_passage",
+      "name": "Winding Passage",
+      "description": "",
+      "notes": "",
+      "x": 0.0,
+      "y": 0.0
+    }
+  ],
+  "exits": [
+    {
+      "id": "z1e001",
+      "from": "altar",
+      "direction": "DOWN",
+      "to": "cave1"
+    },
+    {
+      "id": "z1e001r",
+      "from": "cave1",
+      "direction": "UP",
+      "to": "altar"
+    },
+    {
+      "id": "z1e002",
+      "from": "atlantis_room",
+      "direction": "UP",
+      "to": "cave2"
+    },
+    {
+      "id": "z1e002r",
+      "from": "cave2",
+      "direction": "DOWN",
+      "to": "atlantis_room"
+    },
+    {
+      "id": "z1e003",
+      "from": "atlantis_room",
+      "direction": "S",
+      "to": "reservoir_north"
+    },
+    {
+      "id": "z1e003r",
+      "from": "reservoir_north",
+      "direction": "N",
+      "to": "atlantis_room"
+    },
+    {
+      "id": "z1e004",
+      "from": "attic",
+      "direction": "DOWN",
+      "to": "kitchen"
+    },
+    {
+      "id": "z1e004r",
+      "from": "kitchen",
+      "direction": "UP",
+      "to": "attic"
+    },
+    {
+      "id": "z1e005",
+      "from": "beach1",
+      "direction": "N",
+      "to": "beach2"
+    },
+    {
+      "id": "z1e005r",
+      "from": "beach2",
+      "direction": "S",
+      "to": "beach1"
+    },
+    {
+      "id": "z1e006",
+      "from": "canyon_bottom",
+      "direction": "N",
+      "to": "end_of_rainbow"
+    },
+    {
+      "id": "z1e006r",
+      "from": "end_of_rainbow",
+      "direction": "S",
+      "to": "canyon_bottom"
+    },
+    {
+      "id": "z1e007",
+      "from": "canyon_view",
+      "direction": "W",
+      "to": "forest4"
+    },
+    {
+      "id": "z1e007r",
+      "from": "forest4",
+      "direction": "E",
+      "to": "canyon_view"
+    },
+    {
+      "id": "z1e008",
+      "from": "canyon_view",
+      "direction": "DOWN",
+      "to": "rocky_ledge"
+    },
+    {
+      "id": "z1e008r",
+      "from": "rocky_ledge",
+      "direction": "UP",
+      "to": "canyon_view"
+    },
+    {
+      "id": "z1e009",
+      "from": "cave2",
+      "direction": "N",
+      "to": "mirror_room1"
+    },
+    {
+      "id": "z1e009r",
+      "from": "mirror_room1",
+      "direction": "S",
+      "to": "cave2"
+    },
+    {
+      "id": "z1e010",
+      "from": "cellar",
+      "direction": "S",
+      "to": "east_of_chasm"
+    },
+    {
+      "id": "z1e010r",
+      "from": "east_of_chasm",
+      "direction": "N",
+      "to": "cellar"
+    },
+    {
+      "id": "z1e011",
+      "from": "cellar",
+      "direction": "N",
+      "to": "the_troll_room"
+    },
+    {
+      "id": "z1e011r",
+      "from": "the_troll_room",
+      "direction": "S",
+      "to": "cellar"
+    },
+    {
+      "id": "z1e012",
+      "from": "chasm",
+      "direction": "S",
+      "to": "n_s_passage"
+    },
+    {
+      "id": "z1e012r",
+      "from": "n_s_passage",
+      "direction": "N",
+      "to": "chasm"
+    },
+    {
+      "id": "z1e013",
+      "from": "chasm",
+      "direction": "NE",
+      "to": "reservoir_south"
+    },
+    {
+      "id": "z1e013r",
+      "from": "reservoir_south",
+      "direction": "SW",
+      "to": "chasm"
+    },
+    {
+      "id": "z1e014",
+      "from": "clearing1",
+      "direction": "W",
+      "to": "forest1"
+    },
+    {
+      "id": "z1e014r",
+      "from": "forest1",
+      "direction": "E",
+      "to": "clearing1"
+    },
+    {
+      "id": "z1e015",
+      "from": "clearing1",
+      "direction": "E",
+      "to": "forest2"
+    },
+    {
+      "id": "z1e015r",
+      "from": "forest2",
+      "direction": "W",
+      "to": "clearing1"
+    },
+    {
+      "id": "z1e016",
+      "from": "clearing1",
+      "direction": "S",
+      "to": "forest_path"
+    },
+    {
+      "id": "z1e016r",
+      "from": "forest_path",
+      "direction": "N",
+      "to": "clearing1"
+    },
+    {
+      "id": "z1e017",
+      "from": "clearing1",
+      "direction": "DOWN",
+      "to": "grating_room"
+    },
+    {
+      "id": "z1e017r",
+      "from": "grating_room",
+      "direction": "UP",
+      "to": "clearing1"
+    },
+    {
+      "id": "z1e018",
+      "from": "clearing2",
+      "direction": "E",
+      "to": "canyon_view"
+    },
+    {
+      "id": "z1e018r",
+      "from": "canyon_view",
+      "direction": "W",
+      "to": "clearing2"
+    },
+    {
+      "id": "z1e019",
+      "from": "clearing2",
+      "direction": "W",
+      "to": "east_of_house"
+    },
+    {
+      "id": "z1e019r",
+      "from": "east_of_house",
+      "direction": "E",
+      "to": "clearing2"
+    },
+    {
+      "id": "z1e020",
+      "from": "clearing2",
+      "direction": "N",
+      "to": "forest2"
+    },
+    {
+      "id": "z1e020r",
+      "from": "forest2",
+      "direction": "S",
+      "to": "clearing2"
+    },
+    {
+      "id": "z1e021",
+      "from": "clearing2",
+      "direction": "S",
+      "to": "forest4"
+    },
+    {
+      "id": "z1e021r",
+      "from": "forest4",
+      "direction": "N",
+      "to": "clearing2"
+    },
+    {
+      "id": "z1e022",
+      "from": "cold_passage",
+      "direction": "S",
+      "to": "mirror_room1"
+    },
+    {
+      "id": "z1e022r",
+      "from": "mirror_room1",
+      "direction": "N",
+      "to": "cold_passage"
+    },
+    {
+      "id": "z1e023",
+      "from": "cold_passage",
+      "direction": "W",
+      "to": "slide_room"
+    },
+    {
+      "id": "z1e023r",
+      "from": "slide_room",
+      "direction": "E",
+      "to": "cold_passage"
+    },
+    {
+      "id": "z1e024",
+      "from": "cyclops_room",
+      "direction": "UP",
+      "to": "treasure_room"
+    },
+    {
+      "id": "z1e024r",
+      "from": "treasure_room",
+      "direction": "DOWN",
+      "to": "cyclops_room"
+    },
+    {
+      "id": "z1e025",
+      "from": "dam",
+      "direction": "DOWN",
+      "to": "dam_base"
+    },
+    {
+      "id": "z1e025r",
+      "from": "dam_base",
+      "direction": "UP",
+      "to": "dam"
+    },
+    {
+      "id": "z1e026",
+      "from": "dam",
+      "direction": "N",
+      "to": "dam_lobby"
+    },
+    {
+      "id": "z1e026r",
+      "from": "dam_lobby",
+      "direction": "S",
+      "to": "dam"
+    },
+    {
+      "id": "z1e027",
+      "from": "damp_cave",
+      "direction": "E",
+      "to": "beach2"
+    },
+    {
+      "id": "z1e027r",
+      "from": "beach2",
+      "direction": "W",
+      "to": "damp_cave"
+    },
+    {
+      "id": "z1e028",
+      "from": "deep_canyon",
+      "direction": "E",
+      "to": "dam"
+    },
+    {
+      "id": "z1e028r",
+      "from": "dam",
+      "direction": "W",
+      "to": "deep_canyon"
+    },
+    {
+      "id": "z1e029",
+      "from": "deep_canyon",
+      "direction": "NW",
+      "to": "reservoir_south"
+    },
+    {
+      "id": "z1e029r",
+      "from": "reservoir_south",
+      "direction": "SE",
+      "to": "deep_canyon"
+    },
+    {
+      "id": "z1e030",
+      "from": "dome_room",
+      "direction": "DOWN",
+      "to": "torch_room"
+    },
+    {
+      "id": "z1e030r",
+      "from": "torch_room",
+      "direction": "UP",
+      "to": "dome_room"
+    },
+    {
+      "id": "z1e031",
+      "from": "e_w_passage",
+      "direction": "DOWN",
+      "to": "chasm"
+    },
+    {
+      "id": "z1e031r",
+      "from": "chasm",
+      "direction": "UP",
+      "to": "e_w_passage"
+    },
+    {
+      "id": "z1e032",
+      "from": "e_w_passage",
+      "direction": "E",
+      "to": "round_room"
+    },
+    {
+      "id": "z1e032r",
+      "from": "round_room",
+      "direction": "W",
+      "to": "e_w_passage"
+    },
+    {
+      "id": "z1e033",
+      "from": "east_of_chasm",
+      "direction": "E",
+      "to": "gallery"
+    },
+    {
+      "id": "z1e033r",
+      "from": "gallery",
+      "direction": "W",
+      "to": "east_of_chasm"
+    },
+    {
+      "id": "z1e034",
+      "from": "east_of_house",
+      "direction": "W",
+      "to": "kitchen"
+    },
+    {
+      "id": "z1e034r",
+      "from": "kitchen",
+      "direction": "E",
+      "to": "east_of_house"
+    },
+    {
+      "id": "z1e035",
+      "from": "east_of_house",
+      "direction": "NW",
+      "to": "north_of_house"
+    },
+    {
+      "id": "z1e035r",
+      "from": "north_of_house",
+      "direction": "SE",
+      "to": "east_of_house"
+    },
+    {
+      "id": "z1e036",
+      "from": "east_of_house",
+      "direction": "SW",
+      "to": "south_of_house"
+    },
+    {
+      "id": "z1e036r",
+      "from": "south_of_house",
+      "direction": "NE",
+      "to": "east_of_house"
+    },
+    {
+      "id": "z1e037",
+      "from": "egyptian_room",
+      "direction": "UP",
+      "to": "temple"
+    },
+    {
+      "id": "z1e037r",
+      "from": "temple",
+      "direction": "DOWN",
+      "to": "egyptian_room"
+    },
+    {
+      "id": "z1e038",
+      "from": "end_of_rainbow",
+      "direction": "UP",
+      "to": "on_the_rainbow"
+    },
+    {
+      "id": "z1e038r",
+      "from": "on_the_rainbow",
+      "direction": "DOWN",
+      "to": "end_of_rainbow"
+    },
+    {
+      "id": "z1e039",
+      "from": "engravings_cave",
+      "direction": "E",
+      "to": "dome_room"
+    },
+    {
+      "id": "z1e039r",
+      "from": "dome_room",
+      "direction": "W",
+      "to": "engravings_cave"
+    },
+    {
+      "id": "z1e040",
+      "from": "entrance_to_hades",
+      "direction": "UP",
+      "to": "cave1"
+    },
+    {
+      "id": "z1e040r",
+      "from": "cave1",
+      "direction": "DOWN",
+      "to": "entrance_to_hades"
+    },
+    {
+      "id": "z1e041",
+      "from": "forest3",
+      "direction": "S",
+      "to": "forest2"
+    },
+    {
+      "id": "z1e041r",
+      "from": "forest2",
+      "direction": "N",
+      "to": "forest3"
+    },
+    {
+      "id": "z1e042",
+      "from": "forest4",
+      "direction": "W",
+      "to": "forest1"
+    },
+    {
+      "id": "z1e042r",
+      "from": "forest1",
+      "direction": "E",
+      "to": "forest4"
+    },
+    {
+      "id": "z1e043",
+      "from": "forest4",
+      "direction": "NW",
+      "to": "south_of_house"
+    },
+    {
+      "id": "z1e043r",
+      "from": "south_of_house",
+      "direction": "SE",
+      "to": "forest4"
+    },
+    {
+      "id": "z1e044",
+      "from": "forest_path",
+      "direction": "W",
+      "to": "forest1"
+    },
+    {
+      "id": "z1e044r",
+      "from": "forest1",
+      "direction": "E",
+      "to": "forest_path"
+    },
+    {
+      "id": "z1e045",
+      "from": "forest_path",
+      "direction": "E",
+      "to": "forest2"
+    },
+    {
+      "id": "z1e045r",
+      "from": "forest2",
+      "direction": "W",
+      "to": "forest_path"
+    },
+    {
+      "id": "z1e046",
+      "from": "forest_path",
+      "direction": "S",
+      "to": "north_of_house"
+    },
+    {
+      "id": "z1e046r",
+      "from": "north_of_house",
+      "direction": "N",
+      "to": "forest_path"
+    },
+    {
+      "id": "z1e047",
+      "from": "frigid_river",
+      "direction": "W",
+      "to": "beach1"
+    },
+    {
+      "id": "z1e047r",
+      "from": "beach1",
+      "direction": "E",
+      "to": "frigid_river"
+    },
+    {
+      "id": "z1e048",
+      "from": "frigid_river",
+      "direction": "DOWN",
+      "to": "river1"
+    },
+    {
+      "id": "z1e048r",
+      "from": "river1",
+      "direction": "UP",
+      "to": "frigid_river"
+    },
+    {
+      "id": "z1e049",
+      "from": "frigid_river",
+      "direction": "E",
+      "to": "sandy_beach"
+    },
+    {
+      "id": "z1e049r",
+      "from": "sandy_beach",
+      "direction": "W",
+      "to": "frigid_river"
+    },
+    {
+      "id": "z1e050",
+      "from": "gallery",
+      "direction": "N",
+      "to": "studio"
+    },
+    {
+      "id": "z1e050r",
+      "from": "studio",
+      "direction": "S",
+      "to": "gallery"
+    },
+    {
+      "id": "z1e051",
+      "from": "gas_room",
+      "direction": "UP",
+      "to": "smelly_room"
+    },
+    {
+      "id": "z1e051r",
+      "from": "smelly_room",
+      "direction": "DOWN",
+      "to": "gas_room"
+    },
+    {
+      "id": "z1e052",
+      "from": "kitchen",
+      "direction": "DOWN",
+      "to": "studio"
+    },
+    {
+      "id": "z1e052r",
+      "from": "studio",
+      "direction": "UP",
+      "to": "kitchen"
+    },
+    {
+      "id": "z1e053",
+      "from": "ladder_bottom",
+      "direction": "S",
+      "to": "dead_end"
+    },
+    {
+      "id": "z1e053r",
+      "from": "dead_end",
+      "direction": "N",
+      "to": "ladder_bottom"
+    },
+    {
+      "id": "z1e054",
+      "from": "ladder_bottom",
+      "direction": "UP",
+      "to": "ladder_top"
+    },
+    {
+      "id": "z1e054r",
+      "from": "ladder_top",
+      "direction": "DOWN",
+      "to": "ladder_bottom"
+    },
+    {
+      "id": "z1e055",
+      "from": "ladder_bottom",
+      "direction": "W",
+      "to": "timber_room"
+    },
+    {
+      "id": "z1e055r",
+      "from": "timber_room",
+      "direction": "E",
+      "to": "ladder_bottom"
+    },
+    {
+      "id": "z1e056",
+      "from": "land_of_the_dead",
+      "direction": "N",
+      "to": "entrance_to_hades"
+    },
+    {
+      "id": "z1e056r",
+      "from": "entrance_to_hades",
+      "direction": "S",
+      "to": "land_of_the_dead"
+    },
+    {
+      "id": "z1e057",
+      "from": "living_room",
+      "direction": "DOWN",
+      "to": "cellar"
+    },
+    {
+      "id": "z1e057r",
+      "from": "cellar",
+      "direction": "UP",
+      "to": "living_room"
+    },
+    {
+      "id": "z1e058",
+      "from": "loud_room",
+      "direction": "E",
+      "to": "damp_cave"
+    },
+    {
+      "id": "z1e058r",
+      "from": "damp_cave",
+      "direction": "W",
+      "to": "loud_room"
+    },
+    {
+      "id": "z1e059",
+      "from": "loud_room",
+      "direction": "UP",
+      "to": "deep_canyon"
+    },
+    {
+      "id": "z1e059r",
+      "from": "deep_canyon",
+      "direction": "DOWN",
+      "to": "loud_room"
+    },
+    {
+      "id": "z1e060",
+      "from": "machine_room",
+      "direction": "N",
+      "to": "drafty_room"
+    },
+    {
+      "id": "z1e060r",
+      "from": "drafty_room",
+      "direction": "S",
+      "to": "machine_room"
+    },
+    {
+      "id": "z1e061",
+      "from": "maintenance_room",
+      "direction": "S",
+      "to": "dam_lobby"
+    },
+    {
+      "id": "z1e061r",
+      "from": "dam_lobby",
+      "direction": "N",
+      "to": "maintenance_room"
+    },
+    {
+      "id": "z1e063",
+      "from": "maze1",
+      "direction": "W",
+      "to": "maze2"
+    },
+    {
+      "id": "z1e063r",
+      "from": "maze2",
+      "direction": "E",
+      "to": "maze1"
+    },
+    {
+      "id": "z1e064",
+      "from": "maze1",
+      "direction": "S",
+      "to": "maze4"
+    },
+    {
+      "id": "z1e064r",
+      "from": "maze4",
+      "direction": "N",
+      "to": "maze1"
+    },
+    {
+      "id": "z1e065",
+      "from": "maze1",
+      "direction": "E",
+      "to": "the_troll_room"
+    },
+    {
+      "id": "z1e065r",
+      "from": "the_troll_room",
+      "direction": "W",
+      "to": "maze1"
+    },
+    {
+      "id": "z1e066",
+      "from": "maze10",
+      "direction": "DOWN",
+      "to": "maze12"
+    },
+    {
+      "id": "z1e066r",
+      "from": "maze12",
+      "direction": "UP",
+      "to": "maze10"
+    },
+    {
+      "id": "z1e067",
+      "from": "maze10",
+      "direction": "W",
+      "to": "maze13"
+    },
+    {
+      "id": "z1e067r",
+      "from": "maze13",
+      "direction": "E",
+      "to": "maze10"
+    },
+    {
+      "id": "z1e068",
+      "from": "maze10",
+      "direction": "S",
+      "to": "maze14"
+    },
+    {
+      "id": "z1e068r",
+      "from": "maze14",
+      "direction": "N",
+      "to": "maze10"
+    },
+    {
+      "id": "z1e069",
+      "from": "maze10",
+      "direction": "E",
+      "to": "maze15"
+    },
+    {
+      "id": "z1e069r",
+      "from": "maze15",
+      "direction": "W",
+      "to": "maze10"
+    },
+    {
+      "id": "z1e070",
+      "from": "maze11",
+      "direction": "S",
+      "to": "maze12"
+    },
+    {
+      "id": "z1e070r",
+      "from": "maze12",
+      "direction": "N",
+      "to": "maze11"
+    },
+    {
+      "id": "z1e071",
+      "from": "maze12",
+      "direction": "SW",
+      "to": "maze13"
+    },
+    {
+      "id": "z1e071r",
+      "from": "maze13",
+      "direction": "NE",
+      "to": "maze12"
+    },
+    {
+      "id": "z1e072",
+      "from": "maze12",
+      "direction": "UP",
+      "to": "maze15"
+    },
+    {
+      "id": "z1e072r",
+      "from": "maze15",
+      "direction": "DOWN",
+      "to": "maze12"
+    },
+    {
+      "id": "z1e073",
+      "from": "maze13",
+      "direction": "NE",
+      "to": "grating_room"
+    },
+    {
+      "id": "z1e073r",
+      "from": "grating_room",
+      "direction": "SW",
+      "to": "maze13"
+    },
+    {
+      "id": "z1e074",
+      "from": "maze13",
+      "direction": "DOWN",
+      "to": "maze14"
+    },
+    {
+      "id": "z1e074r",
+      "from": "maze14",
+      "direction": "UP",
+      "to": "maze13"
+    },
+    {
+      "id": "z1e075",
+      "from": "maze14",
+      "direction": "E",
+      "to": "maze15"
+    },
+    {
+      "id": "z1e075r",
+      "from": "maze15",
+      "direction": "W",
+      "to": "maze14"
+    },
+    {
+      "id": "z1e077",
+      "from": "maze16",
+      "direction": "N",
+      "to": "maze17"
+    },
+    {
+      "id": "z1e077r",
+      "from": "maze17",
+      "direction": "S",
+      "to": "maze16"
+    },
+    {
+      "id": "z1e079",
+      "from": "maze2",
+      "direction": "E",
+      "to": "maze19"
+    },
+    {
+      "id": "z1e079r",
+      "from": "maze19",
+      "direction": "W",
+      "to": "maze2"
+    },
+    {
+      "id": "z1e080",
+      "from": "maze2",
+      "direction": "W",
+      "to": "maze3"
+    },
+    {
+      "id": "z1e080r",
+      "from": "maze3",
+      "direction": "E",
+      "to": "maze2"
+    },
+    {
+      "id": "z1e081",
+      "from": "maze3",
+      "direction": "W",
+      "to": "maze4"
+    },
+    {
+      "id": "z1e081r",
+      "from": "maze4",
+      "direction": "E",
+      "to": "maze3"
+    },
+    {
+      "id": "z1e082",
+      "from": "maze3",
+      "direction": "UP",
+      "to": "maze5"
+    },
+    {
+      "id": "z1e082r",
+      "from": "maze5",
+      "direction": "DOWN",
+      "to": "maze3"
+    },
+    {
+      "id": "z1e083",
+      "from": "maze5",
+      "direction": "E",
+      "to": "maze18"
+    },
+    {
+      "id": "z1e083r",
+      "from": "maze18",
+      "direction": "W",
+      "to": "maze5"
+    },
+    {
+      "id": "z1e084",
+      "from": "maze5",
+      "direction": "SW",
+      "to": "maze6"
+    },
+    {
+      "id": "z1e084r",
+      "from": "maze6",
+      "direction": "NE",
+      "to": "maze5"
+    },
+    {
+      "id": "z1e085",
+      "from": "maze6",
+      "direction": "UP",
+      "to": "maze15"
+    },
+    {
+      "id": "z1e085r",
+      "from": "maze15",
+      "direction": "DOWN",
+      "to": "maze6"
+    },
+    {
+      "id": "z1e087",
+      "from": "maze6",
+      "direction": "E",
+      "to": "maze7"
+    },
+    {
+      "id": "z1e087r",
+      "from": "maze7",
+      "direction": "W",
+      "to": "maze6"
+    },
+    {
+      "id": "z1e088",
+      "from": "maze7",
+      "direction": "E",
+      "to": "maze17"
+    },
+    {
+      "id": "z1e088r",
+      "from": "maze17",
+      "direction": "W",
+      "to": "maze7"
+    },
+    {
+      "id": "z1e089",
+      "from": "maze7",
+      "direction": "S",
+      "to": "maze8"
+    },
+    {
+      "id": "z1e089r",
+      "from": "maze8",
+      "direction": "N",
+      "to": "maze7"
+    },
+    {
+      "id": "z1e090",
+      "from": "maze7",
+      "direction": "UP",
+      "to": "maze9"
+    },
+    {
+      "id": "z1e090r",
+      "from": "maze9",
+      "direction": "DOWN",
+      "to": "maze7"
+    },
+    {
+      "id": "z1e091",
+      "from": "maze8",
+      "direction": "SE",
+      "to": "cyclops_room"
+    },
+    {
+      "id": "z1e091r",
+      "from": "cyclops_room",
+      "direction": "NW",
+      "to": "maze8"
+    },
+    {
+      "id": "z1e092",
+      "from": "maze8",
+      "direction": "W",
+      "to": "maze9"
+    },
+    {
+      "id": "z1e092r",
+      "from": "maze9",
+      "direction": "E",
+      "to": "maze8"
+    },
+    {
+      "id": "z1e094",
+      "from": "mine1",
+      "direction": "DOWN",
+      "to": "ladder_top"
+    },
+    {
+      "id": "z1e094r",
+      "from": "ladder_top",
+      "direction": "UP",
+      "to": "mine1"
+    },
+    {
+      "id": "z1e096",
+      "from": "mine1",
+      "direction": "N",
+      "to": "mine2"
+    },
+    {
+      "id": "z1e096r",
+      "from": "mine2",
+      "direction": "S",
+      "to": "mine1"
+    },
+    {
+      "id": "z1e098",
+      "from": "mine2",
+      "direction": "E",
+      "to": "mine3"
+    },
+    {
+      "id": "z1e098r",
+      "from": "mine3",
+      "direction": "W",
+      "to": "mine2"
+    },
+    {
+      "id": "z1e100",
+      "from": "mine3",
+      "direction": "S",
+      "to": "mine4"
+    },
+    {
+      "id": "z1e100r",
+      "from": "mine4",
+      "direction": "N",
+      "to": "mine3"
+    },
+    {
+      "id": "z1e101",
+      "from": "mine4",
+      "direction": "N",
+      "to": "gas_room"
+    },
+    {
+      "id": "z1e101r",
+      "from": "gas_room",
+      "direction": "S",
+      "to": "mine4"
+    },
+    {
+      "id": "z1e103",
+      "from": "mirror_room2",
+      "direction": "E",
+      "to": "cave1"
+    },
+    {
+      "id": "z1e103r",
+      "from": "cave1",
+      "direction": "W",
+      "to": "mirror_room2"
+    },
+    {
+      "id": "z1e104",
+      "from": "n_s_passage",
+      "direction": "NE",
+      "to": "deep_canyon"
+    },
+    {
+      "id": "z1e104r",
+      "from": "deep_canyon",
+      "direction": "SW",
+      "to": "n_s_passage"
+    },
+    {
+      "id": "z1e105",
+      "from": "narrow_passage",
+      "direction": "S",
+      "to": "mirror_room2"
+    },
+    {
+      "id": "z1e105r",
+      "from": "mirror_room2",
+      "direction": "N",
+      "to": "narrow_passage"
+    },
+    {
+      "id": "z1e106",
+      "from": "north_of_house",
+      "direction": "SW",
+      "to": "west_of_house"
+    },
+    {
+      "id": "z1e106r",
+      "from": "west_of_house",
+      "direction": "NE",
+      "to": "north_of_house"
+    },
+    {
+      "id": "z1e107",
+      "from": "on_the_rainbow",
+      "direction": "E",
+      "to": "aragain_falls"
+    },
+    {
+      "id": "z1e107r",
+      "from": "aragain_falls",
+      "direction": "W",
+      "to": "on_the_rainbow"
+    },
+    {
+      "id": "z1e108",
+      "from": "reservoir",
+      "direction": "S",
+      "to": "reservoir_south"
+    },
+    {
+      "id": "z1e108r",
+      "from": "reservoir_south",
+      "direction": "N",
+      "to": "reservoir"
+    },
+    {
+      "id": "z1e109",
+      "from": "reservoir_north",
+      "direction": "S",
+      "to": "reservoir"
+    },
+    {
+      "id": "z1e109r",
+      "from": "reservoir",
+      "direction": "N",
+      "to": "reservoir_north"
+    },
+    {
+      "id": "z1e110",
+      "from": "reservoir_south",
+      "direction": "E",
+      "to": "dam"
+    },
+    {
+      "id": "z1e110r",
+      "from": "dam",
+      "direction": "W",
+      "to": "reservoir_south"
+    },
+    {
+      "id": "z1e111",
+      "from": "river1",
+      "direction": "E",
+      "to": "shore"
+    },
+    {
+      "id": "z1e111r",
+      "from": "shore",
+      "direction": "W",
+      "to": "river1"
+    },
+    {
+      "id": "z1e112",
+      "from": "river2",
+      "direction": "W",
+      "to": "beach2"
+    },
+    {
+      "id": "z1e112r",
+      "from": "beach2",
+      "direction": "E",
+      "to": "river2"
+    },
+    {
+      "id": "z1e113",
+      "from": "river2",
+      "direction": "DOWN",
+      "to": "frigid_river"
+    },
+    {
+      "id": "z1e113r",
+      "from": "frigid_river",
+      "direction": "UP",
+      "to": "river2"
+    },
+    {
+      "id": "z1e114",
+      "from": "river3",
+      "direction": "DOWN",
+      "to": "river2"
+    },
+    {
+      "id": "z1e114r",
+      "from": "river2",
+      "direction": "UP",
+      "to": "river3"
+    },
+    {
+      "id": "z1e115",
+      "from": "river4",
+      "direction": "W",
+      "to": "dam_base"
+    },
+    {
+      "id": "z1e115r",
+      "from": "dam_base",
+      "direction": "E",
+      "to": "river4"
+    },
+    {
+      "id": "z1e116",
+      "from": "river4",
+      "direction": "DOWN",
+      "to": "river3"
+    },
+    {
+      "id": "z1e116r",
+      "from": "river3",
+      "direction": "UP",
+      "to": "river4"
+    },
+    {
+      "id": "z1e117",
+      "from": "rocky_ledge",
+      "direction": "DOWN",
+      "to": "canyon_bottom"
+    },
+    {
+      "id": "z1e117r",
+      "from": "canyon_bottom",
+      "direction": "UP",
+      "to": "rocky_ledge"
+    },
+    {
+      "id": "z1e118",
+      "from": "round_room",
+      "direction": "SE",
+      "to": "engravings_cave"
+    },
+    {
+      "id": "z1e118r",
+      "from": "engravings_cave",
+      "direction": "NW",
+      "to": "round_room"
+    },
+    {
+      "id": "z1e119",
+      "from": "round_room",
+      "direction": "E",
+      "to": "loud_room"
+    },
+    {
+      "id": "z1e119r",
+      "from": "loud_room",
+      "direction": "W",
+      "to": "round_room"
+    },
+    {
+      "id": "z1e120",
+      "from": "round_room",
+      "direction": "N",
+      "to": "n_s_passage"
+    },
+    {
+      "id": "z1e120r",
+      "from": "n_s_passage",
+      "direction": "S",
+      "to": "round_room"
+    },
+    {
+      "id": "z1e121",
+      "from": "round_room",
+      "direction": "S",
+      "to": "narrow_passage"
+    },
+    {
+      "id": "z1e121r",
+      "from": "narrow_passage",
+      "direction": "N",
+      "to": "round_room"
+    },
+    {
+      "id": "z1e122",
+      "from": "sandy_beach",
+      "direction": "S",
+      "to": "shore"
+    },
+    {
+      "id": "z1e122r",
+      "from": "shore",
+      "direction": "N",
+      "to": "sandy_beach"
+    },
+    {
+      "id": "z1e123",
+      "from": "sandy_cave",
+      "direction": "SW",
+      "to": "sandy_beach"
+    },
+    {
+      "id": "z1e123r",
+      "from": "sandy_beach",
+      "direction": "NE",
+      "to": "sandy_cave"
+    },
+    {
+      "id": "z1e124",
+      "from": "shaft_room",
+      "direction": "W",
+      "to": "bat_room"
+    },
+    {
+      "id": "z1e124r",
+      "from": "bat_room",
+      "direction": "E",
+      "to": "shaft_room"
+    },
+    {
+      "id": "z1e125",
+      "from": "shore",
+      "direction": "S",
+      "to": "aragain_falls"
+    },
+    {
+      "id": "z1e125r",
+      "from": "aragain_falls",
+      "direction": "N",
+      "to": "shore"
+    },
+    {
+      "id": "z1e126",
+      "from": "slide_room",
+      "direction": "DOWN",
+      "to": "cellar"
+    },
+    {
+      "id": "z1e126r",
+      "from": "cellar",
+      "direction": "UP",
+      "to": "slide_room"
+    },
+    {
+      "id": "z1e127",
+      "from": "slide_room",
+      "direction": "N",
+      "to": "mine_entrance"
+    },
+    {
+      "id": "z1e127r",
+      "from": "mine_entrance",
+      "direction": "S",
+      "to": "slide_room"
+    },
+    {
+      "id": "z1e128",
+      "from": "smelly_room",
+      "direction": "S",
+      "to": "shaft_room"
+    },
+    {
+      "id": "z1e128r",
+      "from": "shaft_room",
+      "direction": "N",
+      "to": "smelly_room"
+    },
+    {
+      "id": "z1e129",
+      "from": "south_of_house",
+      "direction": "NW",
+      "to": "west_of_house"
+    },
+    {
+      "id": "z1e129r",
+      "from": "west_of_house",
+      "direction": "SE",
+      "to": "south_of_house"
+    },
+    {
+      "id": "z1e130",
+      "from": "squeaky_room",
+      "direction": "N",
+      "to": "bat_room"
+    },
+    {
+      "id": "z1e130r",
+      "from": "bat_room",
+      "direction": "S",
+      "to": "squeaky_room"
+    },
+    {
+      "id": "z1e131",
+      "from": "squeaky_room",
+      "direction": "E",
+      "to": "mine_entrance"
+    },
+    {
+      "id": "z1e131r",
+      "from": "mine_entrance",
+      "direction": "W",
+      "to": "squeaky_room"
+    },
+    {
+      "id": "z1e132",
+      "from": "strange_passage",
+      "direction": "W",
+      "to": "cyclops_room"
+    },
+    {
+      "id": "z1e132r",
+      "from": "cyclops_room",
+      "direction": "E",
+      "to": "strange_passage"
+    },
+    {
+      "id": "z1e133",
+      "from": "strange_passage",
+      "direction": "E",
+      "to": "living_room"
+    },
+    {
+      "id": "z1e133r",
+      "from": "living_room",
+      "direction": "W",
+      "to": "strange_passage"
+    },
+    {
+      "id": "z1e134",
+      "from": "stream",
+      "direction": "DOWN",
+      "to": "reservoir"
+    },
+    {
+      "id": "z1e134r",
+      "from": "reservoir",
+      "direction": "UP",
+      "to": "stream"
+    },
+    {
+      "id": "z1e135",
+      "from": "stream_view",
+      "direction": "E",
+      "to": "reservoir_south"
+    },
+    {
+      "id": "z1e135r",
+      "from": "reservoir_south",
+      "direction": "W",
+      "to": "stream_view"
+    },
+    {
+      "id": "z1e136",
+      "from": "temple",
+      "direction": "S",
+      "to": "altar"
+    },
+    {
+      "id": "z1e136r",
+      "from": "altar",
+      "direction": "N",
+      "to": "temple"
+    },
+    {
+      "id": "z1e137",
+      "from": "temple",
+      "direction": "UP",
+      "to": "torch_room"
+    },
+    {
+      "id": "z1e137r",
+      "from": "torch_room",
+      "direction": "DOWN",
+      "to": "temple"
+    },
+    {
+      "id": "z1e138",
+      "from": "the_troll_room",
+      "direction": "W",
+      "to": "e_w_passage"
+    },
+    {
+      "id": "z1e138r",
+      "from": "e_w_passage",
+      "direction": "E",
+      "to": "the_troll_room"
+    },
+    {
+      "id": "z1e139",
+      "from": "timber_room",
+      "direction": "W",
+      "to": "drafty_room"
+    },
+    {
+      "id": "z1e139r",
+      "from": "drafty_room",
+      "direction": "E",
+      "to": "timber_room"
+    },
+    {
+      "id": "z1e140",
+      "from": "twisting_passage",
+      "direction": "E",
+      "to": "cave2"
+    },
+    {
+      "id": "z1e140r",
+      "from": "cave2",
+      "direction": "W",
+      "to": "twisting_passage"
+    },
+    {
+      "id": "z1e141",
+      "from": "twisting_passage",
+      "direction": "N",
+      "to": "mirror_room1"
+    },
+    {
+      "id": "z1e141r",
+      "from": "mirror_room1",
+      "direction": "S",
+      "to": "twisting_passage"
+    },
+    {
+      "id": "z1e142",
+      "from": "up_a_tree",
+      "direction": "DOWN",
+      "to": "forest_path"
+    },
+    {
+      "id": "z1e142r",
+      "from": "forest_path",
+      "direction": "UP",
+      "to": "up_a_tree"
+    },
+    {
+      "id": "z1e143",
+      "from": "west_of_house",
+      "direction": "SW",
+      "to": "stone_barrow"
+    },
+    {
+      "id": "z1e143r",
+      "from": "stone_barrow",
+      "direction": "NE",
+      "to": "west_of_house"
+    },
+    {
+      "id": "z1e144",
+      "from": "winding_passage",
+      "direction": "E",
+      "to": "cave1"
+    },
+    {
+      "id": "z1e144r",
+      "from": "cave1",
+      "direction": "W",
+      "to": "winding_passage"
+    },
+    {
+      "id": "z1e145",
+      "from": "winding_passage",
+      "direction": "N",
+      "to": "mirror_room2"
+    },
+    {
+      "id": "z1e145r",
+      "from": "mirror_room2",
+      "direction": "S",
+      "to": "winding_passage"
+    }
+  ]
 }
