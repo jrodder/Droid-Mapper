@@ -1,8 +1,11 @@
 package com.jrod.droidgridder.ui.editor
 
+import android.content.res.Resources
+import android.graphics.Paint
 import androidx.lifecycle.ViewModel
 import com.jrod.droidgridder.data.MapStore
 import com.jrod.droidgridder.model.Direction
+import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.deleteExit as removeExit
 import com.jrod.droidgridder.model.deleteRoom as removeRoom
@@ -10,6 +13,7 @@ import com.jrod.droidgridder.model.go as goRoom
 import com.jrod.droidgridder.model.autoTidy as tidyLayout
 import com.jrod.droidgridder.model.linkToExisting
 import com.jrod.droidgridder.model.redirectExit as repointExit
+import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.updateRoomText as setRoomText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -139,6 +143,25 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         }
 
     /**
+     * v1.5 ruling O2: per-map layout stride in world units. Floored at GRID_STEP; widened so
+     * the widest room label (13sp at scale 1 = 13 * density px = world units) plus half a box
+     * fits within one stride — same-row/column/diagonal label-box collisions are impossible by
+     * construction. Paint lives here, not in model/, so model/ stays Android-free.
+     */
+    private fun layoutStride(map: MapFile): Float {
+        // world units = screen px at scale 1; canvas font is 13sp → 13 * density px
+        val widest = try {
+            val paint = Paint()
+            paint.textSize = 13f * Resources.getSystem().displayMetrics.density
+            map.rooms.maxOfOrNull { r -> if (r.name.isBlank()) 0f else paint.measureText(r.name) } ?: 0f
+        } catch (e: Exception) {
+            // ponytail: JVM unit tests get the floor stride; measurement is device-only (no Robolectric)
+            0f
+        }
+        return maxOf(GRID_STEP, widest + ROOM_BOX_SIZE / 2f)
+    }
+
+    /**
      * Walk [direction] from the current room. If the exit already exists, follow it
      * (no map mutation, no save); otherwise create the connected room via the pure
      * [goRoom], persist it, and make the new room current. Either way the
@@ -153,7 +176,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             _uiState.value = applyWheelReturn(s).copy(currentRoomId = existing.to, wheelForRoomId = null)
             return
         }
-        val newMap = goRoom(direction, fromId, map)
+        val newMap = goRoom(direction, fromId, map, layoutStride(map))
         previousMap = map
         store.save(newMap)
         // ponytail: pure go() appends the new room, so the destination is the last one.
@@ -175,7 +198,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
     fun autoTidy() {
         val s = _uiState.value
         val map = s.map ?: return
-        val newMap = tidyLayout(map)
+        val newMap = tidyLayout(map, layoutStride(map))
         // ponytail: data-class equality is the no-op test; store.save would also burn updatedAt.
         if (newMap == map) return
         previousMap = map

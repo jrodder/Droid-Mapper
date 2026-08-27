@@ -6,7 +6,7 @@ package com.jrod.droidgridder.model
  * [freePosition] to dodge already-occupied grid cells. Returns a new [MapFile]
  * with the re-laid-out rooms; unreachable rooms keep their position.
  */
-fun autoTidy(map: MapFile): MapFile {
+fun autoTidy(map: MapFile, stride: Float = GRID_STEP): MapFile {
     if (map.rooms.isEmpty()) return map
     val pos = HashMap<String, Pos>()
     val occupied = ArrayList<Pos>()
@@ -17,7 +17,7 @@ fun autoTidy(map: MapFile): MapFile {
         val id = queue.removeFirst()
         for (e in map.exits.filter { it.from == id && it.to != id }) {
             if (!pos.containsKey(e.to)) {
-                val p = freePosition(pos[id]!!, e.direction, occupied)
+                val p = freePosition(pos[id]!!, e.direction, occupied, stride)
                 pos[e.to] = p; occupied += p; queue.add(e.to)
             }
         }

@@ -44,6 +44,19 @@ class MapGraphTest {
         assertEquals(0f, pos.x, 0.001f)
     }
 
+    @Test fun `stride param flows through freePosition and go`() {
+        // v1.5 ruling O2 pin: an explicit stride must drive placement (not GRID_STEP).
+        val at = freePosition(Pos(0f, 0f), Direction.E, emptyList(), 260f)
+        assertEquals(Pos(260f, 0f), at)
+        val out = go(Direction.E, "a", map(room("a")), 260f)
+        assertEquals(2, out.rooms.size)
+        assertEquals(260f, out.rooms.last().x, 0.001f)
+        assertEquals(0f, out.rooms.last().y, 0.001f)
+        // and nudge math scales with stride: a room at +260 is "near" under stride 260
+        val nudged = freePosition(Pos(0f, 0f), Direction.E, listOf(Pos(260f, 0f)), 260f)
+        assertEquals(Pos(520f, 0f), nudged)
+    }
+
     @Test fun `linkToExisting adds exit without reverse`() {
         val m = map(room("a"), room("b"))
         val out = linkToExisting(Direction.W, "a", "b", m)

@@ -35,3 +35,6 @@ enum class Direction { N, S, E, W, NE, NW, SE, SW, UP, DOWN }
 data class Pos(val x: Float, val y: Float)
 
 const val GRID_STEP = 180f
+
+/** Room box side in world units (~GRID_STEP * 0.7); public so the VM can compute label-aware strides. */
+const val ROOM_BOX_SIZE = GRID_STEP * 0.7f

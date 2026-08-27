@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.jrod.droidgridder.model.Direction
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
+import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.Pos
 
 /**
@@ -73,8 +74,7 @@ class CameraState {
     }
 }
 
-// Room box in world units (~GRID_STEP * 0.7 per the task brief).
-private val ROOM_BOX_SIZE = GRID_STEP * 0.7f
+// Room box in world units: model's ROOM_BOX_SIZE (~GRID_STEP * 0.7 per the task brief).
 private const val ROOM_BOX_RADIUS = 12f
 
 /** Animated per-room world position plus first-draw pop scale (Task 7). */
@@ -184,7 +184,9 @@ fun MapCanvas(
         }
 
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
-        val nameFont = ((13f * camera.scale).coerceIn(9f, 32f)).sp
+        // v1.5 ruling O1: pure world scaling, no clamp — labels keep constant world width at
+        // every zoom (overlap-free by layout stride), pinch-in makes them larger.
+        val nameFont = (13f * camera.scale).sp
 
         for (room in map.rooms) {
             // Animated position (Task 7): re-layouts glide; `pop` scales new rooms in.

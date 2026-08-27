@@ -10,36 +10,36 @@ fun Direction.opposite(): Direction = when (this) {
     Direction.UP -> Direction.DOWN; Direction.DOWN -> Direction.UP
 }
 
-fun directionOffset(d: Direction): Pos = when (d) {
-    Direction.N -> Pos(0f, -GRID_STEP); Direction.S -> Pos(0f, GRID_STEP)
-    Direction.E -> Pos(GRID_STEP, 0f); Direction.W -> Pos(-GRID_STEP, 0f)
-    Direction.NE -> Pos(GRID_STEP, -GRID_STEP); Direction.NW -> Pos(-GRID_STEP, -GRID_STEP)
-    Direction.SE -> Pos(GRID_STEP, GRID_STEP); Direction.SW -> Pos(-GRID_STEP, GRID_STEP)
-    Direction.UP -> Pos(0f, -GRID_STEP * 2f); Direction.DOWN -> Pos(0f, GRID_STEP * 2f)
+fun directionOffset(d: Direction, stride: Float = GRID_STEP): Pos = when (d) {
+    Direction.N -> Pos(0f, -stride); Direction.S -> Pos(0f, stride)
+    Direction.E -> Pos(stride, 0f); Direction.W -> Pos(-stride, 0f)
+    Direction.NE -> Pos(stride, -stride); Direction.NW -> Pos(-stride, -stride)
+    Direction.SE -> Pos(stride, stride); Direction.SW -> Pos(-stride, stride)
+    Direction.UP -> Pos(0f, -stride * 2f); Direction.DOWN -> Pos(0f, stride * 2f)
 }
 
-private fun Pos.isNear(o: Pos): Boolean =
-    (x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) < GRID_STEP * GRID_STEP
+private fun Pos.isNear(o: Pos, stride: Float): Boolean =
+    (x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) < stride * stride
 
-fun freePosition(from: Pos, direction: Direction, occupied: List<Pos>): Pos {
-    val base = directionOffset(direction)
+fun freePosition(from: Pos, direction: Direction, occupied: List<Pos>, stride: Float = GRID_STEP): Pos {
+    val base = directionOffset(direction, stride)
     var k = 1
     while (true) {
         val c = Pos(from.x + base.x * k, from.y + base.y * k)
-        if (occupied.none { it.isNear(c) }) return c
+        if (occupied.none { it.isNear(c, stride) }) return c
         k++
     }
 }
 
-fun placeNewRoom(direction: Direction, from: Room, rooms: List<Room>): Pos =
-    freePosition(Pos(from.x, from.y), direction, rooms.map { Pos(it.x, it.y) })
+fun placeNewRoom(direction: Direction, from: Room, rooms: List<Room>, stride: Float = GRID_STEP): Pos =
+    freePosition(Pos(from.x, from.y), direction, rooms.map { Pos(it.x, it.y) }, stride)
 
-fun go(direction: Direction, currentRoomId: String, map: MapFile): MapFile {
+fun go(direction: Direction, currentRoomId: String, map: MapFile, stride: Float = GRID_STEP): MapFile {
     val fromRoom = map.rooms.firstOrNull { it.id == currentRoomId }
     require(fromRoom != null) { "go: unknown room $currentRoomId" }
     if (map.exits.any { it.from == currentRoomId && it.direction == direction }) return map
     val id = UUID.randomUUID().toString()
-    val pos = placeNewRoom(direction, fromRoom, map.rooms)
+    val pos = placeNewRoom(direction, fromRoom, map.rooms, stride)
     val room = Room(id = id, x = pos.x, y = pos.y)
     val exit = Exit(UUID.randomUUID().toString(), currentRoomId, direction, id)
     val reverse = Exit(UUID.randomUUID().toString(), id, direction.opposite(), currentRoomId)
