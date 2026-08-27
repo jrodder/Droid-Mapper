@@ -100,6 +100,22 @@ class MapEditorViewModelTest {
     }
 
     @Test
+    fun `completeLink on the source room cancels without mutation or save`() {
+        val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
+        vm.openWheel("a")
+        vm.startLink(Direction.N)
+        vm.completeLink("a") // self-link target == source
+
+        val s = vm.uiState.value
+        assertNull(s.linkMode)
+        assertNull(s.linkSourceRoomId)
+        assertTrue(s.map!!.exits.isEmpty())
+        // nothing persisted
+        val saved = MapStore(tmp.root).load("m1")!!
+        assertTrue(saved.exits.isEmpty())
+    }
+
+    @Test
     fun `select null clears selection but keeps current room`() {
         val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
         vm.select("a")

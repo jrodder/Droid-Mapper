@@ -60,7 +60,10 @@ fun MapEditorScreen(store: MapStore, mapId: String) {
             onTapRoom = { id ->
                 if (state.linkMode != null) viewModel.completeLink(id) else viewModel.select(id)
             },
-            onDoubleTapRoom = { id -> viewModel.openWheel(id) },
+            onDoubleTapRoom = { id ->
+                // In link mode a double-tap completes the link instead of opening the wheel.
+                if (state.linkMode != null) viewModel.completeLink(id) else viewModel.openWheel(id)
+            },
             onTapEmpty = {
                 if (state.linkMode != null) viewModel.completeLink(null) else viewModel.select(null)
             },

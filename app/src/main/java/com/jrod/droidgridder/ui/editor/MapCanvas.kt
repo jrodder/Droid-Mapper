@@ -102,7 +102,8 @@ fun MapCanvas(
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
+            // Keyed on map so the hit-test picks up rooms created after go/link (stale-capture fix).
+            .pointerInput(map) {
                 detectTapGestures(
                     onDoubleTap = { pos ->
                         roomAt(map, camera, pos)?.let(onDoubleTapRoom)

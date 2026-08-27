@@ -88,14 +88,16 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
 
     /**
      * Leave link mode. With a [targetRoomId], connect the source room to it via the
-     * pure [linkToExisting] (no reverse exit) and persist; `null` cancels the link.
+     * pure [linkToExisting] (no reverse exit) and persist; `null` cancels the link,
+     * and linking a room to itself is treated as cancel (would be an invisible
+     * self-loop the canvas does not draw). No save on either cancel path.
      */
     fun completeLink(targetRoomId: String?) {
         val s = _uiState.value
         val direction = s.linkMode ?: return
         val fromId = s.linkSourceRoomId
         val map = s.map
-        if (targetRoomId == null || fromId == null || map == null) {
+        if (targetRoomId == null || fromId == null || map == null || targetRoomId == fromId) {
             _uiState.value = s.copy(linkMode = null, linkSourceRoomId = null)
             return
         }
