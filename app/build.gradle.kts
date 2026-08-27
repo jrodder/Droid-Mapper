@@ -10,7 +10,7 @@ android {
     compileSdk = 36
     defaultConfig {
         applicationId = "com.jrod.droidgridder"
-        minSdk = 24; targetSdk = 36; versionCode = 2; versionName = "1.1"
+        minSdk = 24; targetSdk = 36; versionCode = 3; versionName = "1.2"
     }
     buildTypes { release { isMinifyEnabled = false } }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }

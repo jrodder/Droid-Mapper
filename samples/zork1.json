@@ -432,7 +432,7 @@
             "id": "maze12",
             "name": "Maze",
             "description": "",
-            "notes": "",
+            "notes": "One-way descent in the game: no passage back up (OneWay in source).",
             "x": 0.0,
             "y": 0.0
         },
@@ -456,7 +456,7 @@
             "id": "maze15",
             "name": "Maze",
             "description": "",
-            "notes": "",
+            "notes": "One-way descent in the game: no passage back up (OneWay in source).",
             "x": 0.0,
             "y": 0.0
         },
@@ -512,7 +512,7 @@
             "id": "maze4",
             "name": "Maze",
             "description": "",
-            "notes": "",
+            "notes": "One-way descent in the game: no passage back up (OneWay in source).",
             "x": 0.0,
             "y": 0.0
         },
@@ -536,7 +536,7 @@
             "id": "maze7",
             "name": "Maze",
             "description": "",
-            "notes": "",
+            "notes": "One-way descent in the game: no passage back up (OneWay in source).",
             "x": 0.0,
             "y": 0.0
         },
@@ -1817,12 +1817,6 @@
             "to": "maze12"
         },
         {
-            "id": "z1e085r",
-            "from": "maze15",
-            "direction": "DOWN",
-            "to": "maze6"
-        },
-        {
             "id": "z1e077",
             "from": "maze16",
             "direction": "N",
@@ -2973,6 +2967,34 @@
             "from": "dam_lobby",
             "direction": "E",
             "to": "maintenance_room"
+        },
+        {
+            "id": "z1n349",
+            "from": "maze4",
+            "direction": "DOWN",
+            "to": "maze2",
+            "oneWay": true
+        },
+        {
+            "id": "z1n350",
+            "from": "maze7",
+            "direction": "DOWN",
+            "to": "maze19",
+            "oneWay": true
+        },
+        {
+            "id": "z1n351",
+            "from": "maze15",
+            "direction": "DOWN",
+            "to": "maze13",
+            "oneWay": true
+        },
+        {
+            "id": "z1n352",
+            "from": "maze12",
+            "direction": "DOWN",
+            "to": "maze5",
+            "oneWay": true
         }
     ]
 }

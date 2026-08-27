@@ -1,18 +1,23 @@
 package com.jrod.droidgridder.ui.editor
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -109,6 +114,10 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                         else -> viewModel.openRoomEdit(id)
                     }
                 },
+                onLongPressExit = { id ->
+                    // Long-pressing a passage line edits that passage (link properties dialog).
+                    viewModel.openExitDialog(id)
+                },
                 onTapEmpty = {
                     when {
                         state.redirectMode != null -> viewModel.completeRedirect(null)
@@ -175,6 +184,40 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                 RoomDetailWindow(
                     room = selectedRoom,
                     onClose = { viewModel.closeRoomWindow() },
+                )
+            }
+
+            // Passage (link) dialog: opened by long-pressing a line on the canvas.
+            // Lets the user mark the passage one-way or delete it entirely.
+            val dialogExitId = state.exitDialogExitId
+            val dialogExit = dialogExitId?.let { id -> state.map?.exits?.firstOrNull { it.id == id } }
+            if (dialogExit != null) {
+                val destName = state.map?.rooms?.firstOrNull { it.id == dialogExit.to }?.name
+                    ?.takeIf { it.isNotBlank() } ?: "(unmapped)"
+                AlertDialog(
+                    onDismissRequest = { viewModel.closeExitDialog() },
+                    title = { Text("${dialogExit.direction.name} → $destName") },
+                    text = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = "One-way passage",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Switch(
+                                checked = dialogExit.oneWay,
+                                onCheckedChange = { viewModel.setExitOneWay(dialogExit.id, it) },
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.closeExitDialog() }) { Text("Done") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.deletePassage(dialogExit.id) }) { Text("Delete") }
+                    },
                 )
             }
         }

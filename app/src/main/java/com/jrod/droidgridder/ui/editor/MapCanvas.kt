@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.drawText
@@ -90,6 +91,7 @@ fun MapCanvas(
     camera: CameraState,
     onTapRoom: (String) -> Unit,
     onDoubleTapRoom: (String) -> Unit,
+    onLongPressExit: (String) -> Unit,
     onTapEmpty: () -> Unit,
 ) {
     val map = state.map
@@ -137,7 +139,7 @@ fun MapCanvas(
                     // v1.1: long-press is a no-op on rooms and empty canvas. detectTapGestures
                     // still consumes the press in its long-press branch, so it never falls
                     // through to a delayed single tap either.
-                    onLongPress = { },
+                    onLongPress = { pos -> exitAt(map, camera, pos)?.let(onLongPressExit) },
                     onTap = { pos ->
                         val room = roomAt(map, camera, pos)
                         if (room != null) onTapRoom(room) else onTapEmpty()
@@ -179,6 +181,34 @@ fun MapCanvas(
                 end = t,
                 strokeWidth = if (isSelectedEdge) 3f else 2f,
             )
+            // One-way passages get an arrowhead at the destination box edge
+            // (lines run center-to-center under the boxes, so a tip at the center
+            // would be invisible). Same color as the line itself.
+            if (exit.oneWay) {
+                val dx = t.x - s.x
+                val dy = t.y - s.y
+                val len = kotlin.math.hypot(dx, dy)
+                if (len > 1f) {
+                    val ux = dx / len
+                    val uy = dy / len
+                    val boxHalf = (ROOM_BOX_SIZE / 2f) * camera.scale
+                    val tipX = t.x - ux * boxHalf
+                    val tipY = t.y - uy * boxHalf
+                    val arrowLen = 28f // screen px, zoom-independent (14f read as invisible)
+                    val arrowW = 10f
+                    val baseX = tipX - ux * arrowLen
+                    val baseY = tipY - uy * arrowLen
+                    val px = -uy
+                    val py = ux
+                    val arrowPath = Path().apply {
+                        moveTo(tipX, tipY)
+                        lineTo(baseX + px * arrowW, baseY + py * arrowW)
+                        lineTo(baseX - px * arrowW, baseY - py * arrowW)
+                        close()
+                    }
+                    drawPath(arrowPath, color = if (isSelectedEdge) selectedColor else exitColor)
+                }
+            }
         }
 
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
@@ -248,4 +278,38 @@ private fun roomAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
         }
     }
     return bestId
+}
+
+/**
+ * Nearest-exit hit test for long-press (screen space, ~16px finger tolerance):
+ * returns the id of the closest exit line within tolerance. For a two-way
+ * passage both records overlap the same segment and either id edits the same
+ * passage (the one-way toggle and delete are direction-symmetric).
+ */
+private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? {
+    val rooms = map?.rooms?.associateBy { it.id } ?: return null
+    var bestId: String? = null
+    var bestDist = 16f
+    for (exit in map.exits) {
+        val from = rooms[exit.from] ?: continue
+        val to = rooms[exit.to] ?: continue
+        if (from.id == to.id) continue
+        val a = camera.worldToScreen(Pos(from.x, from.y))
+        val b = camera.worldToScreen(Pos(to.x, to.y))
+        val d = pointSegDist(screen, a, b)
+        if (d < bestDist) {
+            bestDist = d
+            bestId = exit.id
+        }
+    }
+    return bestId
+}
+
+private fun pointSegDist(p: Offset, a: Offset, b: Offset): Float {
+    val dx = b.x - a.x
+    val dy = b.y - a.y
+    val l2 = dx * dx + dy * dy
+    if (l2 < 1e-6f) return kotlin.math.hypot(p.x - a.x, p.y - a.y)
+    val t = (((p.x - a.x) * dx + (p.y - a.y) * dy) / l2).coerceIn(0f, 1f)
+    return kotlin.math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy))
 }

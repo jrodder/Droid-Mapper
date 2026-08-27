@@ -66,6 +66,8 @@ fun go(direction: Direction, currentRoomId: String, map: MapFile, stride: Float 
     val fromRoom = map.rooms.firstOrNull { it.id == currentRoomId }
     require(fromRoom != null) { "go: unknown room $currentRoomId" }
     if (map.exits.any { it.from == currentRoomId && it.direction == direction }) return map
+    // A one-way passage blocks its reverse: you can't walk back up.
+    if (map.exits.any { it.oneWay && it.to == currentRoomId && it.direction.opposite() == direction }) return map
     val id = UUID.randomUUID().toString()
     val pos = placeNewRoom(direction, fromRoom, map.rooms, stride)
     val room = Room(id = id, x = pos.x, y = pos.y)
@@ -94,3 +96,41 @@ fun redirectExit(exitId: String, newToRoomId: String, map: MapFile): MapFile =
 
 fun updateRoomText(roomId: String, name: String, description: String, notes: String, map: MapFile): MapFile =
     map.copy(rooms = map.rooms.map { if (it.id == roomId) it.copy(name = name, description = description, notes = notes) else it })
+
+/**
+ * Toggle [oneWay] on the exit [exitId]. One-way means the reverse record is
+ * removed (the return direction is blocked, there is nothing left to draw);
+ * turning it back off recreates the reverse if it is missing. Other records
+ * (including unrelated one-ways) are untouched.
+ */
+fun setExitOneWay(exitId: String, oneWay: Boolean, map: MapFile): MapFile {
+    val exit = map.exits.firstOrNull { it.id == exitId } ?: return map
+    val isReverseOf: (Exit) -> Boolean =
+        { it.from == exit.to && it.to == exit.from && it.direction == exit.direction.opposite() }
+    return if (oneWay) {
+        map.copy(
+            exits = map.exits
+                .map { if (it.id == exitId) it.copy(oneWay = true) else it }
+                .filterNot { it.id != exitId && isReverseOf(it) },
+        )
+    } else {
+        val exits = map.exits.map { if (it.id == exitId) it.copy(oneWay = false) else it }
+        val withReverse = if (exits.none { isReverseOf(it) }) {
+            exits + Exit(UUID.randomUUID().toString(), exit.to, exit.direction.opposite(), exit.from)
+        } else {
+            exits
+        }
+        map.copy(exits = withReverse)
+    }
+}
+
+/**
+ * Delete the passage the user pointed at: the exit [exitId] plus its mirror
+ * record if one exists. Rooms and every other connection survive.
+ */
+fun deletePassage(exitId: String, map: MapFile): MapFile {
+    val exit = map.exits.firstOrNull { it.id == exitId } ?: return map
+    val isReverseOf: (Exit) -> Boolean =
+        { it.from == exit.to && it.to == exit.from && it.direction == exit.direction.opposite() }
+    return map.copy(exits = map.exits.filterNot { it.id == exitId || isReverseOf(it) })
+}

@@ -61,4 +61,25 @@ class MapJsonTest {
         assertNull(store.load(map.id))
         dir.deleteRecursively()
     }
+
+    @Test fun `round trip preserves one-way flag`() {
+        val m = sample.copy(exits = listOf(Exit("e1", "a", Direction.E, "b", oneWay = true)))
+        assertEquals(m, decodeMap(encodeMap(m)))
+    }
+
+    @Test fun `zork sample fixture has four forward-only one-way tunnels`() {
+        // Regression fixture for the one-way feature: the four maze tunnels the
+        // game blocks on the way back ("you won't be able to get back up").
+        val file = File("../samples/zork1.json")
+        if (!file.exists()) return // ponytail: fixture test only runs from a checkout with samples/
+        val m = decodeMap(file.readText())
+        val oneWays = m.exits.filter { it.oneWay }
+        assertEquals(4, oneWays.size)
+        for (e in oneWays) {
+            assertEquals(Direction.DOWN, e.direction)
+            // forward-only: the reverse record must be absent
+            val reverse = m.exits.any { it.from == e.to && it.to == e.from && it.direction == Direction.UP }
+            org.junit.Assert.assertFalse("one-way record has a reverse: $e", reverse)
+        }
+    }
 }

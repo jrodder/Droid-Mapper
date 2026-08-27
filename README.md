@@ -17,6 +17,7 @@ by hand while you play.
 | Pinch | Zoom |
 | Tap a room | Read-only detail window (tap anywhere to dismiss) |
 | Double-tap a room | Edit sheet (name, description, notes; Manage exits → direction wheel; delete room) |
+| Long-press a passage line | Passage dialog: mark it one-way or delete the passage |
 | Direction wheel | Attach a passage to an adjacent room in one of 12 directions |
 
 A direction with no exit is *blocked* by design (same as the game): the wheel
@@ -24,6 +25,14 @@ shows it greyed and tapping it does nothing. IN/OUT rooms are *contained*
 spaces: they hug the room they belong to instead of sitting on a compass
 bearing — Tidy parks them in the nearest free neighbor slot, and Relax pulls
 them into contact with their parent.
+
+**One-way passages** — long-press a line to open the passage dialog and flip
+the switch (or delete the passage entirely; re-create it from a room's
+wheel). On the map a one-way passage draws an arrowhead at the destination
+box edge, and the reverse direction is blocked: tapping it in the wheel does
+nothing instead of creating a phantom room. A passage that merely *lacks*
+a reverse record (not explored yet) stays a plain line — only a deliberate
+mark gets the arrow.
 
 ## Layouts
 
@@ -46,13 +55,15 @@ is a selected room):
 
 ## The Zork I reference map
 
-`samples/zork1.json` is the complete Zork I world — 110 rooms, 348 exits —
+`samples/zork1.json` is the complete Zork I world — 110 rooms, 351 exits —
 extracted from the [Inform source](https://github.com/allengarvin/inform-zork1)
 with the game's actual exit semantics:
 
 - a room's own declaration wins over reverse records
 - exits gated by messages/switches (`OneWay`, lamp checks, etc.) and the
   authentic maze self-loops are dropped (the app has no loop concept)
+- the four genuine one-way maze tunnels ("you won't be able to get back
+  up") are forward-only `oneWay` records with arrowheads on the map
 - the three door objects (trap door, kitchen window, grating) resolve to the
   opposite room
 - `IN`/`OUT` declarations that merely repeat a compass exit to the same room
@@ -71,7 +82,7 @@ dependencies beyond the standard Compose/BOM set.
 
 ```bash
 ./gradlew assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
-./gradlew testDebugUnitTest      # 67 unit tests
+./gradlew testDebugUnitTest      # 79 unit tests
 ```
 
 ### Architecture

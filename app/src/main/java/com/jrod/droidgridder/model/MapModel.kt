@@ -28,6 +28,8 @@ data class Exit(
     val from: String,
     val direction: Direction,
     val to: String,
+    /** Deliberate one-way passage (no return): the reverse record is absent. */
+    val oneWay: Boolean = false,
 )
 
 enum class Direction { N, S, E, W, NE, NW, SE, SW, UP, DOWN, IN, OUT }

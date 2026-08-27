@@ -14,6 +14,8 @@ import com.jrod.droidgridder.model.autoTidy as tidyLayout
 import com.jrod.droidgridder.model.springLayout as relaxLayout
 import com.jrod.droidgridder.model.linkToExisting
 import com.jrod.droidgridder.model.redirectExit as repointExit
+import com.jrod.droidgridder.model.deletePassage as removePassage
+import com.jrod.droidgridder.model.setExitOneWay as setOneWay
 import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.updateRoomText as setRoomText
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +49,8 @@ data class MapEditorUiState(
     val linkSourceRoomId: String? = null,
     val redirectMode: RedirectMode? = null,
     val canUndo: Boolean = false,
+    /** Set while the passage (link) dialog is open; the dialog edits that exit. */
+    val exitDialogExitId: String? = null,
 )
 
 /**
@@ -312,6 +316,45 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         _uiState.value = s.copy(map = newMap, canUndo = true)
     }
 
+    /** Open the passage dialog for the exit the user long-pressed on the canvas. */
+    fun openExitDialog(exitId: String) {
+        _uiState.update { it.copy(exitDialogExitId = exitId) }
+    }
+
+    fun closeExitDialog() {
+        _uiState.update { it.copy(exitDialogExitId = null) }
+    }
+
+    /**
+     * Toggle one-way on the dialog's exit (pure [setOneWay]), persist. The dialog
+     * stays open so the user sees the result; undo-able.
+     */
+    fun setExitOneWay(exitId: String, oneWay: Boolean) {
+        val s = _uiState.value
+        val map = s.map ?: return
+        if (map.exits.none { it.id == exitId }) return
+        val newMap = setOneWay(exitId, oneWay, map)
+        if (newMap == map) return
+        previousMap = map
+        store.save(newMap)
+        _uiState.value = s.copy(map = newMap, canUndo = true)
+    }
+
+    /**
+     * Delete the whole passage (the exit plus its mirror record, pure
+     * [removePassage]), persist, and close the dialog — the passage no longer
+     * exists. Re-creating it is the existing link flow from a room's wheel.
+     */
+    fun deletePassage(exitId: String) {
+        val s = _uiState.value
+        val map = s.map ?: return
+        if (map.exits.none { it.id == exitId }) return
+        previousMap = map
+        val newMap = removePassage(exitId, map)
+        store.save(newMap)
+        _uiState.value = s.copy(map = newMap, canUndo = true, exitDialogExitId = null)
+    }
+
     /** Arm redirect mode from a sheet exit row: dismiss the sheet, remember the exit. */
     fun startRedirect(exitId: String) {
         val s = _uiState.value
@@ -373,6 +416,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             linkMode = s.linkMode?.takeIf { s.linkSourceRoomId in roomIds },
             linkSourceRoomId = s.linkSourceRoomId?.takeIf { it in roomIds },
             redirectMode = s.redirectMode?.takeIf { it.fromRoomId in roomIds && it.exitId in exitIds },
+            exitDialogExitId = s.exitDialogExitId?.takeIf { it in exitIds },
             // a detail/edit window cannot stay open if the restored map lost its room
             roomMode = if (restoredSelected != null) s.roomMode else null,
         )

@@ -1,6 +1,7 @@
 package com.jrod.droidgridder.model
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -35,6 +36,17 @@ class MapGraphTest {
         val e = Exit(id = "e", from = "a", direction = Direction.E, to = "b")
         val m = map(room("a"), room("b")).copy(exits = listOf(e))
         assertEquals(m, go(Direction.E, "a", m))
+    }
+
+    @Test fun `go blocks the reverse direction of a one-way passage`() {
+        val e = Exit(id = "e", from = "a", direction = Direction.E, to = "b", oneWay = true)
+        val m = map(room("a"), room("b")).copy(exits = listOf(e))
+        // standing in b, going W (the blocked reverse) creates no room
+        assertEquals(m, go(Direction.W, "b", m))
+        // contrast: the same half-drawn passage WITHOUT the one-way flag is
+        // "not explored yet", so tapping the reverse direction still creates a room
+        val unflagged = map(room("a"), room("b")).copy(exits = listOf(Exit("e", "a", Direction.E, "b")))
+        assertNotEquals(unflagged, go(Direction.W, "b", unflagged))
     }
 
     @Test fun `IN and OUT are opposites`() {
@@ -112,5 +124,53 @@ class MapGraphTest {
         val m = map(room("a"))
         val out = updateRoomText("a", "n", "d", "t", m)
         assertEquals(Room("a", "n", "d", "t", 0f, 0f), out.rooms.single())
+    }
+
+    @Test fun `setExitOneWay on flags the record and removes the reverse`() {
+        val e1 = Exit("e1", "a", Direction.E, "b")
+        val e2 = Exit("e2", "b", Direction.W, "a")
+        val m = map(room("a"), room("b")).copy(exits = listOf(e1, e2))
+        val out = setExitOneWay("e1", true, m)
+        assertEquals(1, out.exits.size)
+        assertTrue(out.exits.single().oneWay)
+        assertEquals("a", out.exits.single().from)
+    }
+
+    @Test fun `setExitOneWay off clears the flag and recreates the missing reverse`() {
+        val e1 = Exit("e1", "a", Direction.E, "b", oneWay = true)
+        val m = map(room("a"), room("b")).copy(exits = listOf(e1))
+        val out = setExitOneWay("e1", false, m)
+        assertEquals(2, out.exits.size)
+        assertTrue(out.exits.none { it.oneWay })
+        val back = out.exits.single { it.from == "b" && it.direction == Direction.W }
+        assertEquals("a", back.to)
+    }
+
+    @Test fun `setExitOneWay leaves other one-way records alone`() {
+        val e1 = Exit("e1", "a", Direction.E, "b")
+        val e2 = Exit("e2", "b", Direction.W, "a")
+        val e3 = Exit("e3", "c", Direction.N, "d", oneWay = true)
+        val m = map(room("a"), room("b"), room("c"), room("d")).copy(exits = listOf(e1, e2, e3))
+        val out = setExitOneWay("e1", true, m)
+        assertTrue(out.exits.single { it.id == "e1" }.oneWay)
+        assertTrue(out.exits.single { it.id == "e3" }.oneWay)
+    }
+
+    @Test fun `deletePassage removes both records of a two-way pair`() {
+        val e1 = Exit("e1", "a", Direction.E, "b")
+        val e2 = Exit("e2", "b", Direction.W, "a")
+        val m = map(room("a"), room("b")).copy(exits = listOf(e1, e2))
+        val out = deletePassage("e1", m)
+        assertTrue(out.exits.isEmpty())
+        assertEquals(2, out.rooms.size) // rooms untouched
+    }
+
+    @Test fun `deletePassage on a one-way removes only that record`() {
+        val e1 = Exit("e1", "a", Direction.E, "b", oneWay = true)
+        val e2 = Exit("e2", "a", Direction.N, "c")
+        val m = map(room("a"), room("b"), room("c")).copy(exits = listOf(e1, e2))
+        val out = deletePassage("e1", m)
+        assertEquals(1, out.exits.size)
+        assertEquals("e2", out.exits.single().id)
     }
 }

@@ -581,4 +581,65 @@ class MapEditorViewModelTest {
         assertEquals("a", s.selectedRoomId)
         assertEquals(RoomMode.Edit, s.roomMode) // the edit sheet stays open
     }
+
+    @Test
+    fun `setExitOneWay persists the flag, drops the reverse, keeps the dialog open`() {
+        val m = baseMap(Room(id = "a", x = 0f, y = 0f), Room(id = "b", x = 200f, y = 0f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openExitDialog("e1")
+        vm.setExitOneWay("e1", true)
+
+        val s = vm.uiState.value
+        assertTrue(s.map!!.exits.single().oneWay)
+        assertEquals(1, s.map!!.exits.size)
+        assertTrue(s.canUndo)
+        assertEquals("e1", s.exitDialogExitId) // dialog stays open so the user sees the result
+        // persisted
+        assertEquals(1, MapStore(tmp.root).load("m1")!!.exits.size)
+    }
+
+    @Test
+    fun `setExitOneWay off restores the reverse record`() {
+        val m = baseMap(Room(id = "a", x = 0f, y = 0f), Room(id = "b", x = 200f, y = 0f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b", oneWay = true)))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openExitDialog("e1")
+        vm.setExitOneWay("e1", false)
+
+        val s = vm.uiState.value
+        assertEquals(2, s.map!!.exits.size)
+        assertTrue(s.map!!.exits.none { it.oneWay })
+        assertTrue(s.map!!.exits.any { it.from == "b" && it.direction == Direction.W && it.to == "a" })
+    }
+
+    @Test
+    fun `deletePassage removes the whole pair and closes the dialog`() {
+        val m = baseMap(Room(id = "a", x = 0f, y = 0f), Room(id = "b", x = 200f, y = 0f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openExitDialog("e1")
+        vm.deletePassage("e1")
+
+        val s = vm.uiState.value
+        assertTrue(s.map!!.exits.isEmpty())
+        assertNull(s.exitDialogExitId) // dialog closes: the passage no longer exists
+        assertEquals(2, s.map!!.rooms.size) // rooms survive
+        assertTrue(s.canUndo)
+    }
+
+    @Test
+    fun `undo reverts a one-way toggle`() {
+        val m = baseMap(Room(id = "a", x = 0f, y = 0f), Room(id = "b", x = 200f, y = 0f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openExitDialog("e1")
+        vm.setExitOneWay("e1", true)
+        vm.undo()
+
+        val s = vm.uiState.value
+        assertEquals(2, s.map!!.exits.size) // pair restored
+        assertTrue(s.map!!.exits.none { it.oneWay })
+        assertFalse(s.canUndo)
+    }
 }
