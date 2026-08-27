@@ -54,10 +54,18 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         )
     }
 
-    /** Select a room (also makes it current); `null` clears the selection. */
+    /**
+     * Select a room (also makes it current); `null` clears the selection.
+     * A non-null selection also closes any open wheel, making the wheel modal
+     * for room taps so it can never stay open over a stale source room.
+     */
     fun select(roomId: String?) {
-        _uiState.update {
-            it.copy(selectedRoomId = roomId, currentRoomId = roomId ?: it.currentRoomId)
+        _uiState.update { s ->
+            s.copy(
+                selectedRoomId = roomId,
+                currentRoomId = roomId ?: s.currentRoomId,
+                wheelForRoomId = if (roomId != null) null else s.wheelForRoomId,
+            )
         }
     }
 

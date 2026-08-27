@@ -17,8 +17,17 @@ class MapStore(private val rootDir: File) {
 
     fun save(map: MapFile) {
         val now = System.currentTimeMillis()
-        fileFor(map.id).writeText(encodeMap(map.copy(
+        val target = fileFor(map.id)
+        // ponytail: write a temp file in the same dir then rename — atomic on the same
+        // filesystem, so a mid-write kill leaves the previous map intact instead of a
+        // truncated file load()/list() would silently skip.
+        val tmp = File(target.parentFile, "${target.name}.tmp")
+        tmp.writeText(encodeMap(map.copy(
             createdAt = if (map.createdAt == 0L) now else map.createdAt, updatedAt = now)))
+        if (!tmp.renameTo(target)) {
+            tmp.copyTo(target, overwrite = true)
+            tmp.delete()
+        }
     }
 
     fun load(id: String): MapFile? =

@@ -27,6 +27,27 @@ class MapJsonTest {
         assertEquals(m, decodeMap(encodeMap(m)))
     }
 
+    @Test fun `save twice overwrites the file in place and load round-trips`() {
+        // ponytail: JVM-level pin for the atomic write — a mid-write process kill is not
+        // simulatable on the JVM, so this only proves the temp-file-then-rename overwrite
+        // path leaves a valid, loadable file with no stray .tmp behind.
+        val dir = File.createTempFile("maps", "").let { it.delete(); File(it.absolutePath) }
+        try {
+            val store = MapStore(dir)
+            val m = store.newMap("Zork")
+            store.save(m)
+            val root = m.rooms.single().copy(name = "Renamed")
+            store.save(m.copy(rooms = listOf(root))) // second save: overwrite path
+
+            val loaded = store.load(m.id)!!
+            assertEquals("Renamed", loaded.rooms.single().name)
+            assertEquals(m.id, loaded.id)
+            assertEquals(listOf("${m.id}.json"), dir.list()?.toList()) // overwritten in place, no .tmp left
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
     @Test fun `store list save load delete`() {
         val dir = File.createTempFile("maps", "").let { it.delete(); File(it.absolutePath) }
         val store = MapStore(dir)

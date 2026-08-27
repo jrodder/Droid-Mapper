@@ -35,7 +35,8 @@ fun placeNewRoom(direction: Direction, from: Room, rooms: List<Room>): Pos =
     freePosition(Pos(from.x, from.y), direction, rooms.map { Pos(it.x, it.y) })
 
 fun go(direction: Direction, currentRoomId: String, map: MapFile): MapFile {
-    val fromRoom = map.rooms.first { it.id == currentRoomId }
+    val fromRoom = map.rooms.firstOrNull { it.id == currentRoomId }
+    require(fromRoom != null) { "go: unknown room $currentRoomId" }
     if (map.exits.any { it.from == currentRoomId && it.direction == direction }) return map
     val id = UUID.randomUUID().toString()
     val pos = placeNewRoom(direction, fromRoom, map.rooms)

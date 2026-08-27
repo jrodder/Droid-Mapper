@@ -122,7 +122,31 @@ class MapEditorViewModelTest {
     }
 
     @Test
-    fun `select null clears selection but keeps current room`() {
+    fun `selecting a different room closes the wheel and go fires from the new current room`() {
+        val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
+        vm.openWheel("a")
+        assertEquals("a", vm.uiState.value.wheelForRoomId)
+
+        vm.select("b") // single-tap room B while the wheel is open over A
+        val s1 = vm.uiState.value
+        assertNull(s1.wheelForRoomId) // the wheel closes — it is modal for room taps
+        assertEquals("b", s1.currentRoomId)
+        assertEquals("b", s1.selectedRoomId)
+
+        // with the wheel gone it can no longer fire from stale A; go() uses current=b
+        vm.go(Direction.N)
+        val s2 = vm.uiState.value
+        assertEquals(3, s2.map!!.rooms.size)
+        val newRoom = s2.map!!.rooms.last()
+        assertEquals(newRoom.id, s2.currentRoomId)
+        val toB = s2.map!!.exits.single { it.from == "b" && it.direction == Direction.N }
+        assertEquals(newRoom.id, toB.to) // the new room is north of B, not A
+        val saved = MapStore(tmp.root).load("m1")!!
+        assertEquals(newRoom.id, saved.exits.single { it.from == "b" && it.direction == Direction.N }.to)
+    }
+
+    @Test
+    fun `select null clears selection but keeps current room and any open wheel`() {
         val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
         vm.select("a")
         vm.select("b")

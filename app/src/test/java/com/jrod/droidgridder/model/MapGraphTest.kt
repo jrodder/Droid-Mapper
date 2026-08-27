@@ -2,6 +2,7 @@ package com.jrod.droidgridder.model
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class MapGraphTest {
@@ -10,6 +11,15 @@ class MapGraphTest {
 
     @Test fun `opposite is symmetric for all directions`() {
         for (d in Direction.entries) assertEquals(d, d.opposite().opposite())
+    }
+
+    @Test fun `go with unknown room id throws IllegalArgumentException naming the id`() {
+        try {
+            go(Direction.N, "missing", map(room("a")))
+            fail("expected IllegalArgumentException")
+        } catch (e: IllegalArgumentException) {
+            assertTrue(e.message!!.contains("missing"))
+        }
     }
 
     @Test fun `go north creates room and reverse exit`() {
