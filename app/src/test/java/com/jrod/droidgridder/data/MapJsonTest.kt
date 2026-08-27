@@ -1,0 +1,42 @@
+package com.jrod.droidgridder.data
+
+import com.jrod.droidgridder.model.Direction
+import com.jrod.droidgridder.model.Exit
+import com.jrod.droidgridder.model.MapFile
+import com.jrod.droidgridder.model.Room
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class MapJsonTest {
+    private val sample = MapFile(
+        id = "m1", name = "Zork", createdAt = 1L, updatedAt = 2L,
+        rooms = listOf(Room("a", "West of House", "desc", "note", 0f, 0f), Room("b", "North of House", "", "", 0f, -180f)),
+        exits = listOf(Exit("e1", "a", Direction.N, "b"), Exit("e2", "b", Direction.S, "a")),
+    )
+
+    @Test fun `round trip preserves all data`() {
+        assertEquals(sample, decodeMap(encodeMap(sample)))
+    }
+
+    @Test fun `round trip preserves all ten directions`() {
+        val m = MapFile("m", "m", 0L, 0L, rooms = listOf(Room("a"), Room("b")),
+            exits = Direction.entries.mapIndexed { i, d -> Exit("e$i", "a", d, "b") })
+        assertEquals(m, decodeMap(encodeMap(m)))
+    }
+
+    @Test fun `store list save load delete`() {
+        val dir = File.createTempFile("maps", "").let { it.delete(); File(it.absolutePath) }
+        val store = MapStore(dir)
+        val map = store.newMap("Zork")
+        store.save(map.copy(rooms = listOf(Room("a"))))
+        assertEquals(1, store.list().size)
+        assertEquals("Zork", store.load(map.id)?.name)
+        store.delete(map.id)
+        assertTrue(store.list().isEmpty())
+        assertNull(store.load(map.id))
+        dir.deleteRecursively()
+    }
+}
