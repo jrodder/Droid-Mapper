@@ -8,8 +8,6 @@ Built for the classic problem: you're deep in a maze with twisty little
 passages and you have no idea where you are. Droid Mapper is the map you draw
 by hand while you play.
 
-![Zork I (Complete) in Relax layout](docs/images/relax-zork.png)
-
 ## Controls
 
 | Gesture | Action |
@@ -35,10 +33,12 @@ Two layouts, one tap each, fully deterministic:
   −18%, edge crossings −49% vs Tidy.
 
 Both are non-destructive (undo stack) and idempotent (a second tap does
-nothing). Tidy — the same map, compass-true grid (compare with the Relax
-view above; the green highlight is a selected room):
+nothing). Same map, same data — only the layout differs (the green highlight
+is a selected room):
 
-![Tidy layout](docs/images/tidy-zork.png)
+| Tidy (grid, compass-true) | Relax (spring relaxation) |
+|---|---|
+| ![Tidy layout](docs/images/tidy-zork.png) | ![Relax layout](docs/images/relax-zork.png) |
 
 ## The Zork I reference map
 
