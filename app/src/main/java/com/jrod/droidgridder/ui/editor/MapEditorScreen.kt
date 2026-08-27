@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,13 +33,13 @@ import com.jrod.droidgridder.data.MapStore
 import com.jrod.droidgridder.model.Pos
 
 /**
- * Full-screen editor for one map. Hosted directly from MainActivity until
- * real navigation lands (Task 8). Task 6 adds the top bar (map name + undo),
- * the redirect banner, and the room bottom sheet.
+ * Full-screen editor for one map. Hosted in the [com.jrod.droidgridder.ui.navigation.AppNav]
+ * editor route; the top-bar back arrow pops back to the list (AppNav owns the
+ * NavController, so [onBack] is a callback — navigation 2.8 has no LocalNavController).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapEditorScreen(store: MapStore, mapId: String) {
+fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
     val viewModel: MapEditorViewModel = viewModel(
         key = mapId,
         factory = viewModelFactory { initializer { MapEditorViewModel(mapId, store) } },
@@ -50,6 +53,11 @@ fun MapEditorScreen(store: MapStore, mapId: String) {
     Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
                 title = { Text(state.map?.name?.ifBlank { null } ?: "Droid-Gridder") },
                 actions = {
                     IconButton(onClick = { viewModel.autoTidy() }) {

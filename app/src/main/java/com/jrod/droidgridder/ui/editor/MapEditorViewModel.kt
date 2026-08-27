@@ -99,13 +99,17 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
     /**
      * Re-lay out every room via the pure [tidyLayout] (root pinned at the origin,
      * the rest re-placed via BFS along direction offsets). It is a real map
-     * replacement, so it pushes the single-step undo slot and persists.
+     * replacement, so it pushes the single-step undo slot and persists. A no-op
+     * tidy (already-tidy or empty map) returns without pushing undo or re-saving,
+     * so it cannot swallow the user's previous mutation from the undo slot.
      */
     fun autoTidy() {
         val s = _uiState.value
         val map = s.map ?: return
-        previousMap = map
         val newMap = tidyLayout(map)
+        // ponytail: data-class equality is the no-op test; store.save would also burn updatedAt.
+        if (newMap == map) return
+        previousMap = map
         store.save(newMap)
         _uiState.value = s.copy(map = newMap, canUndo = true)
     }

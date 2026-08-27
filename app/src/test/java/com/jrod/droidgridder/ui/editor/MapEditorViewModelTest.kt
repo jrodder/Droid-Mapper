@@ -6,6 +6,7 @@ import com.jrod.droidgridder.model.Exit
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.Room
+import com.jrod.droidgridder.model.autoTidy as tidyLayout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -13,6 +14,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
 
 class MapEditorViewModelTest {
     @get:Rule
@@ -322,6 +324,28 @@ class MapEditorViewModelTest {
         vm.go(Direction.N)
 
         assertFalse(vm.uiState.value.canUndo)
+    }
+
+    @Test
+    fun `autoTidy on an already-tidy map pushes no undo step and re-saves nothing`() {
+        val m = baseMap(Room(id = "a", x = 5f, y = 6f), Room(id = "b", x = 100f, y = 200f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(tidyLayout(m))) // already at the tidy fixpoint
+        val file = File(tmp.root, "m1.json")
+        val before = file.readText()
+
+        vm.autoTidy()
+
+        val s = vm.uiState.value
+        assertFalse(s.canUndo) // no undo step pushed, so the user's previous mutation survives
+        assertEquals(before, file.readText()) // nothing re-saved (no updatedAt burn)
+
+        // and a real mutation afterwards is still undoable in one step
+        vm.select("a")
+        vm.updateRoomText("a", "Renamed", "", "")
+        vm.undo()
+        assertFalse(vm.uiState.value.canUndo)
+        assertEquals("", vm.uiState.value.map!!.rooms.single { it.id == "a" }.name)
     }
 
     @Test
