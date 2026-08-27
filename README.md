@@ -35,7 +35,10 @@ Two layouts, one tap each, fully deterministic:
   −18%, edge crossings −49% vs Tidy.
 
 Both are non-destructive (undo stack) and idempotent (a second tap does
-nothing).
+nothing). Tidy — the same map, compass-true grid (compare with the Relax
+view above; the green highlight is a selected room):
+
+![Tidy layout](docs/images/tidy-zork.png)
 
 ## The Zork I reference map
 
