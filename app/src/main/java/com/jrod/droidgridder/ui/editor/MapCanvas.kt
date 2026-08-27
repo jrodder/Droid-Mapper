@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.Pos
-import kotlin.math.abs
 
 /**
  * World<->screen transform for the editor canvas. The fields are snapshot state so
@@ -144,6 +142,7 @@ fun MapCanvas(
                 center = Offset(mid.x + (t.x - s.x) * 0.18f, mid.y + (t.y - s.y) * 0.18f),
                 fontSize = exitFont,
                 color = exitLabelColor,
+                bg = roomFill,
             )
         }
 
@@ -192,14 +191,23 @@ fun MapCanvas(
     }
 }
 
-/** Point-in-box hit test in world space; top-most (last) room wins on overlap. */
+/** Nearest-room hit test: a room wins if its center is within GRID_STEP/2 of the tap (world space). */
 private fun roomAt(map: MapFile?, camera: CameraState, screen: Offset): String? {
     val rooms = map?.rooms ?: return null
     val world = camera.screenToWorld(screen)
-    val half = ROOM_BOX_SIZE / 2f
-    return rooms.lastOrNull {
-        abs(world.x - it.x) <= half && abs(world.y - it.y) <= half
-    }?.id
+    val maxSq = (GRID_STEP / 2f) * (GRID_STEP / 2f)
+    var bestId: String? = null
+    var bestSq = maxSq
+    for (room in rooms) {
+        val dx = world.x - room.x
+        val dy = world.y - room.y
+        val d2 = dx * dx + dy * dy
+        if (d2 <= bestSq) {
+            bestSq = d2
+            bestId = room.id
+        }
+    }
+    return bestId
 }
 
 private fun DrawScope.drawCenteredLabel(
@@ -208,8 +216,19 @@ private fun DrawScope.drawCenteredLabel(
     center: Offset,
     fontSize: TextUnit,
     color: Color,
+    bg: Color,
 ) {
     val layout = textMeasurer.measure(text = text, style = TextStyle(fontSize = fontSize))
+    // Filled pill keeps the direction label readable over room names and exit lines.
+    val hPad = layout.size.height * 0.45f
+    val vPad = layout.size.height * 0.25f
+    val pill = Rect(
+        left = center.x - layout.size.width / 2f - hPad,
+        top = center.y - layout.size.height / 2f - vPad,
+        right = center.x + layout.size.width / 2f + hPad,
+        bottom = center.y + layout.size.height / 2f + vPad,
+    )
+    drawRoundRect(color = bg, topLeft = pill.topLeft, size = pill.size, cornerRadius = CornerRadius(pill.height / 2f))
     drawText(
         layout,
         color = color,
