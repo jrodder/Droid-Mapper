@@ -40,17 +40,14 @@ import com.jrod.droidgridder.data.MapStore
 import com.jrod.droidgridder.data.encodeMap
 import com.jrod.droidgridder.model.MapFile
 import java.io.File
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
-private val updatedFormat: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("MMM d, yyyy, HH:mm", Locale.getDefault())
-
-/** "Updated" line for a list row. */
+// ponytail: SimpleDateFormat (API 1) instead of java.time — java.time needs API 26 at runtime and
+// crashes on API 24/25 devices (this is the app's start screen); one instance per call, list is tiny.
 private fun formatUpdated(millis: Long): String =
-    Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).format(updatedFormat)
+    SimpleDateFormat("MMM d, yyyy, HH:mm", Locale.getDefault()).format(Date(millis))
 
 /**
  * Share [map] as JSON: write it under filesDir/exports (sanitized name) and fire
