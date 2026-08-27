@@ -3,6 +3,7 @@ package com.jrod.droidgridder.ui.editor
 import com.jrod.droidgridder.data.MapStore
 import com.jrod.droidgridder.model.Direction
 import com.jrod.droidgridder.model.Exit
+import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.Room
 import org.junit.Assert.assertEquals
@@ -320,6 +321,28 @@ class MapEditorViewModelTest {
         vm.openWheel("a")
         vm.go(Direction.N)
 
+        assertFalse(vm.uiState.value.canUndo)
+    }
+
+    @Test
+    fun `autoTidy re-lays-out rooms, saves it, and pushes one undo step`() {
+        val m = baseMap(Room(id = "a", x = 5f, y = 6f), Room(id = "b", x = 100f, y = 200f))
+            .copy(exits = listOf(Exit("e1", "a", Direction.E, "b"), Exit("e2", "b", Direction.W, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.autoTidy()
+
+        val s = vm.uiState.value
+        val byId = s.map!!.rooms.associateBy { it.id }
+        assertEquals(0f, byId["a"]!!.x, 0.001f) // root pinned at the origin
+        assertEquals(0f, byId["a"]!!.y, 0.001f)
+        assertEquals(GRID_STEP, byId["b"]!!.x, 0.001f) // re-placed along the E exit
+        assertTrue(s.canUndo) // tidy is a real map replacement -> undo step
+        assertEquals(GRID_STEP, MapStore(tmp.root).load("m1")!!.rooms.single { it.id == "b" }.x, 0.001f)
+
+        vm.undo()
+        val reverted = vm.uiState.value.map!!.rooms.associateBy { it.id }
+        assertEquals(5f, reverted["a"]!!.x, 0.001f) // undo reverts the positions
+        assertEquals(200f, reverted["b"]!!.y, 0.001f)
         assertFalse(vm.uiState.value.canUndo)
     }
 }

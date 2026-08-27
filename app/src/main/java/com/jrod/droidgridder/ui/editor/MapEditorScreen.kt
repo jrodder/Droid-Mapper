@@ -45,13 +45,16 @@ fun MapEditorScreen(store: MapStore, mapId: String) {
     val camera = remember { CameraState() }
     val centered = remember { mutableStateOf(false) }
 
-    // ponytail: text "Undo" action — no undo glyph in material-icons-core, and the
-    // icons-extended artifact is not worth pulling in for one icon (Task 7+ may revisit).
+    // ponytail: text "Undo"/"Tidy" actions — no glyphs for either in material-icons-core, and
+    // the icons-extended artifact is not worth pulling in for two text buttons (Task 8+ may revisit).
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(state.map?.name?.ifBlank { null } ?: "Droid-Gridder") },
                 actions = {
+                    IconButton(onClick = { viewModel.autoTidy() }) {
+                        Text("Tidy", style = MaterialTheme.typography.labelLarge)
+                    }
                     IconButton(onClick = { viewModel.undo() }, enabled = state.canUndo) {
                         Text("Undo", style = MaterialTheme.typography.labelLarge)
                     }
@@ -95,14 +98,14 @@ fun MapEditorScreen(store: MapStore, mapId: String) {
                     }
                 },
                 // long-press room opens the wheel — adb-reliable alternate to double-tap
-            onLongPressRoom = { id ->
-                when {
-                    state.redirectMode != null -> viewModel.completeRedirect(id)
-                    state.linkMode != null -> viewModel.completeLink(id)
-                    else -> viewModel.openWheel(id)
-                }
-            },
-            onTapEmpty = {
+                onLongPressRoom = { id ->
+                    when {
+                        state.redirectMode != null -> viewModel.completeRedirect(id)
+                        state.linkMode != null -> viewModel.completeLink(id)
+                        else -> viewModel.openWheel(id)
+                    }
+                },
+                onTapEmpty = {
                     when {
                         state.redirectMode != null -> viewModel.completeRedirect(null)
                         state.linkMode != null -> viewModel.completeLink(null)

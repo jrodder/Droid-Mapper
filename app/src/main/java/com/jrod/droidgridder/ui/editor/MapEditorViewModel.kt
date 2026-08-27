@@ -7,6 +7,7 @@ import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.deleteExit as removeExit
 import com.jrod.droidgridder.model.deleteRoom as removeRoom
 import com.jrod.droidgridder.model.go as goRoom
+import com.jrod.droidgridder.model.autoTidy as tidyLayout
 import com.jrod.droidgridder.model.linkToExisting
 import com.jrod.droidgridder.model.redirectExit as repointExit
 import com.jrod.droidgridder.model.updateRoomText as setRoomText
@@ -93,6 +94,20 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             wheelForRoomId = null,
             canUndo = true,
         )
+    }
+
+    /**
+     * Re-lay out every room via the pure [tidyLayout] (root pinned at the origin,
+     * the rest re-placed via BFS along direction offsets). It is a real map
+     * replacement, so it pushes the single-step undo slot and persists.
+     */
+    fun autoTidy() {
+        val s = _uiState.value
+        val map = s.map ?: return
+        previousMap = map
+        val newMap = tidyLayout(map)
+        store.save(newMap)
+        _uiState.value = s.copy(map = newMap, canUndo = true)
     }
 
     /** Enter link mode from the wheel: remember direction and the wheel's source room. */

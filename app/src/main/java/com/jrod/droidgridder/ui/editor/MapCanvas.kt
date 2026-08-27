@@ -1,13 +1,18 @@
 package com.jrod.droidgridder.ui.editor
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -75,6 +80,9 @@ class CameraState {
 private val ROOM_BOX_SIZE = GRID_STEP * 0.7f
 private const val ROOM_BOX_RADIUS = 12f
 
+/** Animated per-room world position plus first-draw pop scale (Task 7). */
+private data class RoomAnim(val x: Float, val y: Float, val pop: Float)
+
 /**
  * Renders the room graph and handles pan/zoom/tap gestures. Tap callbacks receive
  * the hit-tested room id (or an empty-canvas signal); wiring them to editor state
@@ -99,6 +107,29 @@ fun MapCanvas(
     val exitLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val roomNameColor = MaterialTheme.colorScheme.onSurface
     val textMeasurer = rememberTextMeasurer()
+
+    // Task 7: per-room animation state keyed by room id (stable slots), so re-layouts
+    // (go-new, autoTidy, undo) glide the box to its new position; `scale` starts at 0
+    // on a room's first composition -> new rooms pop in. animateFloatAsState has no
+    // initial-value parameter in this compose version, so Animatable carries both.
+    // ponytail: stale entries for deleted rooms linger; bounded by rooms seen this session.
+    val animatedRooms = remember { mutableStateMapOf<String, RoomAnim>() }
+    map?.rooms?.forEach { room ->
+        key(room.id) {
+            val x = remember { Animatable(room.x) }
+            val y = remember { Animatable(room.y) }
+            val scale = remember { Animatable(0f) }
+            LaunchedEffect(room.x, room.y) {
+                x.animateTo(room.x)
+                y.animateTo(room.y)
+            }
+            LaunchedEffect(Unit) {
+                scale.snapTo(0f)
+                scale.animateTo(1f)
+            }
+            animatedRooms[room.id] = RoomAnim(x.value, y.value, scale.value)
+        }
+    }
 
     Canvas(
         modifier = Modifier
@@ -134,12 +165,17 @@ fun MapCanvas(
 
         // Exits first: center-to-center lines with the direction label near the
         // midpoint, nudged toward the target side so opposite edges don't overlap.
+        // Lines track the animated positions so connectors follow rooms mid-glide.
+        // ponytail: no connector draw-in stroke (Task 7 optional) — per-exit animation
+        // state for little visual gain.
         for (exit in map.exits) {
             val from = roomsById[exit.from] ?: continue
             val to = roomsById[exit.to] ?: continue
             if (from.id == to.id) continue
-            val s = camera.worldToScreen(Pos(from.x, from.y))
-            val t = camera.worldToScreen(Pos(to.x, to.y))
+            val a = animatedRooms[from.id]?.let { Pos(it.x, it.y) } ?: Pos(from.x, from.y)
+            val b = animatedRooms[to.id]?.let { Pos(it.x, it.y) } ?: Pos(to.x, to.y)
+            val s = camera.worldToScreen(a)
+            val t = camera.worldToScreen(b)
             drawLine(color = exitColor, start = s, end = t, strokeWidth = 2f)
             val mid = Offset((s.x + t.x) / 2f, (s.y + t.y) / 2f)
             drawCenteredLabel(
@@ -152,13 +188,15 @@ fun MapCanvas(
             )
         }
 
-        val boxSize = ROOM_BOX_SIZE * camera.scale
-        val half = boxSize / 2f
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
         val nameFont = ((13f * camera.scale).coerceIn(9f, 32f)).sp
 
         for (room in map.rooms) {
-            val c = camera.worldToScreen(Pos(room.x, room.y))
+            // Animated position (Task 7): re-layouts glide; `pop` scales new rooms in.
+            val anim = animatedRooms[room.id] ?: RoomAnim(room.x, room.y, 1f)
+            val c = camera.worldToScreen(Pos(anim.x, anim.y))
+            val boxSize = ROOM_BOX_SIZE * camera.scale * anim.pop
+            val half = boxSize / 2f
             val rect = Rect(c.x - half, c.y - half, c.x + half, c.y + half)
             drawRoundRect(
                 color = roomFill, topLeft = rect.topLeft, size = rect.size, cornerRadius = radius,
@@ -187,6 +225,7 @@ fun MapCanvas(
                 drawText(
                     layout,
                     color = roomNameColor,
+                    alpha = anim.pop,
                     topLeft = Offset(
                         c.x - layout.size.width / 2f,
                         rect.bottom + nameFont.value * density * 0.5f,
