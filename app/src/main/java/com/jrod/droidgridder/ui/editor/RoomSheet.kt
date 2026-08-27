@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.jrod.droidgridder.model.MapFile
@@ -153,7 +154,11 @@ fun RoomSheet(
 
 /**
  * Draft field that expands and word-wraps with its content (36–240 dp tall),
- * committing on focus loss or the IME done action.
+ * committing on focus loss or the IME done action. v1.2 ruling K: a commit hides
+ * the keyboard via focusManager.clearFocus() — in the pinned compose-ui (BOM
+ * 2025.01.00 → 1.7.6) that is the API behind the newer clearFocus(hideIme = true);
+ * a text field losing focus hides the IME by default (hideImeOnFocusLost). The
+ * sheet stays open.
  */
 @Composable
 private fun DraftField(
@@ -163,18 +168,25 @@ private fun DraftField(
     onCommit: () -> Unit,
 ) {
     var focused by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onCommit() }),
+        keyboardActions = KeyboardActions(onDone = {
+            onCommit()
+            focusManager.clearFocus()
+        }),
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 36.dp, max = 240.dp)
             .padding(vertical = 4.dp)
             .onFocusChanged { fs ->
-                if (focused && !fs.isFocused) onCommit()
+                if (focused && !fs.isFocused) {
+                    onCommit()
+                    focusManager.clearFocus() // focus-loss commit also hides the IME
+                }
                 focused = fs.isFocused
             },
     )

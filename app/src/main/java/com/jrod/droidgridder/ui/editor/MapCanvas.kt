@@ -19,15 +19,11 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
@@ -103,7 +99,6 @@ fun MapCanvas(
     val currentColor = MaterialTheme.colorScheme.primary
     val selectedColor = MaterialTheme.colorScheme.secondary
     val exitColor = MaterialTheme.colorScheme.outline
-    val exitLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val roomNameColor = MaterialTheme.colorScheme.onSurface
     val textMeasurer = rememberTextMeasurer()
 
@@ -160,10 +155,9 @@ fun MapCanvas(
         if (map == null) return@Canvas
 
         val roomsById = map.rooms.associateBy { it.id }
-        val exitFont = ((11f * camera.scale).coerceIn(7f, 28f)).sp
 
-        // Exits first: center-to-center lines with the direction label near the
-        // midpoint, nudged toward the target side so opposite edges don't overlap.
+        // Exits first: plain center-to-center lines (v1.2 ruling I: no direction labels on the
+        // canvas; the direction wheel keeps the N/E/S/W affordance).
         // Lines track the animated positions so connectors follow rooms mid-glide.
         // ponytail: no connector draw-in stroke (Task 7 optional) — per-exit animation
         // state for little visual gain.
@@ -176,15 +170,6 @@ fun MapCanvas(
             val s = camera.worldToScreen(a)
             val t = camera.worldToScreen(b)
             drawLine(color = exitColor, start = s, end = t, strokeWidth = 2f)
-            val mid = Offset((s.x + t.x) / 2f, (s.y + t.y) / 2f)
-            drawCenteredLabel(
-                textMeasurer = textMeasurer,
-                text = exit.direction.name,
-                center = Offset(mid.x + (t.x - s.x) * 0.18f, mid.y + (t.y - s.y) * 0.18f),
-                fontSize = exitFont,
-                color = exitLabelColor,
-                bg = roomFill,
-            )
         }
 
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
@@ -252,30 +237,4 @@ private fun roomAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
         }
     }
     return bestId
-}
-
-private fun DrawScope.drawCenteredLabel(
-    textMeasurer: TextMeasurer,
-    text: String,
-    center: Offset,
-    fontSize: TextUnit,
-    color: Color,
-    bg: Color,
-) {
-    val layout = textMeasurer.measure(text = text, style = TextStyle(fontSize = fontSize))
-    // Filled pill keeps the direction label readable over room names and exit lines.
-    val hPad = layout.size.height * 0.45f
-    val vPad = layout.size.height * 0.25f
-    val pill = Rect(
-        left = center.x - layout.size.width / 2f - hPad,
-        top = center.y - layout.size.height / 2f - vPad,
-        right = center.x + layout.size.width / 2f + hPad,
-        bottom = center.y + layout.size.height / 2f + vPad,
-    )
-    drawRoundRect(color = bg, topLeft = pill.topLeft, size = pill.size, cornerRadius = CornerRadius(pill.height / 2f))
-    drawText(
-        layout,
-        color = color,
-        topLeft = Offset(center.x - layout.size.width / 2f, center.y - layout.size.height / 2f),
-    )
 }
