@@ -23,11 +23,21 @@ data class RedirectMode(
     val fromRoomId: String,
 )
 
+/**
+ * Room interaction mode (v1.1): [Detail] is the full-screen read-only window,
+ * [Edit] is the bottom edit sheet. The two are mutually exclusive via this field;
+ * a null value means neither is shown (plain canvas, wheel, or armed mode).
+ */
+enum class RoomMode { Detail, Edit }
+
 data class MapEditorUiState(
     val map: MapFile? = null,
     val currentRoomId: String? = null,
     val selectedRoomId: String? = null,
+    val roomMode: RoomMode? = null,
     val wheelForRoomId: String? = null,
+    /** Set while the wheel was opened from the edit sheet; wheel-close paths reopen it. */
+    val wheelReturnToEdit: Boolean = false,
     val linkMode: Direction? = null,
     val linkSourceRoomId: String? = null,
     val redirectMode: RedirectMode? = null,
@@ -55,9 +65,11 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
     }
 
     /**
-     * Select a room (also makes it current); `null` clears the selection.
-     * A non-null selection also closes any open wheel, making the wheel modal
-     * for room taps so it can never stay open over a stale source room.
+     * Single-tap room path: select a room (also makes it current) and open the
+     * read-only detail window (roomMode = Detail). `null` (single-tap empty canvas)
+     * clears the selection and the room mode; the current room and any open wheel
+     * are kept. A non-null selection also closes any open wheel, making the wheel
+     * modal for room taps so it can never stay open over a stale source room.
      */
     fun select(roomId: String?) {
         _uiState.update { s ->
@@ -65,17 +77,66 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
                 selectedRoomId = roomId,
                 currentRoomId = roomId ?: s.currentRoomId,
                 wheelForRoomId = if (roomId != null) null else s.wheelForRoomId,
+                roomMode = if (roomId != null) RoomMode.Detail else null,
+                wheelReturnToEdit = false,
             )
         }
     }
 
+    /** Double-tap room path: open the edit sheet for [roomId] (selected + current, wheel closed). */
+    fun openRoomEdit(roomId: String) {
+        _uiState.update { s ->
+            s.copy(
+                selectedRoomId = roomId,
+                currentRoomId = roomId,
+                wheelForRoomId = null,
+                roomMode = RoomMode.Edit,
+                wheelReturnToEdit = false,
+            )
+        }
+    }
+
+    /** Close the read-only detail window; the selection and current room are kept. */
+    fun closeDetail() {
+        _uiState.update { it.copy(roomMode = null) }
+    }
+
     fun openWheel(roomId: String) {
-        _uiState.update { it.copy(wheelForRoomId = roomId, currentRoomId = roomId) }
+        _uiState.update {
+            it.copy(wheelForRoomId = roomId, currentRoomId = roomId, roomMode = null, wheelReturnToEdit = false)
+        }
+    }
+
+    /**
+     * The sheet's "Manage exits" action: open the wheel for the currently selected
+     * room, close the sheet, and set [wheelReturnToEdit] so the wheel's close paths
+     * (closeWheel / go) reopen the edit sheet for the same room.
+     */
+    fun openWheelFromEdit() {
+        val s = _uiState.value
+        val roomId = s.selectedRoomId ?: return
+        _uiState.value = s.copy(
+            wheelForRoomId = roomId,
+            currentRoomId = roomId,
+            roomMode = null,
+            wheelReturnToEdit = true,
+        )
     }
 
     fun closeWheel() {
-        _uiState.update { it.copy(wheelForRoomId = null) }
+        _uiState.update { applyWheelReturn(it).copy(wheelForRoomId = null) }
     }
+
+    /**
+     * Apply the sheet-originated wheel return: if [wheelReturnToEdit] is set, reopen
+     * the edit sheet (roomMode = Edit) on the wheel's source room. Always clears the flag.
+     */
+    private fun applyWheelReturn(s: MapEditorUiState): MapEditorUiState =
+        if (s.wheelReturnToEdit && s.wheelForRoomId != null) {
+            s.copy(roomMode = RoomMode.Edit, selectedRoomId = s.wheelForRoomId, wheelReturnToEdit = false)
+        } else {
+            s.copy(wheelReturnToEdit = false)
+        }
 
     /**
      * Walk [direction] from the current room. If the exit already exists, follow it
@@ -89,14 +150,14 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         val fromId = s.currentRoomId ?: return
         val existing = map.exits.firstOrNull { it.from == fromId && it.direction == direction }
         if (existing != null) {
-            _uiState.value = s.copy(currentRoomId = existing.to, wheelForRoomId = null)
+            _uiState.value = applyWheelReturn(s).copy(currentRoomId = existing.to, wheelForRoomId = null)
             return
         }
         val newMap = goRoom(direction, fromId, map)
         previousMap = map
         store.save(newMap)
         // ponytail: pure go() appends the new room, so the destination is the last one.
-        _uiState.value = s.copy(
+        _uiState.value = applyWheelReturn(s).copy(
             map = newMap,
             currentRoomId = newMap.rooms.last().id,
             wheelForRoomId = null,
@@ -129,6 +190,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             wheelForRoomId = null,
             linkMode = direction,
             linkSourceRoomId = s.currentRoomId,
+            wheelReturnToEdit = false, // the link outcome (not a wheel close) decides the sheet now
         )
     }
 
@@ -156,6 +218,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             linkSourceRoomId = null,
             selectedRoomId = targetRoomId,
             currentRoomId = targetRoomId,
+            roomMode = RoomMode.Edit, // the tapped room opens in the edit sheet
             canUndo = true,
         )
     }
@@ -192,6 +255,8 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             selectedRoomId = s.selectedRoomId?.takeIf { it != roomId },
             currentRoomId = s.currentRoomId?.takeIf { it != roomId },
             wheelForRoomId = s.wheelForRoomId?.takeIf { it != roomId },
+            // the window/sheet cannot stay up for a room that no longer exists
+            roomMode = s.roomMode?.takeIf { s.selectedRoomId != roomId },
         )
     }
 
@@ -212,6 +277,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         val exit = s.map?.exits?.firstOrNull { it.id == exitId } ?: return
         _uiState.value = s.copy(
             selectedRoomId = null,
+            roomMode = null,
             redirectMode = RedirectMode(exitId = exitId, direction = exit.direction, fromRoomId = exit.from),
         )
     }
@@ -241,6 +307,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             redirectMode = null,
             // Reopen the sheet on the source room so the repointed row is visible.
             selectedRoomId = r.fromRoomId,
+            roomMode = RoomMode.Edit,
         )
     }
 
@@ -255,15 +322,18 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         store.save(prev)
         val roomIds = prev.rooms.mapTo(HashSet()) { it.id }
         val exitIds = prev.exits.mapTo(HashSet()) { it.id }
+        val restoredSelected = s.selectedRoomId?.takeIf { it in roomIds }
         _uiState.value = s.copy(
             map = prev,
             canUndo = false,
-            selectedRoomId = s.selectedRoomId?.takeIf { it in roomIds },
+            selectedRoomId = restoredSelected,
             currentRoomId = s.currentRoomId?.takeIf { it in roomIds },
             wheelForRoomId = s.wheelForRoomId?.takeIf { it in roomIds },
             linkMode = s.linkMode?.takeIf { s.linkSourceRoomId in roomIds },
             linkSourceRoomId = s.linkSourceRoomId?.takeIf { it in roomIds },
             redirectMode = s.redirectMode?.takeIf { it.fromRoomId in roomIds && it.exitId in exitIds },
+            // a detail/edit window cannot stay open if the restored map lost its room
+            roomMode = if (restoredSelected != null) s.roomMode else null,
         )
         previousMap = null
     }

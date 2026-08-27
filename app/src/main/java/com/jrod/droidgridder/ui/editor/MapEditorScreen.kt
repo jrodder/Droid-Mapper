@@ -98,19 +98,11 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                     }
                 },
                 onDoubleTapRoom = { id ->
-                    // In link/redirect mode a double-tap completes the pending mode instead of opening the wheel.
+                    // In link/redirect mode a double-tap completes the pending mode instead of opening the edit sheet.
                     when {
                         state.redirectMode != null -> viewModel.completeRedirect(id)
                         state.linkMode != null -> viewModel.completeLink(id)
-                        else -> viewModel.openWheel(id)
-                    }
-                },
-                // long-press room opens the wheel — adb-reliable alternate to double-tap
-                onLongPressRoom = { id ->
-                    when {
-                        state.redirectMode != null -> viewModel.completeRedirect(id)
-                        state.linkMode != null -> viewModel.completeLink(id)
-                        else -> viewModel.openWheel(id)
+                        else -> viewModel.openRoomEdit(id)
                     }
                 },
                 onTapEmpty = {
@@ -157,22 +149,30 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                     )
                 }
             }
-            // Room sheet: shown while a room is selected and no wheel/link/redirect mode is armed.
+            // Room windows (v1.1): the edit sheet and the read-only detail window are
+            // mutually exclusive via roomMode; the detail window sits above the sheet in
+            // composition order per the interaction ruling.
             val selectedRoom = state.map?.rooms?.firstOrNull { it.id == state.selectedRoomId }
-            if (selectedRoom != null && state.wheelForRoomId == null &&
-                state.linkMode == null && state.redirectMode == null
-            ) {
+            if (state.roomMode == RoomMode.Edit && selectedRoom != null) {
                 key(selectedRoom.id) {
                     RoomSheet(
                         room = selectedRoom,
                         map = state.map!!,
                         onCommitText = { n, d, no -> viewModel.updateRoomText(selectedRoom.id, n, d, no) },
+                        onManageExits = { viewModel.openWheelFromEdit() },
                         onDeleteRoom = { viewModel.deleteRoom(selectedRoom.id) },
                         onDeleteExit = viewModel::deleteExit,
                         onRedirectExit = viewModel::startRedirect,
                         onDismiss = { viewModel.select(null) },
                     )
                 }
+            }
+            if (state.roomMode == RoomMode.Detail && selectedRoom != null) {
+                RoomDetailWindow(
+                    room = selectedRoom,
+                    map = state.map!!,
+                    onClose = { viewModel.closeDetail() },
+                )
             }
         }
     }

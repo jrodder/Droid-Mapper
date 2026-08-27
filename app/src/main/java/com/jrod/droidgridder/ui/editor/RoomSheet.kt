@@ -3,6 +3,7 @@ package com.jrod.droidgridder.ui.editor
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -36,8 +37,9 @@ import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.Room
 
 /**
- * Bottom sheet for the selected room: editable name/description/notes (committed
- * on focus loss or IME action, one commit per editing session) plus per-exit
+ * Bottom sheet for the selected room (edit mode): editable name/description/notes
+ * that expand and word-wrap (committed on focus loss or IME action, one commit per
+ * editing session), a "Manage exits" entry into the direction wheel, plus per-exit
  * delete/redirect actions and a delete-room confirm.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,6 +48,7 @@ fun RoomSheet(
     room: Room,
     map: MapFile,
     onCommitText: (name: String, description: String, notes: String) -> Unit,
+    onManageExits: () -> Unit,
     onDeleteRoom: () -> Unit,
     onDeleteExit: (exitId: String) -> Unit,
     onRedirectExit: (exitId: String) -> Unit,
@@ -70,6 +73,10 @@ fun RoomSheet(
         }
     }
 
+    // ponytail: pinned material3 (BOM 2025.01.00 → 1.3.1) predates the sheet's
+    // windowSizeParams/bottomSheetWindowSize API (material3 1.4.0); the default
+    // content-driven height already grows with the expanding fields up to full
+    // screen height, so no size property is needed.
     ModalBottomSheet(onDismissRequest = { sheetShown = false; onDismiss() }) {
         Column(
             modifier = Modifier
@@ -77,6 +84,15 @@ fun RoomSheet(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
+            Button(
+                onClick = onManageExits,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+            ) {
+                Text("Manage exits")
+            }
+
             DraftField("Name", name, { name = it }, { onCommitText(name, description, notes) })
             DraftField("Description", description, { description = it }, { onCommitText(name, description, notes) })
             DraftField("Notes", notes, { notes = it }, { onCommitText(name, description, notes) })
@@ -135,7 +151,10 @@ fun RoomSheet(
     }
 }
 
-/** Single-line draft field that commits on focus loss or the IME done action. */
+/**
+ * Draft field that expands and word-wraps with its content (36–240 dp tall),
+ * committing on focus loss or the IME done action.
+ */
 @Composable
 private fun DraftField(
     label: String,
@@ -148,11 +167,11 @@ private fun DraftField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onCommit() }),
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = 36.dp, max = 240.dp)
             .padding(vertical = 4.dp)
             .onFocusChanged { fs ->
                 if (focused && !fs.isFocused) onCommit()
