@@ -1,8 +1,9 @@
 # Droid Mapper
 
 A manual map tool for Infocom-style text adventures. Draw your game world as
-rooms and 10-direction passages (N/S/E/W/NE/NW/SE/SW/UP/DOWN), then let it lay
-the map out so you can actually see it.
+rooms and passages in 12 directions — the 8 compass points, UP/DOWN for
+vertical movement, and IN/OUT for contained spaces ("enter the shack").
+Then let it lay the map out so you can actually see it.
 
 Built for the classic problem: you're deep in a maze with twisty little
 passages and you have no idea where you are. Droid Mapper is the map you draw
@@ -16,10 +17,13 @@ by hand while you play.
 | Pinch | Zoom |
 | Tap a room | Read-only detail window (tap anywhere to dismiss) |
 | Double-tap a room | Edit (name, description, notes) + direction wheel |
-| Direction wheel | Attach a passage to an adjacent room in one of 10 directions |
+| Direction wheel | Attach a passage to an adjacent room in one of 12 directions |
 
 A direction with no exit is *blocked* by design (same as the game): the wheel
-shows it greyed and tapping it does nothing.
+shows it greyed and tapping it does nothing. IN/OUT rooms are *contained*
+spaces: they hug the room they belong to instead of sitting on a compass
+bearing — Tidy parks them in the nearest free neighbor slot, and Relax pulls
+them into contact with their parent.
 
 ## Layouts
 
@@ -51,10 +55,14 @@ with the game's actual exit semantics:
   authentic maze self-loops are dropped (the app has no loop concept)
 - the three door objects (trap door, kitchen window, grating) resolve to the
   opposite room
-- `IN`/`OUT` map to UP/DOWN
+- `IN`/`OUT` declarations that merely repeat a compass exit to the same room
+  stay as compass exits (a note records the game's IN/OUT wording)
 
 It's not bundled into the APK — it's a reference layout to study what a
-complete adventure map looks like.
+complete adventure map looks like. The five genuine IN/OUT passages in Zork
+(cook, cyclops, Hades gate, mine entrance, timber/drafty) run *parallel* to a
+compass exit to the same room in the game ("west" and "in"), so the sample
+keeps them as compass edges with a note on each room.
 
 ## Building
 
@@ -86,5 +94,5 @@ the bare JVM (no Robolectric).
   is NP-hard). ~10% of passages may render on the far side of their declared
   compass direction, mostly at high-degree junctions.
 - No multi-floor concept: UP/DOWN are directions like the rest.
-- No import/export in the UI yet — maps are plain JSON files in
-  `files/maps/`.
+- There's no export button — maps are plain JSON files in `files/maps/`
+  (import *is* supported: paste map JSON from the map list).

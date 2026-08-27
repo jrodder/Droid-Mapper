@@ -5,8 +5,9 @@ import kotlin.math.sqrt
 /**
  * Pure force-directed ("spring") layout: relaxes the map's connections so
  * connected rooms settle near their compass-rest slot (one stride along the
- * exit direction) while unrelated rooms repel each other and a centering
- * gravity keeps the map compact. Seeded from the [autoTidy] layout, so the
+ * exit direction; IN/OUT rest at zero, so contained rooms hug their parent
+ * at the contact floor) while unrelated rooms repel each other and a
+ * centering gravity keeps the map compact. Seeded from the [autoTidy] layout, so the
  * result is deterministic (no randomness, fixed iteration count) and the same
  * input always yields the same output.
  *

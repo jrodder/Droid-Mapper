@@ -30,7 +30,7 @@ data class Exit(
     val to: String,
 )
 
-enum class Direction { N, S, E, W, NE, NW, SE, SW, UP, DOWN }
+enum class Direction { N, S, E, W, NE, NW, SE, SW, UP, DOWN, IN, OUT }
 
 data class Pos(val x: Float, val y: Float)
 

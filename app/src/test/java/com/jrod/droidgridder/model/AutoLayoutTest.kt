@@ -25,4 +25,18 @@ class AutoLayoutTest {
         val positions = out.rooms.map { Pos(it.x, it.y) }
         assertEquals(positions.size, positions.distinct().size)
     }
+
+    @Test fun `tidy places an IN room in the nearest free neighbor slot`() {
+        // A is root at origin; N and NE neighbor cells are taken by other rooms,
+        // so A's IN room must land on the next spiral slot (E).
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(Room("a"), Room("b"), Room("c"), Room("d")),
+            exits = listOf(Exit("1", "a", Direction.N, "b"),
+                           Exit("2", "a", Direction.NE, "c"),
+                           Exit("3", "a", Direction.IN, "d")))
+        val out = autoTidy(m)
+        val byId = out.rooms.associateBy { it.id }
+        val d = Pos(byId["d"]!!.x, byId["d"]!!.y)
+        assertEquals(Pos(GRID_STEP, 0f), d)
+    }
 }

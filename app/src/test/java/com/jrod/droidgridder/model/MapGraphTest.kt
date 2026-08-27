@@ -37,6 +37,34 @@ class MapGraphTest {
         assertEquals(m, go(Direction.E, "a", m))
     }
 
+    @Test fun `IN and OUT are opposites`() {
+        assertEquals(Direction.OUT, Direction.IN.opposite())
+        assertEquals(Direction.IN, Direction.OUT.opposite())
+    }
+
+    @Test fun `directionOffset for IN and OUT is the parent cell (zero)`() {
+        // ponytail: containment has no compass; rest vector zero means
+        // "same location", and freePosition's spiral picks the nearest free slot.
+        assertEquals(Pos(0f, 0f), directionOffset(Direction.IN, GRID_STEP))
+        assertEquals(Pos(0f, 0f), directionOffset(Direction.OUT, GRID_STEP))
+    }
+
+    @Test fun `freePosition IN takes the nearest free neighbor slot`() {
+        val occupied = listOf(Pos(0f, -GRID_STEP), Pos(GRID_STEP, -GRID_STEP)) // N, NE taken
+        assertEquals(Pos(GRID_STEP, 0f), freePosition(Pos(0f, 0f), Direction.IN, occupied))
+        // OUT mirrors the same containment placement
+        assertEquals(Pos(GRID_STEP, 0f), freePosition(Pos(0f, 0f), Direction.OUT, occupied))
+    }
+
+    @Test fun `go IN creates a room with a reverse OUT exit`() {
+        val out = go(Direction.IN, "a", map(room("a")))
+        assertEquals(2, out.rooms.size)
+        val inExit = out.exits.single { it.from == "a" && it.direction == Direction.IN }
+        val back = out.exits.single { it.from == inExit.to }
+        assertEquals(Direction.OUT, back.direction)
+        assertEquals("a", back.to)
+    }
+
     @Test fun `placeNewRoom nudges when a spot is occupied`() {
         val occupied = listOf(room("a"), room("b", 0f, -GRID_STEP))
         val pos = placeNewRoom(Direction.N, room("a"), occupied)

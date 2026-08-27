@@ -26,13 +26,14 @@ private val WHEEL_SIZE = 240.dp
 private val BUTTON_SIZE = 44.dp
 private val CARDINAL_PAD = 4.dp
 private val DIAGONAL_PAD = 28.dp
-private val UP_DOWN_SHIFT = 30.dp
+private val CENTER_SHIFT = 24.dp
 
 /**
- * Direction wheel overlay: eight compass buttons in a ring plus UP/DOWN in the
- * center, centered on [center] (screen px of the wheel room). A tap on a button
- * fires [onDirection]; a long-press fires [onLongPressDirection] (link mode).
- * Only the buttons consume input, so canvas gestures pass through everywhere else.
+ * Direction wheel overlay: eight compass buttons in a ring plus UP/DOWN/IN/OUT
+ * in a 2×2 cluster at the center, centered on [center] (screen px of the wheel
+ * room). A tap on a button fires [onDirection]; a long-press fires
+ * [onLongPressDirection] (link mode). Only the buttons consume input, so
+ * canvas gestures pass through everywhere else.
  */
 @Composable
 fun DirectionWheel(
@@ -53,8 +54,10 @@ fun DirectionWheel(
         wheelButton(Direction.NW, Modifier.align(Alignment.TopStart).padding(top = DIAGONAL_PAD, start = DIAGONAL_PAD), onDirection, onLongPressDirection)
         wheelButton(Direction.SE, Modifier.align(Alignment.BottomEnd).padding(bottom = DIAGONAL_PAD, end = DIAGONAL_PAD), onDirection, onLongPressDirection)
         wheelButton(Direction.SW, Modifier.align(Alignment.BottomStart).padding(bottom = DIAGONAL_PAD, start = DIAGONAL_PAD), onDirection, onLongPressDirection)
-        wheelButton(Direction.UP, Modifier.align(Alignment.Center).offset(y = -UP_DOWN_SHIFT), onDirection, onLongPressDirection)
-        wheelButton(Direction.DOWN, Modifier.align(Alignment.Center).offset(y = UP_DOWN_SHIFT), onDirection, onLongPressDirection)
+        wheelButton(Direction.UP, Modifier.align(Alignment.Center).offset(x = -CENTER_SHIFT, y = -CENTER_SHIFT), onDirection, onLongPressDirection)
+        wheelButton(Direction.DOWN, Modifier.align(Alignment.Center).offset(x = -CENTER_SHIFT, y = CENTER_SHIFT), onDirection, onLongPressDirection)
+        wheelButton(Direction.IN, Modifier.align(Alignment.Center).offset(x = CENTER_SHIFT, y = -CENTER_SHIFT), onDirection, onLongPressDirection)
+        wheelButton(Direction.OUT, Modifier.align(Alignment.Center).offset(x = CENTER_SHIFT, y = CENTER_SHIFT), onDirection, onLongPressDirection)
     }
 }
 

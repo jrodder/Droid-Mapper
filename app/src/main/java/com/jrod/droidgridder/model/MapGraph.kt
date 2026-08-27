@@ -8,6 +8,7 @@ fun Direction.opposite(): Direction = when (this) {
     Direction.NE -> Direction.SW; Direction.NW -> Direction.SE
     Direction.SE -> Direction.NW; Direction.SW -> Direction.NE
     Direction.UP -> Direction.DOWN; Direction.DOWN -> Direction.UP
+    Direction.IN -> Direction.OUT; Direction.OUT -> Direction.IN
 }
 
 fun directionOffset(d: Direction, stride: Float = GRID_STEP): Pos = when (d) {
@@ -16,18 +17,45 @@ fun directionOffset(d: Direction, stride: Float = GRID_STEP): Pos = when (d) {
     Direction.NE -> Pos(stride, -stride); Direction.NW -> Pos(-stride, -stride)
     Direction.SE -> Pos(stride, stride); Direction.SW -> Pos(-stride, stride)
     Direction.UP -> Pos(0f, -stride * 2f); Direction.DOWN -> Pos(0f, stride * 2f)
+    // ponytail: containment has no compass — rest vector zero means "same
+    // location"; freePosition's spiral below picks the nearest free slot.
+    Direction.IN, Direction.OUT -> Pos(0f, 0f)
 }
 
 private fun Pos.isNear(o: Pos, stride: Float): Boolean =
     (x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) < stride * stride
 
 fun freePosition(from: Pos, direction: Direction, occupied: List<Pos>, stride: Float = GRID_STEP): Pos {
+    if (direction == Direction.IN || direction == Direction.OUT) {
+        return containmentPosition(from, occupied, stride)
+    }
     val base = directionOffset(direction, stride)
     var k = 1
     while (true) {
         val c = Pos(from.x + base.x * k, from.y + base.y * k)
         if (occupied.none { it.isNear(c, stride) }) return c
         k++
+    }
+}
+
+/**
+ * Placement for IN/OUT ("contained") rooms: the nearest free cell around the
+ * parent, in fixed spiral order (N, NE, E, SE, S, SW, W, NW, then ring 2…),
+ * so an interior room hugs its outer room. Deterministic for a given map.
+ */
+private val CONTAINMENT_SLOTS = listOf(
+    Pos(0f, -1f), Pos(1f, -1f), Pos(1f, 0f), Pos(1f, 1f),
+    Pos(0f, 1f), Pos(-1f, 1f), Pos(-1f, 0f), Pos(-1f, -1f),
+)
+
+private fun containmentPosition(from: Pos, occupied: List<Pos>, stride: Float): Pos {
+    var ring = 1
+    while (true) {
+        for (slot in CONTAINMENT_SLOTS) {
+            val c = Pos(from.x + slot.x * stride * ring, from.y + slot.y * stride * ring)
+            if (occupied.none { it.isNear(c, stride) }) return c
+        }
+        ring++
     }
 }
 

@@ -176,4 +176,18 @@ class SpringLayoutTest {
         assertEquals(0f, out.rooms.single().x, 0.01f) // same root contract as autoTidy
         assertEquals(0f, out.rooms.single().y, 0.01f)
     }
+
+    @Test fun `IN pair settles at contact distance`() {
+        // Containment: rest vector zero pulls the pair together; the collision
+        // pass pins them at the 0.75*stride contact floor (boxes touch, no overlap).
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(Room(id = "a"), Room(id = "b")),
+            exits = listOf(Exit("1", "a", Direction.IN, "b"), Exit("2", "b", Direction.OUT, "a")))
+        val out = springLayout(m)
+        val byId = out.rooms.associateBy { it.id }
+        val dist = kotlin.math.hypot((byId["b"]!!.x - byId["a"]!!.x).toDouble(),
+                                     (byId["b"]!!.y - byId["a"]!!.y).toDouble())
+        val s = GRID_STEP.toDouble()
+        assertTrue("contact distance expected, got ${dist / s} strides", dist >= 0.7 * s && dist <= 1.2 * s)
+    }
 }
