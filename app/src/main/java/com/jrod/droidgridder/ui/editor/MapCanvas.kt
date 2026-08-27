@@ -86,6 +86,7 @@ fun MapCanvas(
     camera: CameraState,
     onTapRoom: (String) -> Unit,
     onDoubleTapRoom: (String) -> Unit,
+    onLongPressRoom: (String) -> Unit,
     onTapEmpty: () -> Unit,
 ) {
     val map = state.map
@@ -107,6 +108,10 @@ fun MapCanvas(
                 detectTapGestures(
                     onDoubleTap = { pos ->
                         roomAt(map, camera, pos)?.let(onDoubleTapRoom)
+                    },
+                    // long-press room opens the wheel — adb-reliable alternate to double-tap
+                    onLongPress = { pos ->
+                        roomAt(map, camera, pos)?.let(onLongPressRoom)
                     },
                     onTap = { pos ->
                         val room = roomAt(map, camera, pos)

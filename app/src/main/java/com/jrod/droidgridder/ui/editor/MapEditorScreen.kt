@@ -94,7 +94,15 @@ fun MapEditorScreen(store: MapStore, mapId: String) {
                         else -> viewModel.openWheel(id)
                     }
                 },
-                onTapEmpty = {
+                // long-press room opens the wheel — adb-reliable alternate to double-tap
+            onLongPressRoom = { id ->
+                when {
+                    state.redirectMode != null -> viewModel.completeRedirect(id)
+                    state.linkMode != null -> viewModel.completeLink(id)
+                    else -> viewModel.openWheel(id)
+                }
+            },
+            onTapEmpty = {
                     when {
                         state.redirectMode != null -> viewModel.completeRedirect(null)
                         state.linkMode != null -> viewModel.completeLink(null)

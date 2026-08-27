@@ -22,6 +22,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,17 @@ fun RoomSheet(
     var confirmDelete by remember { mutableStateOf(false) }
     val exits = map.exits.filter { it.from == room.id }
 
+    // Disposal (scrim tap, swipe-down, back) is a final focus loss that Compose does not
+    // report via onFocusChanged — commit a still-dirty draft so it is not silently lost.
+    // The dirty check keeps an already-committed draft from committing twice.
+    DisposableEffect(room.id) {
+        onDispose {
+            if (name != room.name || description != room.description || notes != room.notes) {
+                onCommitText(name, description, notes)
+            }
+        }
+    }
+
     ModalBottomSheet(onDismissRequest = { sheetShown = false; onDismiss() }) {
         Column(
             modifier = Modifier
@@ -89,10 +101,10 @@ fun RoomSheet(
                         modifier = Modifier.weight(1f),
                     )
                     IconButton(onClick = { onRedirectExit(exit.id) }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Redirect ${exit.direction.name} exit")
+                        Icon(Icons.Filled.Refresh, contentDescription = "Redirect ${exit.direction.name} exit")
                     }
                     IconButton(onClick = { onDeleteExit(exit.id) }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete ${exit.direction.name} exit")
+                        Icon(Icons.Filled.Delete, contentDescription = "Delete ${exit.direction.name} exit")
                     }
                 }
             }

@@ -38,6 +38,7 @@ class MapEditorViewModelTest {
         val newRoom = s.map!!.rooms.last()
         assertEquals(newRoom.id, s.currentRoomId)
         assertNull(s.wheelForRoomId)
+        assertTrue(s.canUndo) // go-new pushes an undo step
         val exits = s.map!!.exits
         assertTrue(exits.any { it.from == "a" && it.direction == Direction.N && it.to == newRoom.id })
         assertTrue(exits.any { it.from == newRoom.id && it.direction == Direction.S && it.to == "a" })
@@ -83,6 +84,7 @@ class MapEditorViewModelTest {
         assertEquals("b", exit.to)
         assertEquals("b", s2.currentRoomId)
         assertEquals("b", s2.selectedRoomId)
+        assertTrue(s2.canUndo) // link pushes an undo step
         val saved = MapStore(tmp.root).load("m1")!!
         assertTrue(saved.exits.none { it.from == "b" && it.direction == Direction.W })
     }
@@ -139,7 +141,7 @@ class MapEditorViewModelTest {
         assertEquals("a desc", room.description)
         assertEquals("a note", room.notes)
         assertTrue(vm.uiState.value.canUndo)
-        assertNull(vm.uiState.value.selectedRoomId) // sheet closes on commit
+        assertEquals("a", vm.uiState.value.selectedRoomId) // sheet stays open after a text commit
         val saved = MapStore(tmp.root).load("m1")!!.rooms.single()
         assertEquals("New", saved.name)
         assertEquals("a note", saved.notes)
@@ -186,6 +188,7 @@ class MapEditorViewModelTest {
         val s = vm.uiState.value
         assertEquals(listOf("e2"), s.map!!.exits.map { it.id })
         assertTrue(s.canUndo)
+        assertEquals("a", s.selectedRoomId) // sheet stays open after deleting an exit row
         assertEquals(listOf("e2"), MapStore(tmp.root).load("m1")!!.exits.map { it.id })
     }
 
@@ -278,6 +281,35 @@ class MapEditorViewModelTest {
         assertNull(s.selectedRoomId)
         assertNull(s.currentRoomId)
         assertFalse(s.canUndo)
+    }
+
+    @Test
+    fun `undo clears armed link and redirect modes whose state is stale`() {
+        // link: go-new pushes an undo step, then a link is armed on top of it
+        val vm1 = MapEditorViewModel("m1", store(baseMap(Room(id = "a"))))
+        vm1.openWheel("a")
+        vm1.go(Direction.N)
+        assertTrue(vm1.uiState.value.canUndo)
+        vm1.openWheel(vm1.uiState.value.currentRoomId!!)
+        vm1.startLink(Direction.E)
+        vm1.undo()
+        val s1 = vm1.uiState.value
+        assertNull(s1.linkMode)
+        assertNull(s1.linkSourceRoomId)
+        assertFalse(s1.canUndo)
+
+        // redirect: the armed exit is created after the undo point, so it is stale in the restored map
+        val vm2 = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
+        vm2.openWheel("a")
+        vm2.go(Direction.N) // pushes the undo step and creates the exits
+        val freshExit = vm2.uiState.value.map!!.exits.first { it.from == "a" }
+        vm2.select("a")
+        vm2.startRedirect(freshExit.id)
+        assertTrue(vm2.uiState.value.redirectMode != null)
+        vm2.undo()
+        val s2 = vm2.uiState.value
+        assertNull(s2.redirectMode)
+        assertFalse(s2.canUndo)
     }
 
     @Test

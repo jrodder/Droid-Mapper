@@ -91,6 +91,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             map = newMap,
             currentRoomId = newMap.rooms.last().id,
             wheelForRoomId = null,
+            canUndo = true,
         )
     }
 
@@ -128,14 +129,16 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             linkSourceRoomId = null,
             selectedRoomId = targetRoomId,
             currentRoomId = targetRoomId,
+            canUndo = true,
         )
     }
 
     /**
      * Commit the sheet's text draft for [roomId] via the pure [setRoomText] and
      * persist. One undo step per commit; unchanged drafts are a no-op so an
-     * untouched field losing focus does not burn the undo slot. The sheet closes
-     * on commit (selection cleared).
+     * untouched field losing focus does not burn the undo slot. The sheet stays
+     * open on commit so multiple fields can be edited in one session (each commit
+     * is its own undo step).
      */
     fun updateRoomText(roomId: String, name: String, description: String, notes: String) {
         val s = _uiState.value
@@ -145,7 +148,7 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         previousMap = map
         val newMap = setRoomText(roomId, name, description, notes, map)
         store.save(newMap)
-        _uiState.value = s.copy(map = newMap, canUndo = true, selectedRoomId = null)
+        _uiState.value = s.copy(map = newMap, canUndo = true)
     }
 
     /** Delete [roomId] and every exit touching it (pure [removeRoom]), persist. */
