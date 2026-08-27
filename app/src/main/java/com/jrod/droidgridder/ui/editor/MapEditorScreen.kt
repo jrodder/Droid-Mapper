@@ -163,14 +163,14 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                         onDeleteRoom = { viewModel.deleteRoom(selectedRoom.id) },
                         onDeleteExit = viewModel::deleteExit,
                         onRedirectExit = viewModel::startRedirect,
-                        onDismiss = { viewModel.select(null) },
+                        onDismiss = { viewModel.closeRoomWindow() },
                     )
                 }
             }
             if (state.roomMode == RoomMode.Detail && selectedRoom != null) {
                 RoomDetailWindow(
                     room = selectedRoom,
-                    onClose = { viewModel.closeDetail() },
+                    onClose = { viewModel.closeRoomWindow() },
                 )
             }
         }

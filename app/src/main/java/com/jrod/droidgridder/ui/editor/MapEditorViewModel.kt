@@ -100,8 +100,11 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         }
     }
 
-    /** Close the read-only detail window; the selection and current room are kept. */
-    fun closeDetail() {
+    /**
+     * Close the room window (detail or edit); the selection and current room are kept so the
+     * canvas shows the room highlighted with its connections.
+     */
+    fun closeRoomWindow() {
         _uiState.update { it.copy(roomMode = null) }
     }
 

@@ -25,7 +25,6 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import com.jrod.droidgridder.model.Direction
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.ROOM_BOX_SIZE
@@ -170,17 +169,16 @@ fun MapCanvas(
             val b = animatedRooms[to.id]?.let { Pos(it.x, it.y) } ?: Pos(to.x, to.y)
             val s = camera.worldToScreen(a)
             val t = camera.worldToScreen(b)
-            // v1.4 ruling N2 (priority order): UP/DOWN edges are primary (blue) 3dp always;
-            // other edges touching the selected room are secondary (green) 3dp; the rest
-            // stay outline (grey) 2dp. Replaces v1.3 ruling L's blue-on-selection.
-            val isVertical = exit.direction == Direction.UP || exit.direction == Direction.DOWN
+            // v1.6 ruling Q1 (replaces v1.4 N2's always-blue vertical clause): one rule for
+            // every edge — touching the selected room is secondary (green) 3dp; the rest stay
+            // outline (grey) 2dp. UP/DOWN follow the same selection rule as all other edges.
             val isSelectedEdge = exit.from == state.selectedRoomId || exit.to == state.selectedRoomId
-            val edgeColor = when {
-                isVertical -> currentColor
-                isSelectedEdge -> selectedColor
-                else -> exitColor
-            }
-            drawLine(color = edgeColor, start = s, end = t, strokeWidth = if (isVertical || isSelectedEdge) 3f else 2f)
+            drawLine(
+                color = if (isSelectedEdge) selectedColor else exitColor,
+                start = s,
+                end = t,
+                strokeWidth = if (isSelectedEdge) 3f else 2f,
+            )
         }
 
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)

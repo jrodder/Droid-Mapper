@@ -442,10 +442,10 @@ class MapEditorViewModelTest {
     }
 
     @Test
-    fun `closeDetail clears roomMode but keeps selection and current`() {
+    fun `closeRoomWindow clears roomMode but keeps selection and current`() {
         val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
         vm.select("a")
-        vm.closeDetail()
+        vm.closeRoomWindow()
 
         val s = vm.uiState.value
         assertNull(s.roomMode)
