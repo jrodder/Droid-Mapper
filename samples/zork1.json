@@ -5,6 +5,14 @@
  "updatedAt": 1787863002520,
  "rooms": [
   {
+   "id": "west_of_house",
+   "name": "West of House",
+   "description": "",
+   "notes": "",
+   "x": 0.0,
+   "y": 0.0
+  },
+  {
    "id": "altar",
    "name": "Altar",
    "description": "",
@@ -863,14 +871,6 @@
   {
    "id": "up_a_tree",
    "name": "Up a Tree",
-   "description": "",
-   "notes": "",
-   "x": 0.0,
-   "y": 0.0
-  },
-  {
-   "id": "west_of_house",
-   "name": "West of House",
    "description": "",
    "notes": "",
    "x": 0.0,
