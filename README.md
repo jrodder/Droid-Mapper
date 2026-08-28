@@ -85,6 +85,20 @@ dependencies beyond the standard Compose/BOM set.
 ./gradlew testDebugUnitTest      # 79 unit tests
 ```
 
+### Updating without losing maps
+
+Maps live in the app's private storage (`files/maps/`) and survive an in-place
+APK update — but **never uninstall to update**: Android wipes that storage on
+uninstall. In-place updates only work when the APKs are signed with the same
+key, so this repo pins `app/droidmapper.keystore` (committed on purpose — a
+personal sideloaded app; the keystore's job is to outlive machines) and signs
+both debug and release builds with it. If a build from another machine's
+key is already installed, the one-time migration is: `adb shell run-as
+com.jrod.droidgridder tar c -C files maps > maps-backup.tar` (before
+uninstalling), then after installing the new APK, `adb push maps-backup.tar
+/data/local/tmp/ && adb shell run-as com.jrod.droidgridder tar xf
+/data/local/tmp/maps-backup.tar -C files`.
+
 ### Architecture
 
 ```
