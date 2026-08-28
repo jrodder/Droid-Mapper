@@ -657,6 +657,12 @@ class MapEditorViewModelTest {
         assertEquals(listOf("a", "c"), s.map!!.rooms.map { it.id }.sorted())
         assertEquals("c", s.map!!.exits.single { it.from == "a" && it.direction == Direction.SE }.to)
         assertEquals("a", s.map!!.exits.single { it.from == "c" && it.direction == Direction.NW }.to)
+        // v1.5: merge auto re-flows the layout (Tidy) so the survivor is not left at
+        // the phantom's spot with crossed edges. Root (first room, a) stays at origin;
+        // c re-lands along a's SE offset.
+        val survivor = s.map!!.rooms.single { it.id == "c" }
+        assertEquals(GRID_STEP, survivor.x, 0.001f)
+        assertEquals(GRID_STEP, survivor.y, 0.001f)
         assertEquals("c", s.selectedRoomId) // the sheet follows the survivor
         assertEquals("c", s.currentRoomId) // current was the phantom; it cannot stay there
         assertEquals(RoomMode.Edit, s.roomMode) // the merged exits are visible in the sheet

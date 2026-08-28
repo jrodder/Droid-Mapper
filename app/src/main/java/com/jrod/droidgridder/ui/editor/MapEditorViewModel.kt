@@ -408,8 +408,12 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         val map = s.map ?: return
         val fromId = s.selectedRoomId ?: return
         if (fromId == survivorId) return
-        val newMap = mergeIntoSurvivor(fromId, survivorId, map)
-        if (newMap == map) return
+        val merged = mergeIntoSurvivor(fromId, survivorId, map)
+        if (merged == map) return
+        // ponytail: auto re-flow (Tidy) after a merge — the survivor's old spot and the
+        // phantom's both make edges cross until a layout pass; one undo step covers
+        // merge + layout. Tidy is the deterministic default; Relax stays one tap away.
+        val newMap = tidyLayout(merged, layoutStride(merged))
         previousMap = map
         store.save(newMap)
         _uiState.value = s.copy(
