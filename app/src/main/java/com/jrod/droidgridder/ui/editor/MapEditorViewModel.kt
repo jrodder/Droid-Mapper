@@ -13,6 +13,7 @@ import com.jrod.droidgridder.model.go as goRoom
 import com.jrod.droidgridder.model.autoTidy as tidyLayout
 import com.jrod.droidgridder.model.springLayout as relaxLayout
 import com.jrod.droidgridder.model.linkToExisting
+import com.jrod.droidgridder.model.mergeRoom as mergeIntoSurvivor
 import com.jrod.droidgridder.model.redirectExit as repointExit
 import com.jrod.droidgridder.model.deletePassage as removePassage
 import com.jrod.droidgridder.model.setExitOneWay as setOneWay
@@ -391,6 +392,31 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
             redirectMode = null,
             // Reopen the sheet on the source room so the repointed row is visible.
             selectedRoomId = r.fromRoomId,
+            roomMode = RoomMode.Edit,
+        )
+    }
+
+    /**
+     * Merge the currently selected room (the phantom) into [survivorId] via the pure
+     * [mergeIntoSurvivor]: the phantom's exits are repointed onto the survivor, the
+     * phantom is deleted, the edit sheet reopens on the survivor so the merged exits
+     * are visible, and the survivor becomes current if the phantom was. Persisted,
+     * one undo step. Self-target or unknown ids are no-ops (no save, no undo slot).
+     */
+    fun mergeRoom(survivorId: String) {
+        val s = _uiState.value
+        val map = s.map ?: return
+        val fromId = s.selectedRoomId ?: return
+        if (fromId == survivorId) return
+        val newMap = mergeIntoSurvivor(fromId, survivorId, map)
+        if (newMap == map) return
+        previousMap = map
+        store.save(newMap)
+        _uiState.value = s.copy(
+            map = newMap,
+            canUndo = true,
+            selectedRoomId = survivorId,
+            currentRoomId = if (s.currentRoomId == fromId) survivorId else s.currentRoomId,
             roomMode = RoomMode.Edit,
         )
     }

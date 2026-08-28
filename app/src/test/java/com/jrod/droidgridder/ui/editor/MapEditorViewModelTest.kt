@@ -642,4 +642,59 @@ class MapEditorViewModelTest {
         assertTrue(s.map!!.exits.none { it.oneWay })
         assertFalse(s.canUndo)
     }
+
+    // --- room merge (v1.4): fold a duplicate-named room into the survivor ---
+
+    @Test
+    fun `mergeRoom moves the phantom's exits to the survivor, deletes the phantom, reopens the sheet on the survivor, and saves`() {
+        val m = baseMap(Room(id = "a"), Room(id = "b"), Room(id = "c"))
+            .copy(exits = listOf(Exit("1", "a", Direction.SE, "b"), Exit("2", "b", Direction.NW, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openRoomEdit("b") // sheet open on the phantom
+        vm.mergeRoom("c")
+
+        val s = vm.uiState.value
+        assertEquals(listOf("a", "c"), s.map!!.rooms.map { it.id }.sorted())
+        assertEquals("c", s.map!!.exits.single { it.from == "a" && it.direction == Direction.SE }.to)
+        assertEquals("a", s.map!!.exits.single { it.from == "c" && it.direction == Direction.NW }.to)
+        assertEquals("c", s.selectedRoomId) // the sheet follows the survivor
+        assertEquals("c", s.currentRoomId) // current was the phantom; it cannot stay there
+        assertEquals(RoomMode.Edit, s.roomMode) // the merged exits are visible in the sheet
+        assertTrue(s.canUndo)
+        val saved = MapStore(tmp.root).load("m1")!!
+        assertEquals(2, saved.rooms.size)
+        assertEquals("c", saved.exits.single { it.from == "a" }.to)
+    }
+
+    @Test
+    fun `mergeRoom with a self or unknown target is a no-op without save`() {
+        val m = baseMap(Room(id = "a"), Room(id = "b"))
+            .copy(exits = listOf(Exit("1", "a", Direction.N, "b")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openRoomEdit("a")
+        vm.mergeRoom("a")
+        vm.mergeRoom("zzz")
+
+        val s = vm.uiState.value
+        assertEquals(2, s.map!!.rooms.size)
+        assertEquals(1, s.map!!.exits.size)
+        assertFalse(s.canUndo) // no undo slot burned
+    }
+
+    @Test
+    fun `undo reverts a merge restoring the deleted room and its original exits`() {
+        val m = baseMap(Room(id = "a"), Room(id = "b"), Room(id = "c"))
+            .copy(exits = listOf(Exit("1", "a", Direction.SE, "b"), Exit("2", "b", Direction.NW, "a")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openRoomEdit("b")
+        vm.mergeRoom("c")
+        vm.undo()
+
+        val s = vm.uiState.value
+        assertEquals(3, s.map!!.rooms.size)
+        assertEquals("b", s.map!!.exits.single { it.id == "1" }.to)
+        assertEquals("a", s.map!!.exits.single { it.id == "2" }.to)
+        assertFalse(s.canUndo)
+        assertEquals(3, MapStore(tmp.root).load("m1")!!.rooms.size) // restored map persisted
+    }
 }

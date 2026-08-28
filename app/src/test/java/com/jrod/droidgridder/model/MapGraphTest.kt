@@ -1,5 +1,6 @@
 package com.jrod.droidgridder.model
 
+import com.jrod.droidgridder.data.decodeMap
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -172,5 +173,64 @@ class MapGraphTest {
         val out = deletePassage("e1", m)
         assertEquals(1, out.exits.size)
         assertEquals("e2", out.exits.single().id)
+    }
+
+    @Test fun `mergeRoom repoints both ends of every touching exit and deletes the source room`() {
+        // Fork(a) -SE-> phantom(b), phantom(b) -NW-> Fork(a); survivor c keeps its spot
+        val m = map(room("a"), room("b"), room("c")).copy(
+            exits = listOf(Exit("1", "a", Direction.SE, "b"), Exit("2", "b", Direction.NW, "a")))
+        val out = mergeRoom("b", "c", m)
+        assertEquals(listOf("a", "c"), out.rooms.map { it.id }.sorted())
+        assertEquals("c", out.exits.single { it.from == "a" && it.direction == Direction.SE }.to)  // Fork -SE-> survivor
+        assertEquals("a", out.exits.single { it.from == "c" && it.direction == Direction.NW }.to)  // survivor -NW-> Fork
+        assertEquals(2, out.exits.size)
+    }
+
+    @Test fun `mergeRoom drops self-loops the repointing creates`() {
+        // phantom(b) <-> survivor(c): both records become c<->c and are unrenderable
+        val m = map(room("a"), room("b"), room("c")).copy(
+            exits = listOf(Exit("1", "b", Direction.E, "c"), Exit("2", "c", Direction.W, "b")))
+        val out = mergeRoom("b", "c", m)
+        assertEquals(listOf("a", "c"), out.rooms.map { it.id }.sorted())
+        assertTrue(out.exits.isEmpty())
+    }
+
+    @Test fun `mergeRoom collapses duplicate exits keeping the first record`() {
+        // survivor c and phantom b both have S -> a: the survivor's record (listed first) wins
+        val m = map(room("a"), room("b"), room("c")).copy(
+            exits = listOf(Exit("s", "c", Direction.S, "a"), Exit("p", "b", Direction.S, "a")))
+        val out = mergeRoom("b", "c", m)
+        assertEquals(1, out.exits.size)
+        assertEquals("s", out.exits.single().id)
+    }
+
+    @Test fun `mergeRoom is a no-op for a self-target or unknown endpoint`() {
+        val m = map(room("a"), room("b"), room("c")).copy(
+            exits = listOf(Exit("1", "a", Direction.N, "b")))
+        assertEquals(m, mergeRoom("c", "c", m))
+        assertEquals(m, mergeRoom("zzz", "c", m))
+        // unknown survivor is a no-op too — otherwise the source's exits would dangle off a missing room
+        assertEquals(m, mergeRoom("b", "zzz", m))
+    }
+
+    // v1.4 acceptance: the real Enchanter map (fixture = the user's exported phone data,
+    // phantom fad6a769 = the unnamed box Fork's SE exit points at).
+    @Test fun `mergeRoom on the Enchanter fixture folds the phantom into Dusty Trail`() {
+        val text = javaClass.getResourceAsStream("/enchanter.json")!!.bufferedReader().readText()
+        val m = decodeMap(text)
+        assertEquals(17, m.rooms.size)
+        val fork = "8c9b5af1-5eed-4d28-a0fa-44b941abd886"
+        val phantom = "fad6a769-25f3-4701-8f5b-c5c8a42855cc"
+        val dustyTrail = "f6bcb9bb-0072-49ee-b0dc-58ccac256513"
+
+        val out = mergeRoom(phantom, dustyTrail, m)
+
+        assertEquals(16, out.rooms.size)
+        assertEquals(32, out.exits.size)
+        assertEquals(dustyTrail, out.exits.single { it.from == fork && it.direction == Direction.SE }.to)
+        assertEquals(fork, out.exits.single { it.from == dustyTrail && it.direction == Direction.NW }.to)
+        // invariant: no exit dangles off the deleted room
+        val ids = out.rooms.mapTo(HashSet()) { it.id }
+        assertTrue(out.exits.all { it.from in ids && it.to in ids })
     }
 }

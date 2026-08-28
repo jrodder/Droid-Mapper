@@ -1,5 +1,6 @@
 package com.jrod.droidgridder.ui.editor
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,6 +51,7 @@ fun RoomSheet(
     map: MapFile,
     onCommitText: (name: String, description: String, notes: String) -> Unit,
     onManageExits: () -> Unit,
+    onMergeInto: (survivorId: String) -> Unit,
     onDeleteRoom: () -> Unit,
     onDeleteExit: (exitId: String) -> Unit,
     onRedirectExit: (exitId: String) -> Unit,
@@ -61,7 +63,17 @@ fun RoomSheet(
     var description by remember { mutableStateOf(room.description) }
     var notes by remember { mutableStateOf(room.notes) }
     var confirmDelete by remember { mutableStateOf(false) }
+    // null = picker closed; otherwise the list of merge targets (same-named for the
+    // banner, every other room for the explicit button)
+    var mergeTargets by remember { mutableStateOf<List<Room>?>(null) }
     val exits = map.exits.filter { it.from == room.id }
+
+    // Duplicate-name detection (v1.4): computed from the committed names, re-evaluated on
+    // every render, so the banner appears the moment the name field commits to a name
+    // another room already has, and disappears when the names diverge.
+    val trimmedName = room.name.trim()
+    val sameNamed = if (trimmedName.isBlank()) emptyList()
+        else map.rooms.filter { it.id != room.id && it.name.trim() == trimmedName }
 
     // Disposal (scrim tap, swipe-down, back) is a final focus loss that Compose does not
     // report via onFocusChanged — commit a still-dirty draft so it is not silently lost.
@@ -95,6 +107,23 @@ fun RoomSheet(
             }
 
             DraftField("Name", name, { name = it }, { onCommitText(name, description, notes) })
+
+            if (sameNamed.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "Room \"$trimmedName\" already exists — merge this room into it?",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(onClick = { mergeTargets = sameNamed }) { Text("Merge") }
+                }
+            }
+
             DraftField("Description", description, { description = it }, { onCommitText(name, description, notes) })
             DraftField("Notes", notes, { notes = it }, { onCommitText(name, description, notes) })
 
@@ -126,15 +155,51 @@ fun RoomSheet(
                 }
             }
 
-            Button(
-                onClick = { confirmDelete = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-            ) {
-                Text("Delete room")
+            Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                Button(
+                    onClick = { mergeTargets = map.rooms.filter { it.id != room.id }
+                        .sortedWith(compareBy({ it.name.isBlank() }, { it.name.trim().lowercase() })) },
+                    modifier = Modifier.weight(1f).padding(end = 4.dp),
+                ) {
+                    Text("Merge into…")
+                }
+                Button(
+                    onClick = { confirmDelete = true },
+                    modifier = Modifier.weight(1f).padding(start = 4.dp),
+                ) {
+                    Text("Delete room")
+                }
             }
         }
+    }
+
+    // v1.4: merge picker. Tapping a row fires onMergeInto for that room; the VM's
+    // mergeRoom() moves the phantom's exits onto the survivor and reopens this sheet on it.
+    mergeTargets?.let { targets ->
+        AlertDialog(
+            onDismissRequest = { mergeTargets = null },
+            title = { Text("Merge this room into…") },
+            text = {
+                Column {
+                    targets.forEach { target ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onMergeInto(target.id); mergeTargets = null },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = target.name.trim().ifBlank { "(untitled)" },
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { mergeTargets = null }) { Text("Cancel") }
+            },
+        )
     }
 
     if (confirmDelete) {

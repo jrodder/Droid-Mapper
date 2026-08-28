@@ -82,7 +82,7 @@ dependencies beyond the standard Compose/BOM set.
 
 ```bash
 ./gradlew assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
-./gradlew testDebugUnitTest      # 79 unit tests
+./gradlew testDebugUnitTest      # 87 unit tests
 ```
 
 ### Updating without losing maps

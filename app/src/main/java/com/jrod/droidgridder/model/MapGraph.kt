@@ -125,6 +125,30 @@ fun setExitOneWay(exitId: String, oneWay: Boolean, map: MapFile): MapFile {
 }
 
 /**
+ * Fold [fromId] into [intoId]: every exit touching the source is repointed at the
+ * survivor on both ends, self-loops the repointing creates are dropped (unrenderable
+ * by construction), and duplicate (from, direction, to) records collapse to the first
+ * in list order — the survivor's original exits normally precede the source's, so on a
+ * real contradiction the survivor wins. The survivor keeps its name and position; the
+ * source is deleted. Unknown [fromId] or a self-target is a no-op.
+ */
+fun mergeRoom(fromId: String, intoId: String, map: MapFile): MapFile {
+    if (fromId == intoId || map.rooms.none { it.id == fromId } || map.rooms.none { it.id == intoId }) return map
+    val rePointed = map.exits.map { e ->
+        e.copy(from = if (e.from == fromId) intoId else e.from,
+               to = if (e.to == fromId) intoId else e.to)
+    }
+    val seen = HashSet<Triple<String, Direction, String>>()
+    val deduped = rePointed
+        .filterNot { it.from == it.to }
+        .filter { e -> seen.add(Triple(e.from, e.direction, e.to)) }
+    return map.copy(
+        rooms = map.rooms.filterNot { it.id == fromId },
+        exits = deduped,
+    )
+}
+
+/**
  * Delete the passage the user pointed at: the exit [exitId] plus its mirror
  * record if one exists. Rooms and every other connection survive.
  */

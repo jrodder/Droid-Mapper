@@ -22,7 +22,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.jrod.droidgridder"
-        minSdk = 24; targetSdk = 36; versionCode = 5; versionName = "1.3"
+        minSdk = 24; targetSdk = 36; versionCode = 6; versionName = "1.4"
     }
     buildTypes {
         debug { signingConfig = signingConfigs.getByName("droidmapper") }
