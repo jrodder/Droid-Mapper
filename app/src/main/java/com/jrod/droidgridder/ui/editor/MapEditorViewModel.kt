@@ -400,15 +400,16 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
      * Merge the currently selected room (the phantom) into [survivorId] via the pure
      * [mergeIntoSurvivor]: the phantom's exits are repointed onto the survivor, the
      * phantom is deleted, the edit sheet reopens on the survivor so the merged exits
-     * are visible, and the survivor becomes current if the phantom was. Persisted,
-     * one undo step. Self-target or unknown ids are no-ops (no save, no undo slot).
+     * are visible, and the survivor becomes current if the phantom was. [rehome]
+     * re-homes the phantom's own exits onto chosen (free) slots on the survivor. One undo step.
+     * Self-target or unknown ids are no-ops (no save, no undo slot).
      */
-    fun mergeRoom(survivorId: String) {
+    fun mergeRoom(survivorId: String, rehome: Map<Direction, Direction> = emptyMap()) {
         val s = _uiState.value
         val map = s.map ?: return
         val fromId = s.selectedRoomId ?: return
         if (fromId == survivorId) return
-        val merged = mergeIntoSurvivor(fromId, survivorId, map)
+        val merged = mergeIntoSurvivor(fromId, survivorId, map, rehome)
         if (merged == map) return
         // ponytail: auto re-flow (Tidy) after a merge — the survivor's old spot and the
         // phantom's both make edges cross until a layout pass; one undo step covers

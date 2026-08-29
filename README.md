@@ -18,7 +18,7 @@ by hand while you play.
 | Tap a room | Read-only detail window (tap anywhere to dismiss) |
 | Double-tap a room | Edit sheet (name, description, notes; Manage exits → direction wheel; delete room) |
 | Long-press a passage line | Passage dialog: mark it one-way or delete the passage |
-| Edit sheet → "Merge into…" | Fold this room into another: its exits re-point onto the survivor, the room is deleted |
+| Edit sheet → "Merge into…" | Fold this room into another: its exits re-point onto the survivor, each of its own exits re-homed to a slot you pick on the survivor, the room is deleted |
 | Direction wheel | Attach a passage to an adjacent room in one of 12 directions |
 
 A direction with no exit is *blocked* by design (same as the game): the wheel
@@ -39,7 +39,10 @@ mark gets the arrow.
 creates a duplicate; naming the new room the same name makes the edit sheet
 offer "merge this room into it" (and the sheet always has "Merge into…" for
 any two rooms). The survivor keeps its name; the duplicate's exits re-point
-onto it, self-loops and exact duplicates are dropped, and the whole operation
+onto it, and each of its own exits lands on a slot you pick on the survivor
+(only the survivor's free directions are offered, so the loop can close around
+an occupied slot). Connections pointing at the duplicate just follow it,
+self-loops and exact duplicates are dropped, and the whole operation
 is one undo step. A merge also re-flows the layout (Tidy) so passages don't
 cross — hit Relax afterwards if you prefer the spring layout.
 

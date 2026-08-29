@@ -35,6 +35,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.jrod.droidgridder.model.Direction
+import com.jrod.droidgridder.model.Exit
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.Room
 
@@ -51,7 +53,7 @@ fun RoomSheet(
     map: MapFile,
     onCommitText: (name: String, description: String, notes: String) -> Unit,
     onManageExits: () -> Unit,
-    onMergeInto: (survivorId: String) -> Unit,
+    onMergeInto: (survivorId: String, rehome: Map<Direction, Direction>) -> Unit,
     onDeleteRoom: () -> Unit,
     onDeleteExit: (exitId: String) -> Unit,
     onRedirectExit: (exitId: String) -> Unit,
@@ -66,6 +68,12 @@ fun RoomSheet(
     // null = picker closed; otherwise the list of merge targets (same-named for the
     // banner, every other room for the explicit button)
     var mergeTargets by remember { mutableStateOf<List<Room>?>(null) }
+    // v1.6 re-home flow: the chosen survivor, each of the phantom's own exits mapped to
+    // the slot it lands in on the survivor (null = no free slot, will be dropped), and
+    // which exit's direction sub-picker is open.
+    var rehomeInto by remember { mutableStateOf<Room?>(null) }
+    var rehomeChoices by remember { mutableStateOf<Map<Direction, Direction?>>(emptyMap()) }
+    var rehomePickerExit by remember { mutableStateOf<Exit?>(null) }
     val exits = map.exits.filter { it.from == room.id }
 
     // Duplicate-name detection (v1.4): computed from the committed names, re-evaluated on
@@ -173,8 +181,10 @@ fun RoomSheet(
         }
     }
 
-    // v1.4: merge picker. Tapping a row fires onMergeInto for that room; the VM's
-    // mergeRoom() moves the phantom's exits onto the survivor and reopens this sheet on it.
+    // v1.4: merge picker. A target tap merges immediately when the phantom has no exits
+    // of its own; otherwise it opens the re-home dialog (v1.6) so the phantom's exits
+    // land on chosen free slots on the survivor. Pointing-at-phantom exits need no UI —
+    // they keep their own room's direction and just follow the survivor.
     mergeTargets?.let { targets ->
         AlertDialog(
             onDismissRequest = { mergeTargets = null },
@@ -185,7 +195,27 @@ fun RoomSheet(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onMergeInto(target.id); mergeTargets = null },
+                                .clickable {
+                                    mergeTargets = null
+                                    val ownExits = map.exits.filter { it.from == room.id }
+                                    if (ownExits.isEmpty()) {
+                                        onMergeInto(target.id, emptyMap())
+                                    } else {
+                                        rehomeInto = target
+                                        // ponytail: default to the exit's own direction when that slot
+                                        // is free on the survivor, else the first free slot — always
+                                        // visible on the row and changeable, so no hidden choice.
+                                        val taken = map.exits.filter { it.from == target.id }
+                                            .mapTo(HashSet()) { it.direction }
+                                        val used = mutableSetOf<Direction>()
+                                        rehomeChoices = ownExits.associate { e ->
+                                            val d = if (e.direction !in taken && e.direction !in used) e.direction
+                                                else Direction.entries.firstOrNull { it !in taken && it !in used }
+                                            if (d != null) used += d
+                                            e.direction to d
+                                        }
+                                    }
+                                },
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -200,6 +230,109 @@ fun RoomSheet(
                 TextButton(onClick = { mergeTargets = null }) { Text("Cancel") }
             },
         )
+    }
+
+    // v1.6: re-home dialog. Lists the phantom's OWN exits; each row shows the exit's
+    // destination (read-only — it is the exit's existing `to`) and the slot it will
+    // occupy on the survivor. Only free slots are offered, so a merge can never create
+    // two survivor exits in one direction. A null choice (no free slot at all) is
+    // surfaced here instead of silently dropping the connection.
+    rehomeInto?.let { target ->
+        val ownExits = map.exits.filter { it.from == room.id }
+        val following = map.exits.count { it.to == room.id && it.from != target.id }
+        AlertDialog(
+            onDismissRequest = { rehomeInto = null },
+            title = { Text("Merge into \"${target.displayName()}\"") },
+            text = {
+                Column {
+                    ownExits.forEach { e ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "${e.direction.name} → ${map.roomName(e.to)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                            TextButton(onClick = { rehomePickerExit = e }) {
+                                Text(rehomeChoices[e.direction]?.name ?: "pick")
+                            }
+                        }
+                    }
+                    if (rehomeChoices.values.any { it == null }) {
+                        Text(
+                            text = "A connection has no free direction on the survivor — it will be dropped. You can redirect it after the merge.",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                    }
+                    if (following > 0) {
+                        Text(
+                            text = "$following connection${if (following == 1) "" else "s"} to this room will follow to ${target.displayName()}.",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val rehome = rehomeChoices.entries.filter { it.value != null }
+                        .associate { (d, slot) -> d to slot!! }
+                    onMergeInto(target.id, rehome)
+                    rehomeInto = null
+                    rehomePickerExit = null
+                }) { Text("Merge") }
+            },
+            dismissButton = {
+                TextButton(onClick = { rehomeInto = null }) { Text("Cancel") }
+            },
+        )
+    }
+
+    // v1.6: direction sub-picker for one re-homed exit. Offers only the survivor's free
+    // directions, excluding slots the other rows already hold.
+    rehomePickerExit?.let { e ->
+        val target = rehomeInto
+        if (target != null) {
+            val taken = map.exits.filter { it.from == target.id }.mapTo(HashSet()) { it.direction }
+            val heldElsewhere = rehomeChoices.filterKeys { it != e.direction }.values.filterNotNull()
+            val options = Direction.entries.filter { it !in taken && it !in heldElsewhere }
+            AlertDialog(
+                onDismissRequest = { rehomePickerExit = null },
+                title = { Text("Where does \"${e.direction.name} → ${map.roomName(e.to)}\" land?") },
+                text = {
+                    if (options.isEmpty()) {
+                        Text(
+                            text = "No free directions on the survivor — this connection will be dropped. You can redirect it after the merge.",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    } else {
+                        Column {
+                            options.forEach { d ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            rehomeChoices = rehomeChoices.toMutableMap().apply { set(e.direction, d) }
+                                            rehomePickerExit = null
+                                        },
+                                ) {
+                                    Text(
+                                        text = d.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { rehomePickerExit = null }) { Text("Close") }
+                },
+            )
+        }
     }
 
     if (confirmDelete) {
@@ -228,6 +361,11 @@ private fun List<Room>.sortedByProximityTo(room: Room): List<Room> =
         { it.name.isBlank() },
         { it.name.trim().lowercase() },
     ))
+
+private fun Room.displayName() = name.trim().ifBlank { "(untitled)" }
+
+private fun MapFile.roomName(id: String): String =
+    rooms.firstOrNull { it.id == id }?.name?.trim()?.ifBlank { null } ?: "(unmapped)"
 
 /**
  * Draft field that expands and word-wraps with its content (36–240 dp tall),

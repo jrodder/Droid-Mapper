@@ -673,6 +673,21 @@ class MapEditorViewModelTest {
     }
 
     @Test
+    fun `mergeRoom passes rehome through so the phantom's exit lands on the survivor's chosen slot`() {
+        val m = baseMap(Room(id = "a"), Room(id = "b"), Room(id = "x"))
+            .copy(exits = listOf(Exit("1", "x", Direction.NW, "b"), Exit("2", "b", Direction.SE, "x")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.openRoomEdit("b") // sheet open on the phantom
+        vm.mergeRoom("a", rehome = mapOf(Direction.SE to Direction.SW))
+
+        val s = vm.uiState.value
+        assertEquals(listOf("a", "x"), s.map!!.rooms.map { it.id }.sorted())
+        assertEquals("a", s.map!!.exits.single { it.from == "x" && it.direction == Direction.NW }.to)
+        assertEquals("x", s.map!!.exits.single { it.from == "a" && it.direction == Direction.SW }.to)
+        assertTrue(s.canUndo)
+    }
+
+    @Test
     fun `mergeRoom with a self or unknown target is a no-op without save`() {
         val m = baseMap(Room(id = "a"), Room(id = "b"))
             .copy(exits = listOf(Exit("1", "a", Direction.N, "b")))

@@ -131,12 +131,18 @@ fun setExitOneWay(exitId: String, oneWay: Boolean, map: MapFile): MapFile {
  * in list order — the survivor's original exits normally precede the source's, so on a
  * real contradiction the survivor wins. The survivor keeps its name and position; the
  * source is deleted. Unknown [fromId] or a self-target is a no-op.
+ *
+ * [rehome] re-homes the source's OWN exits (from == fromId) to a different direction on
+ * the survivor — e.g. the survivor's original SE is taken, so the folded exit becomes
+ * the survivor's SW. The destination is always preserved; exits only POINTING AT the
+ * source keep their direction (it belongs to their own room, not the survivor's).
  */
-fun mergeRoom(fromId: String, intoId: String, map: MapFile): MapFile {
+fun mergeRoom(fromId: String, intoId: String, map: MapFile, rehome: Map<Direction, Direction> = emptyMap()): MapFile {
     if (fromId == intoId || map.rooms.none { it.id == fromId } || map.rooms.none { it.id == intoId }) return map
     val rePointed = map.exits.map { e ->
         e.copy(from = if (e.from == fromId) intoId else e.from,
-               to = if (e.to == fromId) intoId else e.to)
+               to = if (e.to == fromId) intoId else e.to,
+               direction = if (e.from == fromId) (rehome[e.direction] ?: e.direction) else e.direction)
     }
     val seen = HashSet<Triple<String, Direction, String>>()
     val deduped = rePointed

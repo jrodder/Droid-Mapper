@@ -204,6 +204,33 @@ class MapGraphTest {
         assertEquals("s", out.exits.single().id)
     }
 
+    @Test fun `mergeRoom with rehome moves the phantom's own exit to the chosen slot keeping its destination`() {
+        // x -NW-> phantom(b), phantom(b) -SE-> x; survivor a. Re-home b's SE to a's SW.
+        val m = map(room("a"), room("b"), room("x")).copy(
+            exits = listOf(Exit("1", "x", Direction.NW, "b"), Exit("2", "b", Direction.SE, "x")))
+        val out = mergeRoom("b", "a", m, rehome = mapOf(Direction.SE to Direction.SW))
+        assertEquals(listOf("a", "x"), out.rooms.map { it.id }.sorted())
+        // pointing-at-phantom side auto-repoints and keeps its own direction
+        assertEquals("a", out.exits.single { it.from == "x" && it.direction == Direction.NW }.to)
+        // phantom-owned side lands on the survivor at the chosen slot, destination intact
+        assertEquals("x", out.exits.single { it.from == "a" && it.direction == Direction.SW }.to)
+        assertEquals(2, out.exits.size)
+    }
+
+    @Test fun `mergeRoom with rehome leaves the survivor's own exit on a conflicting direction untouched`() {
+        // survivor a already has SE -> c; phantom b has SE -> x. Re-home b's SE to a's SW:
+        // the loop edge lands on the free slot and c's SE is not displaced.
+        val m = map(room("a"), room("b"), room("c"), room("x")).copy(
+            exits = listOf(
+                Exit("s", "a", Direction.SE, "c"),
+                Exit("1", "x", Direction.NW, "b"),
+                Exit("2", "b", Direction.SE, "x")))
+        val out = mergeRoom("b", "a", m, rehome = mapOf(Direction.SE to Direction.SW))
+        assertEquals("c", out.exits.single { it.from == "a" && it.direction == Direction.SE }.to) // c kept
+        assertEquals("x", out.exits.single { it.from == "a" && it.direction == Direction.SW }.to) // loop closed
+        assertEquals(3, out.exits.size)
+    }
+
     @Test fun `mergeRoom is a no-op for a self-target or unknown endpoint`() {
         val m = map(room("a"), room("b"), room("c")).copy(
             exits = listOf(Exit("1", "a", Direction.N, "b")))

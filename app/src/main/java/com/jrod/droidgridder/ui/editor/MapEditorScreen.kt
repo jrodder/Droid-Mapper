@@ -173,7 +173,7 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                         map = state.map!!,
                         onCommitText = { n, d, no -> viewModel.updateRoomText(selectedRoom.id, n, d, no) },
                         onManageExits = { viewModel.openWheelFromEdit() },
-                        onMergeInto = { viewModel.mergeRoom(it) },
+                        onMergeInto = { id, rehome -> viewModel.mergeRoom(id, rehome) },
                         onDeleteRoom = { viewModel.deleteRoom(selectedRoom.id) },
                         onDeleteExit = viewModel::deleteExit,
                         onRedirectExit = viewModel::startRedirect,
