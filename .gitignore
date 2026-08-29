@@ -1,8 +1,10 @@
-.gradle/
-build/
+
 app/build/
-local.properties
-*.iml
-.idea/
+build/
 .DS_Store
+.gradle/
+.idea/
+*.iml
+local.properties
+.pi/
 .superpowers/
