@@ -2,7 +2,10 @@ package com.jrod.droidgridder.ui.editor
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import com.jrod.droidgridder.model.Direction
 import com.jrod.droidgridder.model.Pos
+import com.jrod.droidgridder.model.ROOM_BOX_SIZE
+import com.jrod.droidgridder.model.Room
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -11,6 +14,33 @@ import org.junit.Test
  * pan, and clamped pivot-anchored zoom are covered here instead of on-device pinches.
  */
 class CameraStateTest {
+    // v1.6 pin rule: an exit line meets the box at the compass-true point — cardinals
+    // at edge midpoints, diagonals at the exact corner, UP/DOWN at the top/bottom
+    // midpoint, IN/OUT at the center (containment has no compass).
+    @Test
+    fun `exitAnchor pins lines to corners for diagonals and midpoints for cardinals`() {
+        fun expected(cx: Float, cy: Float, d: Direction): Offset {
+            val hx = ROOM_BOX_SIZE / 2f
+            return when (d) {
+                Direction.N -> Offset(cx, cy - hx)
+                Direction.S -> Offset(cx, cy + hx)
+                Direction.E -> Offset(cx + hx, cy)
+                Direction.W -> Offset(cx - hx, cy)
+                Direction.NE -> Offset(cx + hx, cy - hx)
+                Direction.NW -> Offset(cx - hx, cy - hx)
+                Direction.SE -> Offset(cx + hx, cy + hx)
+                Direction.SW -> Offset(cx - hx, cy + hx)
+                Direction.UP -> Offset(cx, cy - hx)
+                Direction.DOWN -> Offset(cx, cy + hx)
+                Direction.IN, Direction.OUT -> Offset(cx, cy)
+            }
+        }
+        val r = Room(id = "r", x = 100f, y = 200f)
+        for (d in Direction.entries) {
+            assertEquals("$d", expected(100f, 200f, d), exitAnchor(r, d))
+        }
+    }
+
 
     @Test
     fun identityTransformRoundTrip() {

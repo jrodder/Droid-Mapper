@@ -26,10 +26,13 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.jrod.droidgridder.model.Direction
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.Pos
+import com.jrod.droidgridder.model.Room
+import com.jrod.droidgridder.model.opposite
 
 /**
  * World<->screen transform for the editor canvas. The fields are snapshot state so
@@ -76,6 +79,30 @@ class CameraState {
 
 // Room box in world units: model's ROOM_BOX_SIZE (~GRID_STEP * 0.7 per the task brief).
 private const val ROOM_BOX_RADIUS = 12f
+
+/**
+ * v1.6 pin rule: where an exit line meets [room]'s box, in world coords. Cardinals
+ * exit at the edge midpoint, diagonals at the exact corner, UP/DOWN at the
+ * top/bottom midpoint (they sit on the compass grid at 2 strides — the line just
+ * runs longer), IN/OUT at the center (containment has no compass, so contained
+ * rooms keep the center-to-center behavior).
+ */
+fun exitAnchor(room: Room, direction: Direction): Offset {
+    val hx = ROOM_BOX_SIZE / 2f
+    return when (direction) {
+        Direction.N -> Offset(room.x, room.y - hx)
+        Direction.S -> Offset(room.x, room.y + hx)
+        Direction.E -> Offset(room.x + hx, room.y)
+        Direction.W -> Offset(room.x - hx, room.y)
+        Direction.NE -> Offset(room.x + hx, room.y - hx)
+        Direction.NW -> Offset(room.x - hx, room.y - hx)
+        Direction.SE -> Offset(room.x + hx, room.y + hx)
+        Direction.SW -> Offset(room.x - hx, room.y + hx)
+        Direction.UP -> Offset(room.x, room.y - hx)
+        Direction.DOWN -> Offset(room.x, room.y + hx)
+        Direction.IN, Direction.OUT -> Offset(room.x, room.y)
+    }
+}
 
 /** Animated per-room world position plus first-draw pop scale (Task 7). */
 private data class RoomAnim(val x: Float, val y: Float, val pop: Float)
@@ -158,8 +185,10 @@ fun MapCanvas(
 
         val roomsById = map.rooms.associateBy { it.id }
 
-        // Exits first: plain center-to-center lines (v1.2 ruling I: no direction labels on the
-        // canvas; the direction wheel keeps the N/E/S/W affordance).
+        // Exits first: each line runs from the source box's direction anchor to the
+        // destination box's opposite-direction anchor (v1.6 pin rule) — cardinals
+        // leave from the edge midpoint, diagonals from the exact corner. A two-way
+        // mirror computes the identical segment, so mirrors still draw as one line.
         // Lines track the animated positions so connectors follow rooms mid-glide.
         // ponytail: no connector draw-in stroke (Task 7 optional) — per-exit animation
         // state for little visual gain.
@@ -167,10 +196,10 @@ fun MapCanvas(
             val from = roomsById[exit.from] ?: continue
             val to = roomsById[exit.to] ?: continue
             if (from.id == to.id) continue
-            val a = animatedRooms[from.id]?.let { Pos(it.x, it.y) } ?: Pos(from.x, from.y)
-            val b = animatedRooms[to.id]?.let { Pos(it.x, it.y) } ?: Pos(to.x, to.y)
-            val s = camera.worldToScreen(a)
-            val t = camera.worldToScreen(b)
+            val a = animatedRooms[from.id]?.let { exitAnchor(Room(id = from.id, x = it.x, y = it.y), exit.direction) } ?: exitAnchor(from, exit.direction)
+            val b = animatedRooms[to.id]?.let { exitAnchor(Room(id = to.id, x = it.x, y = it.y), exit.direction.opposite()) } ?: exitAnchor(to, exit.direction.opposite())
+            val s = camera.worldToScreen(Pos(a.x, a.y))
+            val t = camera.worldToScreen(Pos(b.x, b.y))
             // v1.6 ruling Q1 (replaces v1.4 N2's always-blue vertical clause): one rule for
             // every edge — touching the selected room is secondary (green) 3dp; the rest stay
             // outline (grey) 2dp. UP/DOWN follow the same selection rule as all other edges.
@@ -181,9 +210,9 @@ fun MapCanvas(
                 end = t,
                 strokeWidth = if (isSelectedEdge) 3f else 2f,
             )
-            // One-way passages get an arrowhead at the destination box edge
-            // (lines run center-to-center under the boxes, so a tip at the center
-            // would be invisible). Same color as the line itself.
+            // One-way passages get an arrowhead at the destination anchor (the line
+            // ends exactly on the box edge now, so a tip there is visible).
+            // Same color as the line itself.
             if (exit.oneWay) {
                 val dx = t.x - s.x
                 val dy = t.y - s.y
@@ -191,11 +220,11 @@ fun MapCanvas(
                 if (len > 1f) {
                     val ux = dx / len
                     val uy = dy / len
-                    val boxHalf = (ROOM_BOX_SIZE / 2f) * camera.scale
-                    val tipX = t.x - ux * boxHalf
-                    val tipY = t.y - uy * boxHalf
                     val arrowLen = 28f // screen px, zoom-independent (14f read as invisible)
                     val arrowW = 10f
+                    // Tip sits exactly on the destination anchor (the line ends there).
+                    val tipX = t.x
+                    val tipY = t.y
                     val baseX = tipX - ux * arrowLen
                     val baseY = tipY - uy * arrowLen
                     val px = -uy
@@ -283,8 +312,8 @@ private fun roomAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
 /**
  * Nearest-exit hit test for long-press (screen space, ~16px finger tolerance):
  * returns the id of the closest exit line within tolerance. For a two-way
- * passage both records overlap the same segment and either id edits the same
- * passage (the one-way toggle and delete are direction-symmetric).
+ * passage both records overlap the same anchored segment and either id edits
+ * the same passage (the one-way toggle and delete are direction-symmetric).
  */
 private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? {
     val rooms = map?.rooms?.associateBy { it.id } ?: return null
@@ -294,8 +323,10 @@ private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
         val from = rooms[exit.from] ?: continue
         val to = rooms[exit.to] ?: continue
         if (from.id == to.id) continue
-        val a = camera.worldToScreen(Pos(from.x, from.y))
-        val b = camera.worldToScreen(Pos(to.x, to.y))
+        val aa = exitAnchor(from, exit.direction)
+        val bb = exitAnchor(to, exit.direction.opposite())
+        val a = camera.worldToScreen(Pos(aa.x, aa.y))
+        val b = camera.worldToScreen(Pos(bb.x, bb.y))
         val d = pointSegDist(screen, a, b)
         if (d < bestDist) {
             bestDist = d
