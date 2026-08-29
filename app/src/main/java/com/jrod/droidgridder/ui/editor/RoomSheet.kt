@@ -120,7 +120,7 @@ fun RoomSheet(
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(1f),
                     )
-                    TextButton(onClick = { mergeTargets = sameNamed }) { Text("Merge") }
+                    TextButton(onClick = { mergeTargets = sameNamed.sortedByProximityTo(room) }) { Text("Merge") }
                 }
             }
 
@@ -158,7 +158,7 @@ fun RoomSheet(
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                 Button(
                     onClick = { mergeTargets = map.rooms.filter { it.id != room.id }
-                        .sortedWith(compareBy({ it.name.isBlank() }, { it.name.trim().lowercase() })) },
+                        .sortedByProximityTo(room) },
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
                 ) {
                     Text("Merge into…")
@@ -216,6 +216,18 @@ fun RoomSheet(
         )
     }
 }
+
+/**
+ * v1.5: merge candidates ordered by proximity to [room], then untitled first, then name.
+ * The merge target is usually near the phantom, and distance disambiguates same-named
+ * rooms better than name order can.
+ */
+private fun List<Room>.sortedByProximityTo(room: Room): List<Room> =
+    sortedWith(compareBy(
+        { kotlin.math.hypot(x - room.x, y - room.y) },
+        { name.isBlank() },
+        { name.trim().lowercase() },
+    ))
 
 /**
  * Draft field that expands and word-wraps with its content (36–240 dp tall),
