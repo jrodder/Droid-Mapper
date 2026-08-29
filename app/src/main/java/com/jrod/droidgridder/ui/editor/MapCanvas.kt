@@ -27,12 +27,17 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.jrod.droidgridder.model.Direction
+import com.jrod.droidgridder.model.ExitRoute
 import com.jrod.droidgridder.model.GRID_STEP
 import com.jrod.droidgridder.model.MapFile
 import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.Pos
 import com.jrod.droidgridder.model.Room
+import com.jrod.droidgridder.model.anchorPos
+import com.jrod.droidgridder.model.directionOffset
+import com.jrod.droidgridder.model.hasMirror
 import com.jrod.droidgridder.model.opposite
+import com.jrod.droidgridder.model.routeExit
 
 /**
  * World<->screen transform for the editor canvas. The fields are snapshot state so
@@ -81,27 +86,20 @@ class CameraState {
 private const val ROOM_BOX_RADIUS = 12f
 
 /**
- * v1.6 pin rule: where an exit line meets [room]'s box, in world coords. Cardinals
- * exit at the edge midpoint, diagonals at the exact corner, UP/DOWN at the
- * top/bottom midpoint (they sit on the compass grid at 2 strides — the line just
- * runs longer), IN/OUT at the center (containment has no compass, so contained
- * rooms keep the center-to-center behavior).
+ * v1.6 pin rule (model math lives in EdgeRouting.anchorPos — the router and the
+ * canvas must agree on where lines meet boxes). Thin Offset wrapper kept for
+ * hit-testing and CameraStateTest.
  */
 fun exitAnchor(room: Room, direction: Direction): Offset {
-    val hx = ROOM_BOX_SIZE / 2f
-    return when (direction) {
-        Direction.N -> Offset(room.x, room.y - hx)
-        Direction.S -> Offset(room.x, room.y + hx)
-        Direction.E -> Offset(room.x + hx, room.y)
-        Direction.W -> Offset(room.x - hx, room.y)
-        Direction.NE -> Offset(room.x + hx, room.y - hx)
-        Direction.NW -> Offset(room.x - hx, room.y - hx)
-        Direction.SE -> Offset(room.x + hx, room.y + hx)
-        Direction.SW -> Offset(room.x - hx, room.y + hx)
-        Direction.UP -> Offset(room.x, room.y - hx)
-        Direction.DOWN -> Offset(room.x, room.y + hx)
-        Direction.IN, Direction.OUT -> Offset(room.x, room.y)
-    }
+    val p = anchorPos(room, direction)
+    return Offset(p.x, p.y)
+}
+
+/** The route's world points as a drawable polyline (Stub = from..tip). */
+private fun ExitRoute.polyline(): List<Pos> = when (this) {
+    is ExitRoute.Straight -> listOf(from, to)
+    is ExitRoute.Bends -> points
+    is ExitRoute.Stub -> listOf(from, tip)
 }
 
 /** Animated per-room world position plus first-draw pop scale (Task 7). */
@@ -185,37 +183,58 @@ fun MapCanvas(
 
         val roomsById = map.rooms.associateBy { it.id }
 
-        // Exits first: each line runs from the source box's direction anchor to the
-        // destination box's opposite-direction anchor (v1.6 pin rule) — cardinals
-        // leave from the edge midpoint, diagonals from the exact corner. A two-way
-        // mirror computes the identical segment, so mirrors still draw as one line.
-        // Lines track the animated positions so connectors follow rooms mid-glide.
+        // v1.5 ruling O1: pure world scaling, no clamp — labels keep constant world width at
+        // every zoom (overlap-free by layout stride), pinch-in makes them larger.
+        val nameFont = (13f * camera.scale).sp
+        val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
+
+        // v1.6.1 routed connectors: route every exit around the OTHER rooms'
+        // footprints (Manhattan gutters; labeled stub when walled in). Routes are
+        // pure functions of the current positions, so they track the animated
+        // glides. A mirror pair shares one route — same endpoints, reversed.
+        val routedMap = map.copy(rooms = map.rooms.map { r ->
+            animatedRooms[r.id]?.let { r.copy(x = it.x, y = it.y) } ?: r
+        })
+        val routes = HashMap<String, ExitRoute?>()
+        for (exit in map.exits) {
+            if (exit.from == exit.to) continue
+            val k = listOf(exit.from, exit.to).sorted().joinToString("|")
+            routes[k] = routes[k] ?: routeExit(exit, routedMap)
+        }
+
+        // Exits first (under the boxes): polylines run from the source box's
+        // direction anchor to the destination box's opposite-direction anchor,
+        // bent around obstructions. A two-way mirror computes the identical
+        // polyline, so mirrors still draw as one line.
         // ponytail: no connector draw-in stroke (Task 7 optional) — per-exit animation
         // state for little visual gain.
         for (exit in map.exits) {
             val from = roomsById[exit.from] ?: continue
             val to = roomsById[exit.to] ?: continue
             if (from.id == to.id) continue
-            val a = animatedRooms[from.id]?.let { exitAnchor(Room(id = from.id, x = it.x, y = it.y), exit.direction) } ?: exitAnchor(from, exit.direction)
-            val b = animatedRooms[to.id]?.let { exitAnchor(Room(id = to.id, x = it.x, y = it.y), exit.direction.opposite()) } ?: exitAnchor(to, exit.direction.opposite())
-            val s = camera.worldToScreen(Pos(a.x, a.y))
-            val t = camera.worldToScreen(Pos(b.x, b.y))
+            val route = routes[listOf(exit.from, exit.to).sorted().joinToString("|")] ?: continue
+            val pts = route.polyline().map { camera.worldToScreen(it) }
             // v1.6 ruling Q1 (replaces v1.4 N2's always-blue vertical clause): one rule for
             // every edge — touching the selected room is secondary (green) 3dp; the rest stay
             // outline (grey) 2dp. UP/DOWN follow the same selection rule as all other edges.
             val isSelectedEdge = exit.from == state.selectedRoomId || exit.to == state.selectedRoomId
-            drawLine(
-                color = if (isSelectedEdge) selectedColor else exitColor,
-                start = s,
-                end = t,
-                strokeWidth = if (isSelectedEdge) 3f else 2f,
-            )
-            // One-way passages get an arrowhead at the destination anchor (the line
-            // ends exactly on the box edge now, so a tip there is visible).
-            // Same color as the line itself.
-            if (exit.oneWay) {
-                val dx = t.x - s.x
-                val dy = t.y - s.y
+            val lineColor = if (isSelectedEdge) selectedColor else exitColor
+            val path = Path().apply {
+                moveTo(pts.first().x, pts.first().y)
+                for (i in 1 until pts.size) lineTo(pts[i].x, pts[i].y)
+            }
+            drawPath(path, color = lineColor, style = Stroke(width = if (isSelectedEdge) 3f else 2f))
+            // One-way passages get an arrowhead at the destination anchor, oriented
+            // along the route's final segment (a routed line can arrive along an axis
+            // different from its declared bearing). Same color as the line itself.
+            // Topology, not the oneWay flag, decides: an arrow only when the reverse
+            // record (to→from along the opposite bearing) does not exist.
+            val oneWay = !hasMirror(exit, map.exits)
+            if (oneWay && pts.size >= 2) {
+                val tip = pts.last()
+                val prev = pts[pts.size - 2]
+                val dx = tip.x - prev.x
+                val dy = tip.y - prev.y
                 val len = kotlin.math.hypot(dx, dy)
                 if (len > 1f) {
                     val ux = dx / len
@@ -223,27 +242,38 @@ fun MapCanvas(
                     val arrowLen = 28f // screen px, zoom-independent (14f read as invisible)
                     val arrowW = 10f
                     // Tip sits exactly on the destination anchor (the line ends there).
-                    val tipX = t.x
-                    val tipY = t.y
-                    val baseX = tipX - ux * arrowLen
-                    val baseY = tipY - uy * arrowLen
+                    val baseX = tip.x - ux * arrowLen
+                    val baseY = tip.y - uy * arrowLen
                     val px = -uy
                     val py = ux
                     val arrowPath = Path().apply {
-                        moveTo(tipX, tipY)
+                        moveTo(tip.x, tip.y)
                         lineTo(baseX + px * arrowW, baseY + py * arrowW)
                         lineTo(baseX - px * arrowW, baseY - py * arrowW)
                         close()
                     }
-                    drawPath(arrowPath, color = if (isSelectedEdge) selectedColor else exitColor)
+                    drawPath(arrowPath, color = lineColor)
                 }
             }
+            // Walled-in edge: labeled stub naming the destination, pushed out along
+            // the bearing's dominant axis so the text doesn't sit on the line.
+            if (route is ExitRoute.Stub) {
+                val layout = textMeasurer.measure(text = "→ ${route.targetName}", style = TextStyle(fontSize = nameFont))
+                val off = directionOffset(exit.direction)
+                val tip = camera.worldToScreen(route.tip)
+                val cx = if (kotlin.math.abs(off.x) > kotlin.math.abs(off.y)) {
+                    tip.x + (if (off.x > 0f) 1f else -1f) * (4f + layout.size.width / 2f)
+                } else {
+                    tip.x
+                }
+                val cy = if (kotlin.math.abs(off.x) > kotlin.math.abs(off.y)) {
+                    tip.y
+                } else {
+                    tip.y + (if (off.y > 0f) 1f else -1f) * (layout.size.height / 2f)
+                }
+                drawText(layout, color = lineColor, topLeft = Offset(cx - layout.size.width / 2f, cy - layout.size.height / 2f))
+            }
         }
-
-        val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
-        // v1.5 ruling O1: pure world scaling, no clamp — labels keep constant world width at
-        // every zoom (overlap-free by layout stride), pinch-in makes them larger.
-        val nameFont = (13f * camera.scale).sp
 
         for (room in map.rooms) {
             // Animated position (Task 7): re-layouts glide; `pop` scales new rooms in.
@@ -316,18 +346,23 @@ private fun roomAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
  * the same passage (the one-way toggle and delete are direction-symmetric).
  */
 private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? {
-    val rooms = map?.rooms?.associateBy { it.id } ?: return null
+    if (map == null) return null
     var bestId: String? = null
     var bestDist = 16f
     for (exit in map.exits) {
-        val from = rooms[exit.from] ?: continue
-        val to = rooms[exit.to] ?: continue
-        if (from.id == to.id) continue
-        val aa = exitAnchor(from, exit.direction)
-        val bb = exitAnchor(to, exit.direction.opposite())
-        val a = camera.worldToScreen(Pos(aa.x, aa.y))
-        val b = camera.worldToScreen(Pos(bb.x, bb.y))
-        val d = pointSegDist(screen, a, b)
+        if (exit.from == exit.to) continue
+        // Settled positions are fine: the route shape (and hence the polyline) is the
+        // same the user just looked at, and the 16px tolerance absorbs glide drift.
+        val route = routeExit(exit, map) ?: continue
+        val pts = route.polyline()
+        if (pts.size < 2) continue
+        var d = Float.MAX_VALUE
+        for (i in 0 until pts.size - 1) {
+            val a = camera.worldToScreen(pts[i])
+            val b = camera.worldToScreen(pts[i + 1])
+            val di = pointSegDist(screen, a, b)
+            if (di < d) d = di
+        }
         if (d < bestDist) {
             bestDist = d
             bestId = exit.id
