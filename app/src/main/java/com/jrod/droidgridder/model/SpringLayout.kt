@@ -134,34 +134,9 @@ fun springLayout(map: MapFile, stride: Float = GRID_STEP): MapFile {
     return map.copy(rooms = map.rooms.mapIndexed { i, r -> r.copy(x = x[i], y = y[i]) })
 }
 
-// v1.6 display geometry, in world units (MapCanvas draws the name at
-// 13sp * density, below the box: top 0.5 font below the box bottom, one
-// font tall). ponytail: density 3.0 is the phone target — calibrate if a
-// low-density device shows occlusion.
-const val LABEL_FONT_WORLD = 39f  // 13sp @ 3.0
-const val LABEL_CHAR_W = 0.55f    // average character width, in em
-private val BOX_HALF = ROOM_BOX_SIZE / 2f
-private val STRIP_TOP = BOX_HALF + LABEL_FONT_WORLD / 2f        // 82.5
-private val STRIP_BOTTOM = BOX_HALF + LABEL_FONT_WORLD * 1.5f   // 121.5
-
-private data class R(val l: Float, val t: Float, val r: Float, val b: Float) {
-    /** Penetration (x, y); positive = overlapping on that axis. */
-    fun pen(o: R): Pair<Float, Float> =
-        (minOf(r, o.r) - maxOf(l, o.l)) to (minOf(b, o.b) - maxOf(t, o.t))
-    fun hits(o: R, margin: Float): Boolean {
-        val (px, py) = pen(o)
-        return px > -margin && py > -margin
-    }
-}
-
-private fun boxRect(x: Float, y: Float): R = R(x - BOX_HALF, y - BOX_HALF, x + BOX_HALF, y + BOX_HALF)
-
-/** The label strip below a room (null for an unnamed room — nothing drawn). */
-private fun stripRect(x: Float, y: Float, name: String): R? {
-    if (name.isEmpty()) return null
-    val hw = name.length * LABEL_CHAR_W * LABEL_FONT_WORLD / 2f
-    return R(x - hw, y + STRIP_TOP, x + hw, y + STRIP_BOTTOM)
-}
+// v1.6 display geometry (Foot, boxFoot, stripFoot, LABEL_FONT_WORLD,
+// LABEL_CHAR_W, DISPLAY_MARGIN) moved to EdgeRouting.kt — shared with the
+// edge router so layout and routing agree on footprints.
 
 /**
  * True when any room's box occludes another room's label strip (either
@@ -173,10 +148,10 @@ fun labelsOccluded(rooms: List<Room>, margin: Float = DISPLAY_MARGIN): Boolean {
         for (j in i + 1 until rooms.size) {
             val a = rooms[i]
             val b = rooms[j]
-            val boxA = boxRect(a.x, a.y)
-            val boxB = boxRect(b.x, b.y)
-            val stripA = stripRect(a.x, a.y, a.name)
-            val stripB = stripRect(b.x, b.y, b.name)
+            val boxA = boxFoot(a.x, a.y)
+            val boxB = boxFoot(b.x, b.y)
+            val stripA = stripFoot(a.x, a.y, a.name)
+            val stripB = stripFoot(b.x, b.y, b.name)
             if ((stripA != null && stripA.hits(boxB, margin)) ||
                 (stripB != null && boxA.hits(stripB, margin))) return true
         }
@@ -229,10 +204,10 @@ private fun separateFootprints(x: FloatArray, y: FloatArray, names: List<String>
     var moved = false
     for (i in x.indices) {
         for (j in i + 1 until x.size) {
-            val boxI = boxRect(x[i], y[i])
-            val boxJ = boxRect(x[j], y[j])
-            val stripI = stripRect(x[i], y[i], names[i])
-            val stripJ = stripRect(x[j], y[j], names[j])
+            val boxI = boxFoot(x[i], y[i])
+            val boxJ = boxFoot(x[j], y[j])
+            val stripI = stripFoot(x[i], y[i], names[i])
+            val stripJ = stripFoot(x[j], y[j], names[j])
             // Tightest overlap across all rect pairs and both axes. A pair
             // only overlaps when BOTH axes penetrate; among real overlaps we
             // take the least-penetrating axis to push along.
@@ -272,7 +247,3 @@ private const val ITERATIONS = 300
 // instead of oscillating against a grid-length insistence.
 private const val MIN_ALONG = 0.85f   // contact floor, × stride
 private const val FOOTPRINT_PASSES = 500 // final footprint fixed-point passes (bounded)
-
-// [DISPLAY_MARGIN] of clearance is kept when testing occlusion (the canvas
-// stroke extends ~1px past the box edge).
-const val DISPLAY_MARGIN = 2f
