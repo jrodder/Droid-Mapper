@@ -224,9 +224,9 @@ fun RoomSheet(
  */
 private fun List<Room>.sortedByProximityTo(room: Room): List<Room> =
     sortedWith(compareBy(
-        { kotlin.math.hypot(x - room.x, y - room.y) },
-        { name.isBlank() },
-        { name.trim().lowercase() },
+        { kotlin.math.hypot(it.x - room.x, it.y - room.y) },
+        { it.name.isBlank() },
+        { it.name.trim().lowercase() },
     ))
 
 /**
