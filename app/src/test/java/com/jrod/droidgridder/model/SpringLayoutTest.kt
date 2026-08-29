@@ -1,6 +1,7 @@
 package com.jrod.droidgridder.model
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
@@ -130,6 +131,24 @@ class SpringLayoutTest {
         assertTrue("attic/eastern tunnel overlap: $sep", sep >= 0.74f * GRID_STEP)
     }
 
+    @Test
+    fun `spring layout keeps a room's label clear of a neighbor's box`() {
+        // The user's testing-map case: "closet" is "eastern tunnel"'s S neighbor.
+        // The canvas draws the name BELOW the box, so a long name's label strip
+        // ends up under the south neighbor's box — the solver's final phase
+        // must clear it (stretching, not rotating, the S edge).
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(Room(id = "a", name = "eastern tunnel"), Room(id = "b", name = "closet")),
+            exits = listOf(Exit("1", "a", Direction.S, "b"), Exit("2", "b", Direction.N, "a")))
+        val out = springLayout(m)
+        assertFalse("eastern tunnel's label sits under closet's box: $out",
+            labelsOccluded(out.rooms))
+        // The S bearing is kept: any stretch stays on the line, not angled.
+        val p = out.rooms.associateBy { it.id }
+        assertTrue("S edge angled: dx=${p["b"]!!.x - p["a"]!!.x}",
+            abs(p["b"]!!.x - p["a"]!!.x) < 1f)
+    }
+
     /**
      * Mean/min cosine between each bearing edge's actual offset and its declared
      * bearing (1.0 = on bearing at any distance, < 0 = flipped to the wrong
@@ -173,22 +192,22 @@ class SpringLayoutTest {
     }
 
     @Test
-    fun `spring layout keeps the root at the origin and rooms at least a box apart`() {
+    fun `spring layout keeps the root at the origin and boxes clear`() {
         val out = springLayout(zorkSubset)
         val root = out.rooms.first()
         assertEquals(0f, root.x, 0.01f)
         assertEquals(0f, root.y, 0.01f)
-        var min = Float.MAX_VALUE
+        // Display guarantee: no box overlaps another box. Boxes are 126 wide,
+        // so a pair is clear when they are ≥126 apart on at least one axis
+        // (1px tolerance for the 2px stroke / float rounding).
         for (i in out.rooms.indices) {
             for (j in i + 1 until out.rooms.size) {
-                val d = kotlin.math.hypot(
-                    (out.rooms[j].x - out.rooms[i].x).toDouble(),
-                    (out.rooms[j].y - out.rooms[i].y).toDouble(),
-                ).toFloat()
-                min = minOf(min, d)
+                val dx = abs((out.rooms[j].x - out.rooms[i].x).toDouble())
+                val dy = abs((out.rooms[j].y - out.rooms[i].y).toDouble())
+                assertTrue("boxes overlap: ${out.rooms[i].name} <-> ${out.rooms[j].name} dx=$dx dy=$dy",
+                    dx >= 125.0 || dy >= 125.0)
             }
         }
-        assertTrue("rooms overlap: min distance $min < ${0.74f * GRID_STEP}", min >= 0.74f * GRID_STEP)
     }
 
     @Test
