@@ -231,17 +231,24 @@ fun MapCanvas(
                 drawCircle(color = lineColor, radius = LOOP_RADIUS * camera.scale, center = center, style = Stroke(width = lineWidth))
                 continue
             }
+            // One passage pair (mirror records) draws ONCE — from the canonical
+            // record (smaller from-room id). The mirror's own route (its own
+            // drop-off shape, say) is not drawn: that would be two different
+            // polylines for one passage. One-way records have no mirror and
+            // draw themselves (with the arrowhead).
+            if (exit.from > exit.to) {
+                val mirror = map.exits.firstOrNull {
+                    it.from == exit.to && it.to == exit.from &&
+                        it.direction == exit.direction.opposite()
+                }
+                if (mirror != null) continue
+            }
             val route = routeExit(exit, routedMap) ?: continue
             val pts = route.polyline().map { camera.worldToScreen(it) }
             val path = Path().apply {
                 moveTo(pts.first().x, pts.first().y)
                 for (i in 1 until pts.size) lineTo(pts[i].x, pts[i].y)
             }
-            // Walled-in edge: the stub (line + destination label) is a per-PASSAGE
-            // feature — ZUG's "where more than one direction leads to the same
-            // place, all are not necessarily shown" — so exactly one record of
-            // the mirror pair (the lexicographically first room) draws it.
-            if (route is ExitRoute.Stub && exit.from != listOf(exit.from, exit.to).min()) continue
             drawPath(path, color = lineColor, style = Stroke(width = lineWidth))
             // One-way passages get an arrowhead at the destination anchor, oriented
             // along the route's final segment (a routed line can arrive along an axis
@@ -369,11 +376,20 @@ private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
     var bestId: String? = null
     var bestDist = 16f
     for (exit in map.exits) {
+        // A mirror pair shares one drawn polyline (the canonical record's
+        // route); hit-test that. Either id still edits the same passage
+        // (the one-way toggle and delete are direction-symmetric).
+        val source = if (exit.from > exit.to) {
+            map.exits.firstOrNull {
+                it.from == exit.to && it.to == exit.from &&
+                    it.direction == exit.direction.opposite()
+            } ?: exit
+        } else exit
         // Settled positions are fine: the route shape (and hence the polyline) is the
         // same the user just looked at, and the 16px tolerance absorbs glide drift.
         // Self-exits hit-test their loop stalk; containment self-exits route to
         // null and are skipped (they don't draw).
-        val route = routeExit(exit, map) ?: continue
+        val route = routeExit(source, map) ?: continue
         val pts = route.polyline()
         if (pts.size < 2) continue
         var d = Float.MAX_VALUE

@@ -26,6 +26,9 @@ const val STUB_LEN = 40f
  * out from the anchor, then a circle of this radius centered beyond it. */
 const val LOOP_STALK = 18f
 const val LOOP_RADIUS = 12f
+const val EDGE_SLACK = 4f    // channel offset beyond an obstacle edge (clears the ROUTE_MARGIN inflation)
+const val DROP_LEN = 30f     // drop-off length; clears the max on-grid label graze (6.5 incl. margin)
+const val EXIT_FRAC = 0.25f  // quick-exit tolerance fraction of a segment's length
 
 /** Normalized bearing vector for [d]; IN/OUT have no compass bearing —
  *  defined as "up" so degenerate callers never divide by zero. */
@@ -45,7 +48,16 @@ data class Foot(val l: Float, val t: Float, val r: Float, val b: Float) {
         return px > -margin && py > -margin
     }
 
-    /** True when segment p–q intersects this rect inflated by [margin] (slab test). */
+    /** True when point p is inside this rect (no margin). */
+    fun contains(p: Pos): Boolean = p.x in l..r && p.y in t..b
+
+    /** True when segment p–q intersects this rect inflated by [margin] (slab test).
+     *  Quick-exit rule: an endpoint sitting inside the inflated rect that
+     *  leaves (or arrives) within [EXIT_FRAC] of the segment's length is not
+     *  counted — the line is merely stepping off its anchor in a tolerated
+     *  footprint graze. ponytail: if the layout ever produced a DEEP overlap
+     *  (it doesn't — boxes never overlap; only ≤6.5-unit label grazes), a
+     *  long run-through near an anchor would be missed. */
     fun crosses(p: Pos, q: Pos, margin: Float): Boolean {
         val dx = q.x - p.x
         val dy = q.y - p.y
@@ -70,7 +82,10 @@ data class Foot(val l: Float, val t: Float, val r: Float, val b: Float) {
             if (ta > t0) t0 = ta
             if (tb < t1) t1 = tb
         }
-        return t0 <= t1
+        if (t0 > t1) return false
+        if (t0 == 0f && t1 <= EXIT_FRAC) return false      // p inside, quick exit
+        if (t1 == 1f && t0 >= 1f - EXIT_FRAC) return false // q inside, quick arrival
+        return true
     }
 }
 
@@ -127,9 +142,13 @@ sealed class ExitRoute {
  * hang the loop on). Unknown room ids return null. IN/OUT are containment:
  * straight center-to-center, never routed. Otherwise the straight anchor-to-
  * anchor segment wins when clear; failing that, the fixed-order Manhattan
- * candidate list (L/Z corners, then half-stride gutter channels) is tried in
- * order and the first fully clear polyline wins; failing all of that, a
- * labeled stub pointing out along the declared bearing names the destination.
+ * candidate list (L/Z corners, half-stride gutter channels, obstacle-edge
+ * channels, and a hidden drop-off shape for anchors trapped in a neighbor's
+ * label strip) is tried in order and the first fully clear polyline wins;
+ * failing all of that, a labeled stub pointing out along the declared bearing
+ * names the destination. A segment whose endpoint sits inside an inflated
+ * footprint and leaves within the first 25% of its length is not counted as
+ * crossing it (quick-exit rule — anchors may sit in tolerated label grazes).
  *
  * ponytail: candidate-list routing, not A* — the upgrade path if visible
  * routing failures remain; no routed-line-vs-routed-line crossing avoidance.
@@ -164,16 +183,46 @@ fun routeExit(exit: Exit, map: MapFile): ExitRoute? {
     // Fixed candidate order (deterministic): L1 horizontal-first, L2
     // vertical-first, then the 8 half-stride gutter channels (g = GRID_STEP/2).
     val g = GRID_STEP / 2f
-    val cands = ArrayList<List<Pos>>(10)
+    val cands = ArrayList<List<Pos>>(26)
     cands.add(listOf(a, Pos(b.x, a.y), b))
     cands.add(listOf(a, Pos(a.x, b.y), b))
+    val gutterRows = ArrayList<Float>()
+    val gutterCols = ArrayList<Float>()
     for (s in listOf(-1f, 1f)) {
         for (m in listOf(a.y + s * g, b.y + s * g)) {
+            gutterRows.add(m)
             cands.add(listOf(a, Pos(a.x, m), Pos(b.x, m), b))
         }
         for (m in listOf(a.x + s * g, b.x + s * g)) {
+            gutterCols.add(m)
             cands.add(listOf(a, Pos(m, a.y), Pos(m, b.y), b))
         }
+    }
+    // Edge-derived channels: just outside each obstacle's edges. Tries a hug
+    // of the actual blocker, not just the fixed ±90 gutters.
+    val edgeRows = ArrayList<Float>()
+    val edgeCols = ArrayList<Float>()
+    for (o in obstacles) {
+        edgeRows.add(o.t - EDGE_SLACK); edgeRows.add(o.b + EDGE_SLACK)
+        edgeCols.add(o.l - EDGE_SLACK); edgeCols.add(o.r + EDGE_SLACK)
+    }
+    edgeRows.sortBy { abs(it - (a.y + b.y) / 2f) }
+    edgeCols.sortBy { abs(it - (a.x + b.x) / 2f) }
+    for (m in edgeRows) cands.add(listOf(a, Pos(a.x, m), Pos(b.x, m), b))
+    for (m in edgeCols) cands.add(listOf(a, Pos(m, a.y), Pos(m, b.y), b))
+    // Drop-off shape: step off the source anchor under its own box (hidden —
+    // edges draw under boxes), run to a channel, run to the destination
+    // row/col, arrive. Wins when the anchor sits in a neighbor's label strip:
+    // a plain 4-point shape's first segment would then run along the label
+    // text. Gutter channels come before edge channels (shorter detour).
+    val u = unitBearing(exit.direction)
+    val p0 = Pos(a.x - u.x * DROP_LEN, a.y - u.y * DROP_LEN)
+    val allRows = (gutterRows + edgeRows).distinct().sortedBy { abs(it - (a.y + b.y) / 2f) }
+    val allCols = (gutterCols + edgeCols).distinct().sortedBy { abs(it - (a.x + b.x) / 2f) }
+    if (abs(u.x) > abs(u.y)) {
+        for (m in allRows) cands.add(listOf(a, p0, Pos(p0.x, m), Pos(b.x, m), b))
+    } else {
+        for (m in allCols) cands.add(listOf(a, p0, Pos(m, p0.y), Pos(m, b.y), b))
     }
     // Cardinal bearings: candidates whose first segment runs ALONG the bearing
     // come first (a line leaving an E port should leave east). Stable sort keeps
@@ -186,7 +235,6 @@ fun routeExit(exit: Exit, map: MapFile): ExitRoute? {
         val pts = collapse(cand)
         if (pts.size >= 2 && clear(pts)) return ExitRoute.Bends(pts)
     }
-    val u = unitBearing(exit.direction)
     return ExitRoute.Stub(a, Pos(a.x + u.x * STUB_LEN, a.y + u.y * STUB_LEN),
                            exit.direction, toRoom.name)
 }

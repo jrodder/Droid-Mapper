@@ -137,4 +137,37 @@ class EdgeRoutingTest {
         val inU = unitBearing(Direction.IN)
         assertEquals(1f, kotlin.math.hypot(inU.x, inU.y), 0.001f)
     }
+
+    // Tidy corridor case (Enchanter's Mountain Trail -> Trail Head -> Top of
+    // Lonely Mountain): the source anchor sits inside the middle room's label
+    // strip (the tolerated box-over-label graze). The route must step off the
+    // anchor under its own box (hidden), swing out past the label's edge, and
+    // arrive — not stub, and no segment may run through the label itself.
+    @Test fun `anchor inside neighbor label strip routes around the label`() {
+        val mt = room("mt", 0f, 0f, "Mountain Trail")
+        val th = room("th", 0f, -180f, "Trail Head")          // between them
+        val tol = room("tolm", 0f, -360f, "Top of Lonely Mountain")
+        val e = exit("e1", "mt", Direction.N, "tolm")
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(mt, th, tol), exits = listOf(e))
+
+        // The graze is real: MT's N anchor is inside Trail Head's strip.
+        val strip = stripFoot(th.x, th.y, th.name)!!
+        val anchor = anchorPos(mt, Direction.N)
+        assertTrue("premise: anchor inside strip", strip.contains(anchor))
+
+        val route = routeExit(e, m) ?: error("expected a route, got Stub")
+        val bends = route as? ExitRoute.Bends ?: error("expected Bends, got $route")
+        val pts = bends.points
+        assertEquals(anchor, pts.first())
+        assertEquals(anchorPos(tol, Direction.S), pts.last())
+        val box = boxFoot(th.x, th.y)
+        for (i in 0 until pts.size - 1) {
+            val p = pts[i]; val q = pts[i + 1]
+            assertTrue("segment must be axis-aligned", p.x == q.x || p.y == q.y)
+            assertFalse("segment $i crosses the box", box.crosses(p, q, ROUTE_MARGIN))
+            val mid = Pos((p.x + q.x) / 2f, (p.y + q.y) / 2f)
+            assertFalse("segment $i runs through the label", strip.contains(mid))
+        }
+    }
 }
