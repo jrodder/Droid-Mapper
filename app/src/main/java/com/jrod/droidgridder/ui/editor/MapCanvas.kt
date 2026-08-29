@@ -34,10 +34,12 @@ import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.Pos
 import com.jrod.droidgridder.model.Room
 import com.jrod.droidgridder.model.anchorPos
-import com.jrod.droidgridder.model.directionOffset
 import com.jrod.droidgridder.model.hasMirror
 import com.jrod.droidgridder.model.opposite
 import com.jrod.droidgridder.model.routeExit
+import com.jrod.droidgridder.model.unitBearing
+import com.jrod.droidgridder.model.LOOP_RADIUS
+import com.jrod.droidgridder.model.LOOP_STALK
 
 /**
  * World<->screen transform for the editor canvas. The fields are snapshot state so
@@ -95,11 +97,17 @@ fun exitAnchor(room: Room, direction: Direction): Offset {
     return Offset(p.x, p.y)
 }
 
-/** The route's world points as a drawable polyline (Stub = from..tip). */
+/** The route's world points as a drawable polyline (Stub = from..tip;
+ *  Loop = anchor..end of the stalk, which is what hit-testing needs). */
 private fun ExitRoute.polyline(): List<Pos> = when (this) {
     is ExitRoute.Straight -> listOf(from, to)
     is ExitRoute.Bends -> points
     is ExitRoute.Stub -> listOf(from, tip)
+    is ExitRoute.Loop -> {
+        val u = unitBearing(direction)
+        val reach = LOOP_STALK + LOOP_RADIUS
+        listOf(anchor, Pos(anchor.x + u.x * reach, anchor.y + u.y * reach))
+    }
 }
 
 /** Animated per-room world position plus first-draw pop scale (Task 7). */
@@ -188,42 +196,53 @@ fun MapCanvas(
         val nameFont = (13f * camera.scale).sp
         val radius = CornerRadius(ROOM_BOX_RADIUS * camera.scale)
 
-        // v1.6.1 routed connectors: route every exit around the OTHER rooms'
-        // footprints (Manhattan gutters; labeled stub when walled in). Routes are
-        // pure functions of the current positions, so they track the animated
-        // glides. A mirror pair shares one route — same endpoints, reversed.
+        // v1.6.1 routed connectors: each exit is routed around the OTHER rooms'
+        // footprints (Manhattan gutters; labeled stub when walled in; a loop
+        // glyph for self-exits). Routes are pure functions of the current
+        // positions, so they track the animated glides. A mirror pair computes
+        // the identical geometry reversed, so mirrors still draw as one line.
         val routedMap = map.copy(rooms = map.rooms.map { r ->
             animatedRooms[r.id]?.let { r.copy(x = it.x, y = it.y) } ?: r
         })
-        val routes = HashMap<String, ExitRoute?>()
-        for (exit in map.exits) {
-            if (exit.from == exit.to) continue
-            val k = listOf(exit.from, exit.to).sorted().joinToString("|")
-            routes[k] = routes[k] ?: routeExit(exit, routedMap)
-        }
 
         // Exits first (under the boxes): polylines run from the source box's
         // direction anchor to the destination box's opposite-direction anchor,
-        // bent around obstructions. A two-way mirror computes the identical
-        // polyline, so mirrors still draw as one line.
+        // bent around obstructions.
         // ponytail: no connector draw-in stroke (Task 7 optional) — per-exit animation
         // state for little visual gain.
         for (exit in map.exits) {
             val from = roomsById[exit.from] ?: continue
             val to = roomsById[exit.to] ?: continue
-            if (from.id == to.id) continue
-            val route = routes[listOf(exit.from, exit.to).sorted().joinToString("|")] ?: continue
-            val pts = route.polyline().map { camera.worldToScreen(it) }
             // v1.6 ruling Q1 (replaces v1.4 N2's always-blue vertical clause): one rule for
             // every edge — touching the selected room is secondary (green) 3dp; the rest stay
             // outline (grey) 2dp. UP/DOWN follow the same selection rule as all other edges.
             val isSelectedEdge = exit.from == state.selectedRoomId || exit.to == state.selectedRoomId
             val lineColor = if (isSelectedEdge) selectedColor else exitColor
+            val lineWidth = if (isSelectedEdge) 3f else 2f
+            // Self-exit: ZUG's loop glyph — a stalk out along the bearing with a
+            // small circle at its end (passage returning to room of origin).
+            if (exit.from == exit.to) {
+                val route = routeExit(exit, routedMap) as? ExitRoute.Loop ?: continue
+                val a = camera.worldToScreen(route.anchor)
+                val u = unitBearing(route.direction)
+                val stalkEnd = Offset(a.x + u.x * LOOP_STALK * camera.scale, a.y + u.y * LOOP_STALK * camera.scale)
+                val center = Offset(stalkEnd.x + u.x * LOOP_RADIUS * camera.scale, stalkEnd.y + u.y * LOOP_RADIUS * camera.scale)
+                drawLine(color = lineColor, start = a, end = stalkEnd, strokeWidth = lineWidth)
+                drawCircle(color = lineColor, radius = LOOP_RADIUS * camera.scale, center = center, style = Stroke(width = lineWidth))
+                continue
+            }
+            val route = routeExit(exit, routedMap) ?: continue
+            val pts = route.polyline().map { camera.worldToScreen(it) }
             val path = Path().apply {
                 moveTo(pts.first().x, pts.first().y)
                 for (i in 1 until pts.size) lineTo(pts[i].x, pts[i].y)
             }
-            drawPath(path, color = lineColor, style = Stroke(width = if (isSelectedEdge) 3f else 2f))
+            // Walled-in edge: the stub (line + destination label) is a per-PASSAGE
+            // feature — ZUG's "where more than one direction leads to the same
+            // place, all are not necessarily shown" — so exactly one record of
+            // the mirror pair (the lexicographically first room) draws it.
+            if (route is ExitRoute.Stub && exit.from != listOf(exit.from, exit.to).min()) continue
+            drawPath(path, color = lineColor, style = Stroke(width = lineWidth))
             // One-way passages get an arrowhead at the destination anchor, oriented
             // along the route's final segment (a routed line can arrive along an axis
             // different from its declared bearing). Same color as the line itself.
@@ -259,17 +278,17 @@ fun MapCanvas(
             // the bearing's dominant axis so the text doesn't sit on the line.
             if (route is ExitRoute.Stub) {
                 val layout = textMeasurer.measure(text = "→ ${route.targetName}", style = TextStyle(fontSize = nameFont))
-                val off = directionOffset(exit.direction)
+                val u = unitBearing(route.direction)
                 val tip = camera.worldToScreen(route.tip)
-                val cx = if (kotlin.math.abs(off.x) > kotlin.math.abs(off.y)) {
-                    tip.x + (if (off.x > 0f) 1f else -1f) * (4f + layout.size.width / 2f)
+                val cx = if (kotlin.math.abs(u.x) > kotlin.math.abs(u.y)) {
+                    tip.x + (if (u.x > 0f) 1f else -1f) * (4f + layout.size.width / 2f)
                 } else {
                     tip.x
                 }
-                val cy = if (kotlin.math.abs(off.x) > kotlin.math.abs(off.y)) {
+                val cy = if (kotlin.math.abs(u.x) > kotlin.math.abs(u.y)) {
                     tip.y
                 } else {
-                    tip.y + (if (off.y > 0f) 1f else -1f) * (layout.size.height / 2f)
+                    tip.y + (if (u.y > 0f) 1f else -1f) * (layout.size.height / 2f)
                 }
                 drawText(layout, color = lineColor, topLeft = Offset(cx - layout.size.width / 2f, cy - layout.size.height / 2f))
             }
@@ -350,9 +369,10 @@ private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
     var bestId: String? = null
     var bestDist = 16f
     for (exit in map.exits) {
-        if (exit.from == exit.to) continue
         // Settled positions are fine: the route shape (and hence the polyline) is the
         // same the user just looked at, and the 16px tolerance absorbs glide drift.
+        // Self-exits hit-test their loop stalk; containment self-exits route to
+        // null and are skipped (they don't draw).
         val route = routeExit(exit, map) ?: continue
         val pts = route.polyline()
         if (pts.size < 2) continue

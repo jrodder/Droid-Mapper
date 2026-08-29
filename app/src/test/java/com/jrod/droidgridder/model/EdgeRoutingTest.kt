@@ -2,9 +2,11 @@ package com.jrod.droidgridder.model
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.math.hypot
 
 class EdgeRoutingTest {
     private fun room(id: String, x: Float, y: Float, name: String = "") =
@@ -105,5 +107,34 @@ class EdgeRoutingTest {
             rooms = listOf(room("A", 0f, 0f), room("B", GRID_STEP, -GRID_STEP)),
             exits = listOf(exit("1", "A", Direction.IN, "B")))
         assertTrue(routeExit(m.exits[0], m) is ExitRoute.Straight)
+    }
+
+    @Test fun `self-exit routes to a loop glyph at the bearing anchor`() {
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(room("A", 0f, 0f), room("B", 2 * GRID_STEP, 0f)),
+            exits = listOf(exit("1", "A", Direction.E, "A")))
+        val h = ROOM_BOX_SIZE / 2f
+        val r = routeExit(m.exits[0], m) as? ExitRoute.Loop
+            ?: error("expected Loop, got ${routeExit(m.exits[0], m)}")
+        assertEquals(Pos(h, 0f), r.anchor) // E anchor = right edge midpoint
+        assertEquals(Direction.E, r.direction)
+    }
+
+    @Test fun `containment self-exit is not routed`() {
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(room("A", 0f, 0f)),
+            exits = listOf(exit("1", "A", Direction.IN, "A")))
+        assertNull(routeExit(m.exits[0], m))
+    }
+
+    @Test fun `unitBearing is normalized and defined for every direction`() {
+        assertEquals(Pos(1f, 0f), unitBearing(Direction.E))
+        assertEquals(Pos(0f, -1f), unitBearing(Direction.N))
+        val ne = unitBearing(Direction.NE)
+        assertEquals(1f, kotlin.math.hypot(ne.x, ne.y), 0.001f)
+        assertEquals(ne.x, -ne.y, 0.001f) // NE = (+, -)
+        // containment has no bearing — defined, not zero (guard for degenerate callers)
+        val inU = unitBearing(Direction.IN)
+        assertEquals(1f, kotlin.math.hypot(inU.x, inU.y), 0.001f)
     }
 }

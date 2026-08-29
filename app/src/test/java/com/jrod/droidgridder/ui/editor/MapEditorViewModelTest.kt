@@ -106,19 +106,36 @@ class MapEditorViewModelTest {
     }
 
     @Test
-    fun `completeLink on the source room cancels without mutation or save`() {
+    fun `completeLink on the source room creates a self-loop exit`() {
         val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
         vm.openWheel("a")
         vm.startLink(Direction.N)
-        vm.completeLink("a") // self-link target == source
+        vm.completeLink("a") // self-loop target == source
 
         val s = vm.uiState.value
         assertNull(s.linkMode)
         assertNull(s.linkSourceRoomId)
-        assertTrue(s.map!!.exits.isEmpty())
-        // nothing persisted
+        val exit = s.map!!.exits.single()
+        assertEquals("a", exit.from)
+        assertEquals("a", exit.to)
+        assertEquals(Direction.N, exit.direction)
+        assertEquals("a", s.selectedRoomId)
+        assertTrue(s.canUndo)
         val saved = MapStore(tmp.root).load("m1")!!
-        assertTrue(saved.exits.isEmpty())
+        assertEquals("a", saved.exits.single().to)
+    }
+
+    @Test
+    fun test129() {
+        val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"), Room(id = "b"))))
+        vm.openWheel("a")
+        vm.startLink(Direction.IN)
+        vm.completeLink("a") // IN self-link: invisible, so cancelled
+
+        val s = vm.uiState.value
+        assertNull(s.linkMode)
+        assertTrue(s.map!!.exits.isEmpty())
+        assertTrue(MapStore(tmp.root).load("m1")!!.exits.isEmpty())
     }
 
     @Test

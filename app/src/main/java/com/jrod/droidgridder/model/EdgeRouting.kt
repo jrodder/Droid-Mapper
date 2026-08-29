@@ -22,6 +22,18 @@ const val DISPLAY_MARGIN = 2f
 const val ROUTE_MARGIN = 2f
 /** Labeled-stub length in world units (fallback when no candidate route is clear). */
 const val STUB_LEN = 40f
+/** Self-exit loop glyph (ZUG legend: passage returning to room of origin): stalk
+ * out from the anchor, then a circle of this radius centered beyond it. */
+const val LOOP_STALK = 18f
+const val LOOP_RADIUS = 12f
+
+/** Normalized bearing vector for [d]; IN/OUT have no compass bearing —
+ *  defined as "up" so degenerate callers never divide by zero. */
+fun unitBearing(d: Direction): Pos {
+    val off = directionOffset(d)
+    val len = sqrt(off.x * off.x + off.y * off.y)
+    return if (len < 1e-6f) Pos(0f, -1f) else Pos(off.x / len, off.y / len)
+}
 
 data class Foot(val l: Float, val t: Float, val r: Float, val b: Float) {
     /** Penetration (x, y); positive = overlapping on that axis. */
@@ -104,24 +116,31 @@ sealed class ExitRoute {
     data class Bends(val points: List<Pos>) : ExitRoute()
     data class Stub(val from: Pos, val tip: Pos, val direction: Direction,
                     val targetName: String) : ExitRoute()
+    /** Self-exit (ZUG: passage returning to room of origin): a stalk from
+     *  [anchor] along [direction] with a small loop circle at its end. */
+    data class Loop(val anchor: Pos, val direction: Direction) : ExitRoute()
 }
 
 /**
- * Pure, deterministic obstruction routing for one exit (spec §2). Returns
- * null for unknown room ids or self-exits. IN/OUT are containment: straight
- * center-to-center, never routed. Otherwise the straight anchor-to-anchor
- * segment wins when clear; failing that, the fixed-order Manhattan candidate
- * list (L/Z corners, then half-stride gutter channels) is tried in order and
- * the first fully clear polyline wins; failing all of that, a labeled stub
- * pointing out along the declared bearing names the destination.
+ * Pure, deterministic obstruction routing for one exit (spec §2). Self-exits
+ * route to a [ExitRoute.Loop] (IN/OUT self-exits return null — no bearing to
+ * hang the loop on). Unknown room ids return null. IN/OUT are containment:
+ * straight center-to-center, never routed. Otherwise the straight anchor-to-
+ * anchor segment wins when clear; failing that, the fixed-order Manhattan
+ * candidate list (L/Z corners, then half-stride gutter channels) is tried in
+ * order and the first fully clear polyline wins; failing all of that, a
+ * labeled stub pointing out along the declared bearing names the destination.
  *
  * ponytail: candidate-list routing, not A* — the upgrade path if visible
  * routing failures remain; no routed-line-vs-routed-line crossing avoidance.
  */
 fun routeExit(exit: Exit, map: MapFile): ExitRoute? {
-    if (exit.from == exit.to) return null
     val rooms = map.rooms.associateBy { it.id }
     val fromRoom = rooms[exit.from] ?: return null
+    if (exit.from == exit.to) {
+        if (exit.direction == Direction.IN || exit.direction == Direction.OUT) return null
+        return ExitRoute.Loop(anchorPos(fromRoom, exit.direction), exit.direction)
+    }
     val toRoom = rooms[exit.to] ?: return null
     if (exit.direction == Direction.IN || exit.direction == Direction.OUT) {
         return ExitRoute.Straight(Pos(fromRoom.x, fromRoom.y), Pos(toRoom.x, toRoom.y))
@@ -167,11 +186,8 @@ fun routeExit(exit: Exit, map: MapFile): ExitRoute? {
         val pts = collapse(cand)
         if (pts.size >= 2 && clear(pts)) return ExitRoute.Bends(pts)
     }
-    val off = directionOffset(exit.direction)
-    val len = sqrt(off.x * off.x + off.y * off.y)
-    val ux = off.x / len
-    val uy = off.y / len
-    return ExitRoute.Stub(a, Pos(a.x + ux * STUB_LEN, a.y + uy * STUB_LEN),
+    val u = unitBearing(exit.direction)
+    return ExitRoute.Stub(a, Pos(a.x + u.x * STUB_LEN, a.y + u.y * STUB_LEN),
                            exit.direction, toRoom.name)
 }
 
