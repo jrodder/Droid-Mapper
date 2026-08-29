@@ -3,6 +3,7 @@ package com.jrod.droidgridder.model
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.math.abs
 
 class SpringLayoutTest {
     /**
@@ -89,45 +90,86 @@ class SpringLayoutTest {
         ),
     )
 
-    private fun totalEdgeLength(map: MapFile): Float {
-        val pos = map.rooms.associateBy { it.id }
-        val seen = HashSet<Pair<String, String>>()
-        var total = 0f
-        for (e in map.exits) {
-            if (e.from == e.to) continue
-            val key = if (e.from < e.to) e.from to e.to else e.to to e.from
-            if (!seen.add(key)) continue
-            val a = pos.getValue(e.from)
-            val b = pos.getValue(e.to)
-            total += kotlin.math.hypot((b.x - a.x).toDouble(), (b.y - a.y).toDouble()).toFloat()
+    /**
+     * v1.6 pin rule, the user's testing-map scenario: a = TESTING, b = tunnel,
+     * c = attic, d = eastern tunnel. a-SW-b and b-E-d and a-S-c all want to put
+     * c and d on the same cell (b-E from SW(a) lands on S(a)), so no placement
+     * satisfies the exact strides. The solver must keep every line ON its
+     * declared bearing — stretching distances (longer lines) — instead of
+     * angling them, and keep the two rooms' boxes apart.
+     */
+    @Test
+    fun `spring layout keeps a contradictory loop on its declared bearings`() {
+        val m = MapFile("m", "m", 0L, 0L,
+            rooms = listOf(Room(id = "a"), Room(id = "b"), Room(id = "c"), Room(id = "d")),
+            exits = listOf(
+                Exit("1", "a", Direction.SW, "b"), Exit("2", "b", Direction.NE, "a"),
+                Exit("3", "a", Direction.S, "c"),  Exit("4", "c", Direction.N, "a"),
+                Exit("5", "b", Direction.E, "d"),  Exit("6", "d", Direction.W, "b")))
+        val out = springLayout(m)
+        val p = out.rooms.associateBy { it.id }
+        fun offBearing(e: Exit): Float {
+            val rest = directionOffset(e.direction)
+            val rl = kotlin.math.hypot(rest.x.toDouble(), rest.y.toDouble()).toFloat()
+            val a = p.getValue(e.from)
+            val b = p.getValue(e.to)
+            val dx = b.x - a.x
+            val dy = b.y - a.y
+            val al = kotlin.math.hypot(dx.toDouble(), dy.toDouble()).toFloat()
+            // 2D cross with the unit bearing: |v|·sin(angle); 0 = exactly on bearing.
+            return abs((dx * rest.y / rl - dy * rest.x / rl) / al)
         }
-        return total
+        for (e in m.exits) {
+            assertTrue("${e.direction.name} edge off its bearing by ${offBearing(e)}",
+                offBearing(e) < 0.05f)
+        }
+        // The stretch is real: attic and eastern tunnel are separated, not stacked.
+        val c = p["c"]!!
+        val d = p["d"]!!
+        val sep = kotlin.math.hypot((d.x - c.x).toDouble(), (d.y - c.y).toDouble()).toFloat()
+        assertTrue("attic/eastern tunnel overlap: $sep", sep >= 0.74f * GRID_STEP)
     }
 
-    private fun lineCrossings(map: MapFile): Int {
+    /**
+     * Mean/min cosine between each bearing edge's actual offset and its declared
+     * bearing (1.0 = on bearing at any distance, < 0 = flipped to the wrong
+     * side). IN/OUT have no bearing and are skipped.
+     */
+    private fun bearingAlignment(map: MapFile): Pair<Float, Float> {
         val pos = map.rooms.associateBy { it.id }
-        val segs = ArrayList<Triple<String, Pos, Pos>>()
-        val seen = HashSet<Pair<String, String>>()
+        var sum = 0f
+        var min = 1f
+        var count = 0
         for (e in map.exits) {
             if (e.from == e.to) continue
-            val key = if (e.from < e.to) e.from to e.to else e.to to e.from
-            if (!seen.add(key)) continue
-            segs.add(Triple(e.from, pos.getValue(e.from).let { Pos(it.x, it.y) }, pos.getValue(e.to).let { Pos(it.x, it.y) }))
+            val rest = directionOffset(e.direction)
+            val rl = kotlin.math.hypot(rest.x.toDouble(), rest.y.toDouble()).toFloat()
+            if (rl < 1e-6f) continue
+            val a = pos.getValue(e.from)
+            val b = pos.getValue(e.to)
+            val dx = b.x - a.x
+            val dy = b.y - a.y
+            val al = kotlin.math.hypot(dx.toDouble(), dy.toDouble()).toFloat()
+            if (al < 1e-6f) continue
+            val cos = (dx * rest.x + dy * rest.y) / (al * rl).toFloat()
+            sum += cos
+            if (cos < min) min = cos
+            count++
         }
-        fun orient(a: Pos, b: Pos, c: Pos): Int {
-            val v = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
-            return when { v > 0f -> 1; v < 0f -> -1; else -> 0 }
-        }
-        var crossings = 0
-        for (i in segs.indices) {
-            for (j in i + 1 until segs.size) {
-                if (segs[i].first == segs[j].first) continue // adjacent edges share a room
-                val (_, a1, a2) = segs[i]
-                val (_, b1, b2) = segs[j]
-                if (orient(a1, a2, b1) != orient(a1, a2, b2) && orient(b1, b2, a1) != orient(b1, b2, a2)) crossings++
-            }
-        }
-        return crossings
+        return if (count == 0) 0f to 1f else sum / count to min
+    }
+
+    @Test
+    fun `spring layout keeps conflicting neighbors on their declared compass side`() {
+        val tidy = autoTidy(zorkSubset)
+        val spring = springLayout(zorkSubset)
+        val (springAlign, springMin) = bearingAlignment(spring)
+        println("[v1.6 bearing] tidy align ${bearingAlignment(tidy).first} | spring align $springAlign min $springMin")
+        // The pin rule on a genuinely conflicting maze: nearly every line sits on
+        // its declared bearing (beats the grid, which is 0.91 on this subset),
+        // and no room ends up on the wrong side of a neighbor.
+        assertTrue("spring compass alignment $springAlign should be high", springAlign > 0.93f)
+        assertTrue("a neighbor is on the wrong side: min align $springMin", springMin > 0f)
     }
 
     @Test
@@ -147,21 +189,6 @@ class SpringLayoutTest {
             }
         }
         assertTrue("rooms overlap: min distance $min < ${0.74f * GRID_STEP}", min >= 0.74f * GRID_STEP)
-    }
-
-    @Test
-    fun `spring layout beats tidy on total edge length and crossings for conflicting maps`() {
-        val tidy = autoTidy(zorkSubset)
-        val spring = springLayout(zorkSubset)
-        // Measured before implementation: tidy 50.3 strides / 55 crossings, spring 42.3 / 46.
-        assertTrue(
-            "spring total ${totalEdgeLength(spring)} should beat tidy ${totalEdgeLength(tidy)}",
-            totalEdgeLength(spring) < totalEdgeLength(tidy),
-        )
-        assertTrue(
-            "spring crossings ${lineCrossings(spring)} should beat tidy ${lineCrossings(tidy)}",
-            lineCrossings(spring) < lineCrossings(tidy),
-        )
     }
 
     @Test
