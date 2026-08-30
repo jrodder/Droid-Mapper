@@ -345,6 +345,29 @@ class MapEditorViewModel(mapId: String, private val store: MapStore) : ViewModel
         _uiState.value = s.copy(map = newMap, canUndo = true)
     }
 
+    /** Toggle a room's dark flag ("total darkness") — persists, undo-able. */
+    fun setRoomDark(roomId: String, isDark: Boolean) {
+        val s = _uiState.value
+        val map = s.map ?: return
+        val newMap = map.copy(rooms = map.rooms.map { if (it.id == roomId) it.copy(isDark = isDark) else it })
+        if (newMap == map) return
+        previousMap = map
+        store.save(newMap)
+        _uiState.value = s.copy(map = newMap, canUndo = true)
+    }
+
+    /** Set the exit's traversal action ("climb rope", "slide"); empty clears. */
+    fun setTraversalAction(exitId: String, action: String) {
+        val s = _uiState.value
+        val map = s.map ?: return
+        if (map.exits.none { it.id == exitId }) return
+        val newMap = map.copy(exits = map.exits.map { if (it.id == exitId) it.copy(traversalAction = action) else it })
+        if (newMap == map) return
+        previousMap = map
+        store.save(newMap)
+        _uiState.value = s.copy(map = newMap, canUndo = true)
+    }
+
     /**
      * Delete the whole passage (the exit plus its mirror record, pure
      * [removePassage]), persist, and close the dialog — the passage no longer

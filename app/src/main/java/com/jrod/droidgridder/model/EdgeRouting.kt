@@ -130,7 +130,7 @@ sealed class ExitRoute {
     /** Axis-aligned polyline; first = source anchor, last = destination anchor. */
     data class Bends(val points: List<Pos>) : ExitRoute()
     data class Stub(val from: Pos, val tip: Pos, val direction: Direction,
-                    val targetName: String) : ExitRoute()
+                    val targetId: String, val targetName: String) : ExitRoute()
     /** Self-exit (ZUG: passage returning to room of origin): a stalk from
      *  [anchor] along [direction] with a small loop circle at its end. */
     data class Loop(val anchor: Pos, val direction: Direction) : ExitRoute()
@@ -236,7 +236,7 @@ fun routeExit(exit: Exit, map: MapFile): ExitRoute? {
         if (pts.size >= 2 && clear(pts)) return ExitRoute.Bends(pts)
     }
     return ExitRoute.Stub(a, Pos(a.x + u.x * STUB_LEN, a.y + u.y * STUB_LEN),
-                           exit.direction, toRoom.name)
+                           exit.direction, toRoom.id, toRoom.name)
 }
 
 /** Collapse consecutive equal/zero-length points in a candidate polyline. */

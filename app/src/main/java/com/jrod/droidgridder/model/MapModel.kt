@@ -20,6 +20,8 @@ data class Room(
     val notes: String = "",
     val x: Float = 0f,
     val y: Float = 0f,
+    /** Unlit room ("total darkness") — the canvas draws it dimmed. */
+    val isDark: Boolean = false,
 )
 
 @Serializable
@@ -30,11 +32,46 @@ data class Exit(
     val to: String,
     /** Deliberate one-way passage (no return): the reverse record is absent. */
     val oneWay: Boolean = false,
+    /** Contextual command to traverse ("climb rope", "slide"); drawn on the line. */
+    val traversalAction: String = "",
 )
 
 enum class Direction { N, S, E, W, NE, NW, SE, SW, UP, DOWN, IN, OUT }
 
 data class Pos(val x: Float, val y: Float)
+
+/**
+ * ZUG-style display names: rooms sharing a name are numbered by discovery
+ * order (append order of [rooms]) — "Maze (1)", "Maze (2)"… Unique and blank
+ * names pass through. Display-only: stored names never change.
+ * ponytail: deleting a mid-list room renumbers its successors (a human map
+ * wouldn't); persist the number if that ever bites.
+ */
+fun displayNames(rooms: List<Room>): Map<String, String> {
+    val shared = rooms.groupBy { it.name }.filterValues { it.size > 1 }.keys.toSet()
+    val seen = mutableMapOf<String, Int>()
+    return rooms.associate { r ->
+        if (r.name.isNotBlank() && r.name in shared) {
+            val n = (seen[r.name] ?: 0) + 1
+            seen[r.name] = n
+            r.id to "${r.name} ($n)"
+        } else {
+            r.id to r.name
+        }
+    }
+}
+
+/**
+ * ZUG canon: vertical and containment passages get a U / D / In / Out label
+ * at their midpoint; compass passages label themselves by their bearing.
+ */
+fun edgeLabel(d: Direction): String? = when (d) {
+    Direction.UP -> "U"
+    Direction.DOWN -> "D"
+    Direction.IN -> "In"
+    Direction.OUT -> "Out"
+    else -> null
+}
 
 const val GRID_STEP = 180f
 

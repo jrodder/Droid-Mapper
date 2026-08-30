@@ -38,8 +38,12 @@ import com.jrod.droidgridder.model.hasMirror
 import com.jrod.droidgridder.model.opposite
 import com.jrod.droidgridder.model.routeExit
 import com.jrod.droidgridder.model.unitBearing
+import com.jrod.droidgridder.model.LABEL_CHAR_W
+import com.jrod.droidgridder.model.LABEL_FONT_WORLD
 import com.jrod.droidgridder.model.LOOP_RADIUS
 import com.jrod.droidgridder.model.LOOP_STALK
+import com.jrod.droidgridder.model.displayNames
+import com.jrod.droidgridder.model.edgeLabel
 
 /**
  * World<->screen transform for the editor canvas. The fields are snapshot state so
@@ -136,6 +140,9 @@ fun MapCanvas(
     val exitColor = MaterialTheme.colorScheme.outline
     val roomNameColor = MaterialTheme.colorScheme.onSurface
     val textMeasurer = rememberTextMeasurer()
+    // Draw-scope size, remembered so the tap handler can center the camera
+    // on a tapped stub's target (centerOn needs the canvas rect).
+    val canvasSize = remember { mutableStateOf(Size.Zero) }
 
     // Task 7: per-room animation state keyed by room id (stable slots), so re-layouts
     // (go-new, autoTidy, undo) glide the box to its new position; `scale` starts at 0
@@ -174,8 +181,19 @@ fun MapCanvas(
                     // through to a delayed single tap either.
                     onLongPress = { pos -> exitAt(map, camera, pos)?.let(onLongPressExit) },
                     onTap = { pos ->
-                        val room = roomAt(map, camera, pos)
-                        if (room != null) onTapRoom(room) else onTapEmpty()
+                        // Tapped stub (walled-in passage): center the camera on
+                        // the stub's named target — the ZUG "to Troll Room" hop.
+                        val stubTarget = stubTargetAt(map, camera, pos)
+                        if (stubTarget != null) {
+                            map?.rooms?.firstOrNull { it.id == stubTarget }?.let { r ->
+                                if (canvasSize.value != Size.Zero) {
+                                    camera.centerOn(Pos(r.x, r.y), canvasSize.value)
+                                }
+                            }
+                        } else {
+                            val room = roomAt(map, camera, pos)
+                            if (room != null) onTapRoom(room) else onTapEmpty()
+                        }
                     },
                 )
             }
@@ -189,7 +207,9 @@ fun MapCanvas(
         drawRect(color = background)
         if (map == null) return@Canvas
 
+        canvasSize.value = size
         val roomsById = map.rooms.associateBy { it.id }
+        val names = displayNames(map.rooms)
 
         // v1.5 ruling O1: pure world scaling, no clamp — labels keep constant world width at
         // every zoom (overlap-free by layout stride), pinch-in makes them larger.
@@ -235,14 +255,15 @@ fun MapCanvas(
             // record (smaller from-room id). The mirror's own route (its own
             // drop-off shape, say) is not drawn: that would be two different
             // polylines for one passage. One-way records have no mirror and
-            // draw themselves (with the arrowhead).
-            if (exit.from > exit.to) {
-                val mirror = map.exits.firstOrNull {
+            // draw themselves (with the arrowhead). [mirror] is kept for the
+            // label fallback below (either record may carry the traversal text).
+            val mirror = if (exit.from > exit.to) {
+                map.exits.firstOrNull {
                     it.from == exit.to && it.to == exit.from &&
                         it.direction == exit.direction.opposite()
                 }
-                if (mirror != null) continue
-            }
+            } else null
+            if (exit.from > exit.to && mirror != null) continue
             val route = routeExit(exit, routedMap) ?: continue
             val pts = route.polyline().map { camera.worldToScreen(it) }
             val path = Path().apply {
@@ -281,6 +302,32 @@ fun MapCanvas(
                     drawPath(arrowPath, color = lineColor)
                 }
             }
+            // ZUG canon text on the line: U / D / In / Out for vertical and
+            // containment edges (which draw center-to-center), and the
+            // traversal action ("climb rope", "slide") for compass passages.
+            // Sits at the longest segment's midpoint, pushed above the line —
+            // the longest segment is the most likely to be in open space.
+            val labelText = if (route !is ExitRoute.Stub) {
+                edgeLabel(exit.direction)
+                    ?: exit.traversalAction.ifBlank { mirror?.traversalAction.orEmpty() }
+            } else null
+            if (labelText != null && pts.size >= 2) {
+                var bestI = 0
+                var bestLen = -1f
+                for (i in 0 until pts.size - 1) {
+                    val segLen = kotlin.math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y)
+                    if (segLen > bestLen) { bestLen = segLen; bestI = i }
+                }
+                val mid = Offset(
+                    (pts[bestI].x + pts[bestI + 1].x) / 2f,
+                    (pts[bestI].y + pts[bestI + 1].y) / 2f,
+                )
+                val layout = textMeasurer.measure(text = labelText, style = TextStyle(fontSize = (11f * camera.scale).sp))
+                drawText(
+                    layout, color = lineColor,
+                    topLeft = Offset(mid.x - layout.size.width / 2f, mid.y - 6f * camera.scale - layout.size.height / 2f),
+                )
+            }
             // Walled-in edge: labeled stub naming the destination, pushed out along
             // the bearing's dominant axis so the text doesn't sit on the line.
             if (route is ExitRoute.Stub) {
@@ -308,11 +355,15 @@ fun MapCanvas(
             val boxSize = ROOM_BOX_SIZE * camera.scale * anim.pop
             val half = boxSize / 2f
             val rect = Rect(c.x - half, c.y - half, c.x + half, c.y + half)
+            // Dark room ("total darkness"): the box is dimmed — its exits are
+            // not yet trustworthy. The name stays bright (identity).
+            val fill = if (room.isDark) roomFill.copy(alpha = 0.45f) else roomFill
+            val stroke = if (room.isDark) boxStroke.copy(alpha = 0.45f) else boxStroke
             drawRoundRect(
-                color = roomFill, topLeft = rect.topLeft, size = rect.size, cornerRadius = radius,
+                color = fill, topLeft = rect.topLeft, size = rect.size, cornerRadius = radius,
             )
             drawRoundRect(
-                color = boxStroke, topLeft = rect.topLeft, size = rect.size,
+                color = stroke, topLeft = rect.topLeft, size = rect.size,
                 cornerRadius = radius, style = Stroke(width = 2f),
             )
             // v1.4 ruling N1: one highlight per room, drawn ON the box. Selected -> secondary
@@ -329,9 +380,11 @@ fun MapCanvas(
                     cornerRadius = radius, style = Stroke(width = 3f),
                 )
             }
-            // Room name is drawn under the box (spec wins over brief's "below/inside").
-            if (room.name.isNotBlank()) {
-                val layout = textMeasurer.measure(text = room.name, style = TextStyle(fontSize = nameFont))
+            // Room name is drawn under the box (spec wins over brief's "below/inside"),
+            // numbered for duplicates (displayNames): "Maze (1)", "Maze (2)"…
+            val displayName = names[room.id] ?: room.name
+            if (displayName.isNotBlank()) {
+                val layout = textMeasurer.measure(text = displayName, style = TextStyle(fontSize = nameFont))
                 drawText(
                     layout,
                     color = roomNameColor,
@@ -402,6 +455,48 @@ private fun exitAt(map: MapFile?, camera: CameraState, screen: Offset): String? 
         if (d < bestDist) {
             bestDist = d
             bestId = exit.id
+        }
+    }
+    return bestId
+}
+
+/**
+ * Tapped stub hit test (screen space): returns the target room id of the
+ * stub line (or its "→ name" label) nearest the tap, within ~16px. Stubs are
+ * tappable so the camera can hop to the named target — the ZUG
+ * "(to Troll Room)" jump. Label extents are estimated from the same width
+ * model the router uses (LABEL_CHAR_W * LABEL_FONT_WORLD per character);
+ * good enough for a finger tolerance.
+ */
+private fun stubTargetAt(map: MapFile?, camera: CameraState, screen: Offset): String? {
+    val m = map ?: return null
+    var bestId: String? = null
+    var bestDist = 16f
+    for (exit in m.exits) {
+        // Same owner rule as drawing: one stub per passage pair.
+        val source = if (exit.from > exit.to) {
+            m.exits.firstOrNull {
+                it.from == exit.to && it.to == exit.from &&
+                    it.direction == exit.direction.opposite()
+            } ?: exit
+        } else exit
+        val route = routeExit(source, m) as? ExitRoute.Stub ?: continue
+        val from = camera.worldToScreen(route.from)
+        val tip = camera.worldToScreen(route.tip)
+        var d = pointSegDist(screen, from, tip)
+        // Label center mirrors the draw math: pushed out along the dominant axis.
+        val labelW = (route.targetName.length + 2f) * LABEL_CHAR_W * LABEL_FONT_WORLD * camera.scale
+        val labelH = LABEL_FONT_WORLD * camera.scale
+        val u = unitBearing(route.direction)
+        val labelCenter = if (kotlin.math.abs(u.x) > kotlin.math.abs(u.y)) {
+            Offset(tip.x + (if (u.x > 0f) 1f else -1f) * (4f + labelW / 2f), tip.y)
+        } else {
+            Offset(tip.x, tip.y + (if (u.y > 0f) 1f else -1f) * (labelH / 2f))
+        }
+        d = minOf(d, kotlin.math.hypot(screen.x - labelCenter.x, screen.y - labelCenter.y) - maxOf(labelW, labelH) / 2f)
+        if (d < bestDist) {
+            bestDist = d
+            bestId = route.targetId
         }
     }
     return bestId

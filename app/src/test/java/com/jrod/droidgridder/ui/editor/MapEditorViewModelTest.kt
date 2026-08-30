@@ -735,4 +735,23 @@ class MapEditorViewModelTest {
         assertFalse(s.canUndo)
         assertEquals(3, MapStore(tmp.root).load("m1")!!.rooms.size) // restored map persisted
     }
+    @Test
+    fun `setRoomDark toggles the dark flag and persists`() {
+        val vm = MapEditorViewModel("m1", store(baseMap(Room(id = "a"))))
+        vm.setRoomDark("a", true)
+        assertTrue(vm.uiState.value.map!!.rooms.single().isDark)
+        assertTrue(MapStore(tmp.root).load("m1")!!.rooms.single().isDark)
+        vm.setRoomDark("a", false)
+        assertFalse(vm.uiState.value.map!!.rooms.single().isDark)
+    }
+
+    @Test
+    fun `setTraversalAction stores the contextual command on the exit`() {
+        val m = baseMap(Room(id = "a"), Room(id = "b"))
+            .copy(exits = listOf(Exit("1", "a", Direction.E, "b")))
+        val vm = MapEditorViewModel("m1", store(m))
+        vm.setTraversalAction("1", "climb rope")
+        assertEquals("climb rope", vm.uiState.value.map!!.exits.single().traversalAction)
+        assertEquals("climb rope", MapStore(tmp.root).load("m1")!!.exits.single().traversalAction)
+    }
 }

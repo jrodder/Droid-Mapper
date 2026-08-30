@@ -1,6 +1,7 @@
 package com.jrod.droidgridder.ui.editor
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -22,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -172,6 +175,7 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
                         room = selectedRoom,
                         map = state.map!!,
                         onCommitText = { n, d, no -> viewModel.updateRoomText(selectedRoom.id, n, d, no) },
+                        onSetDark = { viewModel.setRoomDark(selectedRoom.id, it) },
                         onManageExits = { viewModel.openWheelFromEdit() },
                         onMergeInto = { id, rehome -> viewModel.mergeRoom(id, rehome) },
                         onDeleteRoom = { viewModel.deleteRoom(selectedRoom.id) },
@@ -193,23 +197,40 @@ fun MapEditorScreen(store: MapStore, mapId: String, onBack: () -> Unit) {
             val dialogExitId = state.exitDialogExitId
             val dialogExit = dialogExitId?.let { id -> state.map?.exits?.firstOrNull { it.id == id } }
             if (dialogExit != null) {
+                // Draft for the traversal action ("climb rope", "slide"); commits
+                // to the model live on each keystroke.
+                var traversal by remember(dialogExit.id) { mutableStateOf(dialogExit.traversalAction) }
                 val destName = state.map?.rooms?.firstOrNull { it.id == dialogExit.to }?.name
                     ?.takeIf { it.isNotBlank() } ?: "(unmapped)"
                 AlertDialog(
                     onDismissRequest = { viewModel.closeExitDialog() },
                     title = { Text("${dialogExit.direction.name} → $destName") },
                     text = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(
-                                text = "One-way passage",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Switch(
-                                checked = dialogExit.oneWay,
-                                onCheckedChange = { viewModel.setExitOneWay(dialogExit.id, it) },
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(
+                                    text = "One-way passage",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Switch(
+                                    checked = dialogExit.oneWay,
+                                    onCheckedChange = { viewModel.setExitOneWay(dialogExit.id, it) },
+                                )
+                            }
+                            // ZUG-style passage annotation: the contextual command to
+                            // traverse ("climb rope"); drawn on the line.
+                            OutlinedTextField(
+                                value = traversal,
+                                onValueChange = {
+                                    traversal = it
+                                    viewModel.setTraversalAction(dialogExit.id, it.trim())
+                                },
+                                label = { Text("Traversal (e.g. climb rope)") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                     },

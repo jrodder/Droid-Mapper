@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ fun RoomSheet(
     room: Room,
     map: MapFile,
     onCommitText: (name: String, description: String, notes: String) -> Unit,
+    onSetDark: (isDark: Boolean) -> Unit,
     onManageExits: () -> Unit,
     onMergeInto: (survivorId: String, rehome: Map<Direction, Direction>) -> Unit,
     onDeleteRoom: () -> Unit,
@@ -134,6 +136,25 @@ fun RoomSheet(
 
             DraftField("Description", description, { description = it }, { onCommitText(name, description, notes) })
             DraftField("Notes", notes, { notes = it }, { onCommitText(name, description, notes) })
+
+            // Unlit room ("total darkness"): the canvas draws the box dimmed —
+            // its exits aren't trustworthy until a light source.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Dark room (total darkness)",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                Switch(
+                    checked = room.isDark,
+                    onCheckedChange = onSetDark,
+                )
+            }
 
             Text(
                 text = "Exits",
