@@ -37,8 +37,10 @@ import kotlin.math.sqrt
  * and the pushes are tiny, their bearing damage negligible. No projection
  * runs after it, so the pushes are monotone — nothing re-collides a cleared
  * pair. Guarantee: no box overlaps a box, no box swallows a neighbor's
- * label. Deterministic: seeded from [autoTidy], fixed edge order, fixed
- * pass order, no randomness.
+ * label, and every box/label pair carries [DISPLAY_MARGIN] of clearance
+ * (the [labelsOccluded] predicate with its default margin is the solver's
+ * own invariant). Deterministic: seeded from [autoTidy], fixed edge order,
+ * fixed pass order, no randomness.
  *
  * IN/OUT exits have no bearing (containment) and are left to the Tidy seed;
  * the separation pass still keeps their boxes clear. The root room (first
@@ -193,12 +195,18 @@ private fun separateToSeedFloor(x: FloatArray, y: FloatArray, seedFloor: FloatAr
  * deterministic): for every pair whose boxes overlap, or whose label strip
  * overlaps the other's box (either direction), push them apart along the
  * least-penetrating axis by the full penetration plus [DISPLAY_MARGIN],
- * split evenly between the endpoints. Used only as the final phase — the
- * main loop keeps every pair at its Tidy-seed distance, so only small
- * residuals remain, and with no projection left to re-straighten, each push
- * is monotone (nothing re-collides a cleared pair) and the phase converges
- * (bounded by [FOOTPRINT_PASSES]). Returns whether anything moved
- * (false = clean).
+ * split evenly between the endpoints. Penetration is measured WITH the
+ * display margin (a pair already 1 unit apart is 1 unit "penetrating" for
+ * this pass), so the pass drives every touching/near-touching pair out to
+ * exactly [DISPLAY_MARGIN] of clearance and the [labelsOccluded] predicate
+ * (same margin) is the solver's honest invariant. Without the margin on the
+ * trigger, a 0–2-unit dead zone survives: the main loop stops at the
+ * Tidy-seed floor and a bare-penetration trigger never sees a 0.5 gap. Used
+ * only as the final phase — the main loop keeps every pair at its
+ * Tidy-seed distance, so only small residuals remain, and with no projection
+ * left to re-straighten, each push is monotone (nothing re-collides a
+ * cleared pair) and the phase converges (bounded by [FOOTPRINT_PASSES]).
+ * Returns whether anything moved (false = clean).
  */
 private fun separateFootprints(x: FloatArray, y: FloatArray, names: List<String>): Boolean {
     var moved = false
@@ -208,21 +216,24 @@ private fun separateFootprints(x: FloatArray, y: FloatArray, names: List<String>
             val boxJ = boxFoot(x[j], y[j])
             val stripI = stripFoot(x[i], y[i], names[i])
             val stripJ = stripFoot(x[j], y[j], names[j])
-            // Tightest overlap across all rect pairs and both axes. A pair
-            // only overlaps when BOTH axes penetrate; among real overlaps we
-            // take the least-penetrating axis to push along.
+            // Tightest margin-adjusted overlap across all rect pairs and both
+            // axes. A pair only acts when BOTH axes are within [DISPLAY_MARGIN]
+            // of touching; among real touches we take the least-penetrating
+            // axis to push along.
             var best = Float.MAX_VALUE
             var axisX = true
             fun consider(p: Pair<Float, Float>) {
-                if (p.first <= 0f || p.second <= 0f) return
-                if (p.first < best) { best = p.first; axisX = true }
-                if (p.second < best) { best = p.second; axisX = false }
+                val px = p.first + DISPLAY_MARGIN
+                val py = p.second + DISPLAY_MARGIN
+                if (px <= 0f || py <= 0f) return
+                if (px < best) { best = px; axisX = true }
+                if (py < best) { best = py; axisX = false }
             }
             consider(boxI.pen(boxJ))
             if (stripI != null) consider(stripI.pen(boxJ))
             if (stripJ != null) consider(boxI.pen(stripJ))
             if (best == Float.MAX_VALUE) continue
-            val d = (best + DISPLAY_MARGIN) / 2f
+            val d = best / 2f
             if (axisX) {
                 val s = if (x[j] >= x[i]) 1f else -1f
                 x[i] -= s * d; x[j] += s * d
