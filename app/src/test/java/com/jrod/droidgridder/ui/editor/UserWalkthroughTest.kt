@@ -15,6 +15,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
 
 /**
  * The end-to-end question: build a map the way a USER builds one — driving the
@@ -230,6 +231,10 @@ class UserWalkthroughTest {
         assertEquals(listOf("Dead End (1)", "Dead End (2)"), deadNames)
         assertEquals("Living Room", names[out.rooms.first { it.id == "lr" }.id])
         assertEquals(m1In.name, "Maze") // stored names are never rewritten
+
+        // Fixture dump (outside the temp folder): the final map, ready to load
+        // in the app or inspect as JSON.
+        MapStore(File("build")).save(out)
     }
 
     /** Mean/min cosine between each edge's actual offset and its declared bearing. */

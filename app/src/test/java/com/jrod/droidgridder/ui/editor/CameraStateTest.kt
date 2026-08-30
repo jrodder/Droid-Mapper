@@ -7,6 +7,7 @@ import com.jrod.droidgridder.model.Pos
 import com.jrod.droidgridder.model.ROOM_BOX_SIZE
 import com.jrod.droidgridder.model.Room
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -92,5 +93,70 @@ class CameraStateTest {
         assertEquals(500f, s.x, 0.001f)
         assertEquals(400f, s.y, 0.001f)
         assertEquals(1f, cam.scale, 0.0001f)
+    }
+
+    // v1.6.3 fit-to-view: opening the editor used to leave the camera at the
+    // world origin (top-left corner), so any map whose content sat away from
+    // (0,0) opened as a black canvas.
+    @Test
+    fun fitToScalesDownAndCentersLargeMaps() {
+        val cam = CameraState()
+        val map = com.jrod.droidgridder.model.MapFile(
+            id = "m", name = "t", createdAt = 0L, updatedAt = 0L,
+            rooms = listOf(
+                Room(id = "a", name = "A", x = 0f, y = 0f),
+                Room(id = "b", name = "B", x = 1000f, y = 600f),
+            ),
+        )
+        cam.fitTo(map, Size(1000f, 800f))
+        assertTrue("large map must zoom out: ${cam.scale}", cam.scale < 1f)
+        // padded bounds are symmetric, so the room-bounds center lands centered
+        val s = cam.worldToScreen(Pos(500f, 300f))
+        assertEquals(500f, s.x, 1f)
+        assertEquals(400f, s.y, 1f)
+        // every room inside the canvas
+        for (r in map.rooms) {
+            val p = cam.worldToScreen(Pos(r.x, r.y))
+            assertTrue("room ${r.id} off-canvas: $p", p.x in 0f..1000f && p.y in 0f..800f)
+        }
+    }
+
+    @Test
+    fun fitToNeverZoomsInPastOne() {
+        val cam = CameraState()
+        val map = com.jrod.droidgridder.model.MapFile(
+            id = "m", name = "t", createdAt = 0L, updatedAt = 0L,
+            rooms = listOf(Room(id = "a", name = "A", x = 0f, y = 0f)),
+        )
+        cam.fitTo(map, Size(1000f, 800f))
+        assertEquals("small maps open 1:1, not magnified", 1f, cam.scale, 0.001f)
+        val s = cam.worldToScreen(Pos(0f, 0f))
+        assertEquals(500f, s.x, 1f)
+        assertEquals(400f, s.y, 1f)
+    }
+
+    @Test
+    fun fitToClampsAtMinScaleForHugeMaps() {
+        val cam = CameraState()
+        val map = com.jrod.droidgridder.model.MapFile(
+            id = "m", name = "t", createdAt = 0L, updatedAt = 0L,
+            rooms = listOf(
+                Room(id = "a", name = "A", x = 0f, y = 0f),
+                Room(id = "b", name = "B", x = 100000f, y = 0f),
+            ),
+        )
+        cam.fitTo(map, Size(1000f, 800f))
+        assertEquals(CameraState.MIN_SCALE, cam.scale, 0.0001f)
+    }
+
+    @Test
+    fun fitToEmptyMapIsNoOp() {
+        val cam = CameraState()
+        cam.fitTo(com.jrod.droidgridder.model.MapFile(
+            id = "m", name = "t", createdAt = 0L, updatedAt = 0L, rooms = emptyList(),
+        ), Size(1000f, 800f))
+        assertEquals(1f, cam.scale, 0.001f)
+        assertEquals(0f, cam.offsetX, 0.001f)
+        assertEquals(0f, cam.offsetY, 0.001f)
     }
 }
