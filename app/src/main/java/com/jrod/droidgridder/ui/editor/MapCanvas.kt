@@ -20,6 +20,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.drawText
@@ -80,6 +81,26 @@ class CameraState {
         scale = 1f
         offsetX = canvasSize.width / 2f - world.x
         offsetY = canvasSize.height / 2f - world.y
+    }
+
+    /**
+     * One-shot fit (used when the editor opens): scale the whole map's bounds —
+     * padded so labels and stubs stay visible — to the canvas, centered. Never
+     * zooms IN past scale 1.0 (a small map opens 1:1, not magnified) and
+     * clamps at [MIN_SCALE] for huge ones. Empty maps are a no-op.
+     */
+    fun fitTo(map: MapFile, canvas: Size) {
+        val rooms = map.rooms
+        if (rooms.isEmpty()) return
+        val pad = 170f // label strip reaches ~121.5 world units past center; stubs a bit further
+        val minX = (rooms.minOf { it.x } - pad)
+        val maxX = (rooms.maxOf { it.x } + pad)
+        val minY = (rooms.minOf { it.y } - pad)
+        val maxY = (rooms.maxOf { it.y } + pad)
+        scale = minOf(canvas.width / (maxX - minX), canvas.height / (maxY - minY), 1f)
+            .coerceIn(MIN_SCALE, MAX_SCALE)
+        offsetX = canvas.width / 2f - (minX + maxX) / 2f * scale
+        offsetY = canvas.height / 2f - (minY + maxY) / 2f * scale
     }
 
     companion object {
@@ -143,6 +164,9 @@ fun MapCanvas(
     // Draw-scope size, remembered so the tap handler can center the camera
     // on a tapped stub's target (centerOn needs the canvas rect).
     val canvasSize = remember { mutableStateOf(Size.Zero) }
+    // v1.6.3 one-shot fit: which map id has had its opening camera fit. Guarded
+    // by id so Tidy/Relax re-layouts and user pan/zoom never re-fit mid-session.
+    var fittedMapId by remember { mutableStateOf<String?>(null) }
 
     // Task 7: per-room animation state keyed by room id (stable slots), so re-layouts
     // (go-new, autoTidy, undo) glide the box to its new position; `scale` starts at 0
@@ -208,6 +232,14 @@ fun MapCanvas(
         if (map == null) return@Canvas
 
         canvasSize.value = size
+        // v1.6.3: the camera defaults to the world origin (top-left of the
+        // canvas), so a map whose content sits away from (0,0) used to open as
+        // a black screen. Fit once per map open; the camera write invalidates
+        // the draw and the id guard stops re-fitting on the next pass.
+        if (size != Size.Zero && fittedMapId != map.id) {
+            fittedMapId = map.id
+            camera.fitTo(map, size)
+        }
         val roomsById = map.rooms.associateBy { it.id }
         val names = displayNames(map.rooms)
 
@@ -239,6 +271,13 @@ fun MapCanvas(
             val isSelectedEdge = exit.from == state.selectedRoomId || exit.to == state.selectedRoomId
             val lineColor = if (isSelectedEdge) selectedColor else exitColor
             val lineWidth = if (isSelectedEdge) 3f else 2f
+            // UP/DOWN passages are drawn dashed (ZUG's stair marker) instead of
+            // labeled: same screen-px dash length at every zoom, like the arrow.
+            val lineStyle = if (exit.direction == Direction.UP || exit.direction == Direction.DOWN) {
+                Stroke(width = lineWidth, pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f), 0f))
+            } else {
+                Stroke(width = lineWidth)
+            }
             // Self-exit: ZUG's loop glyph — a stalk out along the bearing with a
             // small circle at its end (passage returning to room of origin).
             if (exit.from == exit.to) {
@@ -270,7 +309,7 @@ fun MapCanvas(
                 moveTo(pts.first().x, pts.first().y)
                 for (i in 1 until pts.size) lineTo(pts[i].x, pts[i].y)
             }
-            drawPath(path, color = lineColor, style = Stroke(width = lineWidth))
+            drawPath(path, color = lineColor, style = lineStyle)
             // One-way passages get an arrowhead at the destination anchor, oriented
             // along the route's final segment (a routed line can arrive along an axis
             // different from its declared bearing). Same color as the line itself.
@@ -302,11 +341,12 @@ fun MapCanvas(
                     drawPath(arrowPath, color = lineColor)
                 }
             }
-            // ZUG canon text on the line: U / D / In / Out for vertical and
-            // containment edges (which draw center-to-center), and the
-            // traversal action ("climb rope", "slide") for compass passages.
-            // Sits at the longest segment's midpoint, pushed above the line —
-            // the longest segment is the most likely to be in open space.
+            // ZUG canon text on the line: In / Out for containment edges (which
+            // draw center-to-center) and the traversal action ("climb rope",
+            // "slide") for compass passages. UP / DOWN get no text — the dashed
+            // stroke below is their marker. Sits at the longest segment's
+            // midpoint, pushed above the line — the longest segment is the most
+            // likely to be in open space.
             val labelText = if (route !is ExitRoute.Stub) {
                 edgeLabel(exit.direction)
                     ?: exit.traversalAction.ifBlank { mirror?.traversalAction.orEmpty() }

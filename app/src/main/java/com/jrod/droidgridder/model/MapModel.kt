@@ -62,12 +62,12 @@ fun displayNames(rooms: List<Room>): Map<String, String> {
 }
 
 /**
- * ZUG canon: vertical and containment passages get a U / D / In / Out label
- * at their midpoint; compass passages label themselves by their bearing.
+ * ZUG canon: containment passages get an In / Out label at their midpoint;
+ * UP and DOWN passages carry no label — they are drawn DASHED (see
+ * MapCanvas) so the stair is readable without text. Compass passages label
+ * themselves by their bearing.
  */
 fun edgeLabel(d: Direction): String? = when (d) {
-    Direction.UP -> "U"
-    Direction.DOWN -> "D"
     Direction.IN -> "In"
     Direction.OUT -> "Out"
     else -> null

@@ -28,9 +28,9 @@ class DisplayNamingTest {
         assertEquals("Maze (3)", displayNames(three)["c"])
     }
 
-    @Test fun `edge labels follow ZUG canon for vertical and containment directions`() {
-        assertEquals("U", edgeLabel(Direction.UP))
-        assertEquals("D", edgeLabel(Direction.DOWN))
+    @Test fun `edge labels are In-Out only, UP and DOWN draw dashed instead`() {
+        assertNull("UP is drawn dashed, not labeled", edgeLabel(Direction.UP))
+        assertNull("DOWN is drawn dashed, not labeled", edgeLabel(Direction.DOWN))
         assertEquals("In", edgeLabel(Direction.IN))
         assertEquals("Out", edgeLabel(Direction.OUT))
         // compass directions carry no label — the bearing geometry is the label
